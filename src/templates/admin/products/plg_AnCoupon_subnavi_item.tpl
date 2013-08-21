@@ -1,6 +1,5 @@
-<?php
-/*
- * アフィリナビクーポンプラグイン
+<!--{*
+ * EC-CUBEアフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
  * 
@@ -17,11 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-require_once PLUGIN_UPLOAD_REALDIR .  'AnCoupon/pages/plg_AnCoupon_LC_Page_Config.php';
-
-$page = new plg_AnCoupon_LC_Page_Config();
-register_shutdown_function(array($page, 'destroy'));
-$page->init();
-$page->process();
+ *}-->
+ 
+<li<!--{if $tpl_subno == 'discount_rule_list'}--> class="on"<!--{/if}--> id="navi-products-discount-rule-list"><a href="<!--{$smarty.const.ROOT_URLPATH}--><!--{$smarty.const.ADMIN_DIR}-->products/plg_AnCoupon_discount_rule_list.php"><span>クーポン管理</span></a></li>
+<li<!--{if $tpl_subno == 'coupon_list'}--> class="on"<!--{/if}--> id="navi-products-coupon-list"><a href="<!--{$smarty.const.ROOT_URLPATH}--><!--{$smarty.const.ADMIN_DIR}-->products/plg_AnCoupon_coupon_list.php"><span>発行済クーポン</span></a></li>

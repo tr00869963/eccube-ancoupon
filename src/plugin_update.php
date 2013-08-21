@@ -88,7 +88,7 @@ class plugin_update {
      * @param array $old_info 以前のプラグイン情報の連想配列(dtb_plugin)
      */
     protected static function savePluginInfo($new_info, $old_info) {
-        $query = SC_Query::getSingletonInstance();
+        $query = SC_Query_Ex::getSingletonInstance();
         $fields = array(
             'plugin_name',
             'plugin_code',

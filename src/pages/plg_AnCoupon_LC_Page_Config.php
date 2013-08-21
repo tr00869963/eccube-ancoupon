@@ -1,6 +1,6 @@
 <?php
 /*
- * EC-CUBEアフィリナビトラッキングプラグイン
+ * EC-CUBEアフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
  * 
@@ -24,11 +24,11 @@ require_once CLASS_EX_REALDIR . 'page_extends/admin/LC_Page_Admin_Ex.php';
 /**
  * プラグインの設定画面
  *
- * @package AnTracking
+ * @package AnCoupon
  * @author M-soft
  * @version $Id: $
  */
-class LC_Page_Plugin_AnCoupon_Config extends LC_Page_Admin_Ex {
+class plg_AnCoupon_LC_Page_Config extends LC_Page_Admin_Ex {
     /**
      * フォームの値を収めた連想配列。
      * テンプレートで使用します。
@@ -48,8 +48,8 @@ class LC_Page_Plugin_AnCoupon_Config extends LC_Page_Admin_Ex {
     function init() {
         parent::init();
 
+        $this->template = TEMPLATE_ADMIN_REALDIR . 'ownersstore/plg_AnCoupon_config.tpl';
         $this->tpl_subtitle = 'アフィリナビクーポンプラグイン設定';
-        $this->setTemplate(PLUGIN_UPLOAD_REALDIR . "AnCoupon/templates/config.tpl");
     }
     
     function process() {

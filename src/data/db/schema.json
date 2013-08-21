@@ -1,0 +1,447 @@
+{
+    "sequences": {
+        "plg_AnCoupon_coupon_coupon_id": 1, 
+        "plg_AnCoupon_discount_code": 1, 
+        "plg_AnCoupon_discount_rule_id": 1
+    }, 
+    "tables": {
+        "plg_AnCoupon_coupon": {
+            "constraints": {
+                "plg_AnCoupon_coupon_code_unique": {
+                    "check": false, 
+                    "deferrable": false, 
+                    "fields": {
+                        "code": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }
+                    }, 
+                    "foreign": false, 
+                    "initiallydeferred": false, 
+                    "match": "", 
+                    "ondelete": "", 
+                    "onupdate": "", 
+                    "primary": false, 
+                    "references": {
+                        "fields": [], 
+                        "table": ""
+                    }, 
+                    "unique": true
+                }, 
+                "plg_AnCoupon_coupon_primary": {
+                    "check": false, 
+                    "deferrable": false, 
+                    "fields": {
+                        "coupon_id": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }
+                    }, 
+                    "foreign": false, 
+                    "initiallydeferred": false, 
+                    "match": "", 
+                    "ondelete": "", 
+                    "onupdate": "", 
+                    "primary": true, 
+                    "references": {
+                        "fields": [], 
+                        "table": ""
+                    }, 
+                    "unique": false
+                }
+            }, 
+            "fields": {
+                "code": {
+                    "length": "64", 
+                    "notnull": true, 
+                    "type": "text"
+                }, 
+                "coupon_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "create_date": {
+                    "default": "CURRENT_TIMESTAMP", 
+                    "notnull": true, 
+                    "type": "timestamp"
+                }, 
+                "effective_from": {
+                    "notnull": true, 
+                    "type": "timestamp"
+                }, 
+                "effective_to": {
+                    "notnull": true, 
+                    "type": "timestamp"
+                }, 
+                "enabled": {
+                    "default": "1", 
+                    "length": 1, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "limit_uses": {
+                    "default": "0", 
+                    "length": 1, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "max_uses": {
+                    "default": "0", 
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "memo": {
+                    "notnull": false, 
+                    "type": "text"
+                }, 
+                "update_date": {
+                    "default": "CURRENT_TIMESTAMP", 
+                    "notnull": true, 
+                    "type": "timestamp"
+                }, 
+                "uses": {
+                    "default": "0", 
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }
+            }
+        }, 
+        "plg_AnCoupon_coupon_discount_rule": {
+            "constraints": {
+                "plg_AnCoupon_coupon_discount_rule_primary": {
+                    "check": false, 
+                    "deferrable": false, 
+                    "fields": {
+                        "coupon_id": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }, 
+                        "discount_rule_id": {
+                            "position": 2, 
+                            "sorting": "ascending"
+                        }
+                    }, 
+                    "foreign": false, 
+                    "initiallydeferred": false, 
+                    "match": "", 
+                    "ondelete": "", 
+                    "onupdate": "", 
+                    "primary": true, 
+                    "references": {
+                        "fields": [], 
+                        "table": ""
+                    }, 
+                    "unique": false
+                }
+            }, 
+            "fields": {
+                "coupon_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "discount_rule_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }
+            }
+        }, 
+        "plg_AnCoupon_discount_rule": {
+            "constraints": {
+                "plg_AnCoupon_discount_rule_code_unique": {
+                    "check": false, 
+                    "deferrable": false, 
+                    "fields": {
+                        "code": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }
+                    }, 
+                    "foreign": false, 
+                    "initiallydeferred": false, 
+                    "match": "", 
+                    "ondelete": "", 
+                    "onupdate": "", 
+                    "primary": false, 
+                    "references": {
+                        "fields": [], 
+                        "table": ""
+                    }, 
+                    "unique": true
+                }, 
+                "plg_AnCoupon_discount_rule_primary": {
+                    "check": false, 
+                    "deferrable": false, 
+                    "fields": {
+                        "discount_rule_id": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }
+                    }, 
+                    "foreign": false, 
+                    "initiallydeferred": false, 
+                    "match": "", 
+                    "ondelete": "", 
+                    "onupdate": "", 
+                    "primary": true, 
+                    "references": {
+                        "fields": [], 
+                        "table": ""
+                    }, 
+                    "unique": false
+                }
+            }, 
+            "fields": {
+                "code": {
+                    "length": "60", 
+                    "notnull": true, 
+                    "type": "text"
+                }, 
+                "create_date": {
+                    "default": "CURRENT_TIMESTAMP", 
+                    "notnull": true, 
+                    "type": "timestamp"
+                }, 
+                "discount_rule_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "effective_from": {
+                    "notnull": true, 
+                    "type": "timestamp"
+                }, 
+                "effective_to": {
+                    "notnull": true, 
+                    "type": "timestamp"
+                }, 
+                "enabled": {
+                    "default": "1", 
+                    "length": 1, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "item_discount_amount": {
+                    "default": "0", 
+                    "length": "10", 
+                    "notnull": true, 
+                    "scale": "0", 
+                    "type": "decimal"
+                }, 
+                "item_discount_rate": {
+                    "default": "0.00", 
+                    "length": "3", 
+                    "notnull": true, 
+                    "scale": "2", 
+                    "type": "decimal"
+                }, 
+                "memo": {
+                    "notnull": false, 
+                    "type": "text"
+                }, 
+                "name": {
+                    "length": "100", 
+                    "notnull": true, 
+                    "type": "text"
+                }, 
+                "total_discount_amount": {
+                    "default": "0", 
+                    "length": "10", 
+                    "notnull": true, 
+                    "scale": "0", 
+                    "type": "decimal"
+                }, 
+                "total_discount_rate": {
+                    "default": "0.00", 
+                    "length": "3", 
+                    "notnull": true, 
+                    "scale": "2", 
+                    "type": "decimal"
+                }, 
+                "update_date": {
+                    "default": "CURRENT_TIMESTAMP", 
+                    "notnull": true, 
+                    "type": "timestamp"
+                }
+            }
+        }, 
+        "plg_AnCoupon_discount_rule_category": {
+            "constraints": {
+                "plg_AnCoupon_discount_rule_category_primary": {
+                    "check": false, 
+                    "deferrable": false, 
+                    "fields": {
+                        "category_id": {
+                            "position": 2, 
+                            "sorting": "ascending"
+                        }, 
+                        "discount_rule_id": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }
+                    }, 
+                    "foreign": false, 
+                    "initiallydeferred": false, 
+                    "match": "", 
+                    "ondelete": "", 
+                    "onupdate": "", 
+                    "primary": true, 
+                    "references": {
+                        "fields": [], 
+                        "table": ""
+                    }, 
+                    "unique": false
+                }
+            }, 
+            "fields": {
+                "category_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "discount_rule_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }
+            }
+        }, 
+        "plg_AnCoupon_discount_rule_product": {
+            "constraints": {
+                "plg_AnCoupon_discount_rule_product_primary": {
+                    "check": false, 
+                    "deferrable": false, 
+                    "fields": {
+                        "discount_rule_id": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }, 
+                        "product_id": {
+                            "position": 2, 
+                            "sorting": "ascending"
+                        }
+                    }, 
+                    "foreign": false, 
+                    "initiallydeferred": false, 
+                    "match": "", 
+                    "ondelete": "", 
+                    "onupdate": "", 
+                    "primary": true, 
+                    "references": {
+                        "fields": [], 
+                        "table": ""
+                    }, 
+                    "unique": false
+                }
+            }, 
+            "fields": {
+                "discount_rule_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "product_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }
+            }
+        }, 
+        "plg_AnCoupon_discount_rule_product_class": {
+            "constraints": {
+                "plg_AnCoupon_discount_rule_product_class_primary": {
+                    "check": false, 
+                    "deferrable": false, 
+                    "fields": {
+                        "discount_rule_id": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }, 
+                        "product_class_id": {
+                            "position": 2, 
+                            "sorting": "ascending"
+                        }
+                    }, 
+                    "foreign": false, 
+                    "initiallydeferred": false, 
+                    "match": "", 
+                    "ondelete": "", 
+                    "onupdate": "", 
+                    "primary": true, 
+                    "references": {
+                        "fields": [], 
+                        "table": ""
+                    }, 
+                    "unique": false
+                }
+            }, 
+            "fields": {
+                "discount_rule_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "product_class_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }
+            }
+        }, 
+        "plg_AnCoupon_order_coupon": {
+            "fields": {
+                "coupon_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "discount": {
+                    "length": "10", 
+                    "notnull": true, 
+                    "scale": "0", 
+                    "type": "decimal"
+                }, 
+                "order_id": {
+                    "length": 4, 
+                    "notnull": true, 
+                    "type": "integer"
+                }, 
+                "used_date": {
+                    "default": "CURRENT_TIMESTAMP", 
+                    "notnull": true, 
+                    "type": "timestamp"
+                }
+            }, 
+            "indexes": {
+                "plg_AnCoupon_order_coupon_coupon": {
+                    "fields": {
+                        "coupon_id": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }, 
+                        "order_id": {
+                            "position": 2, 
+                            "sorting": "ascending"
+                        }
+                    }
+                }, 
+                "plg_AnCoupon_order_coupon_order": {
+                    "fields": {
+                        "coupon_id": {
+                            "position": 2, 
+                            "sorting": "ascending"
+                        }, 
+                        "order_id": {
+                            "position": 1, 
+                            "sorting": "ascending"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

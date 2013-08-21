@@ -1,6 +1,6 @@
 <?php
 /*
- * アフィリナビクーポンプラグイン
+ * EC-CUBEアフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
  * 
@@ -19,9 +19,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once PLUGIN_UPLOAD_REALDIR .  'AnCoupon/pages/plg_AnCoupon_LC_Page_Config.php';
+require_once CLASS_EX_REALDIR . 'page_extends/admin/order/LC_Page_Admin_Order_ProductSelect_Ex.php';
 
-$page = new plg_AnCoupon_LC_Page_Config();
-register_shutdown_function(array($page, 'destroy'));
-$page->init();
-$page->process();
+/**
+ * 商品選択画面
+ *
+ * @package AnCoupon
+ * @author M-soft
+ * @version $Id: $
+ */
+class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends LC_Page_Admin_Order_ProductSelect_Ex {
+    function init() {
+        parent::init();
+        
+        $this->tpl_mainpage = 'products/plg_AnCoupon_product_select.tpl';
+        $this->tpl_mainno = 'products';
+        $this->tpl_subno = '';
+        $this->tpl_maintitle = 'クーポン管理';
+        $this->tpl_subtitle = '商品選択';
+    }
+    
+    public function action() {
+        parent::action();
+        
+        $this->class_required = (int)!empty($_REQUEST['class_required']);
+    }
+}

@@ -1,0 +1,14 @@
+#cart_area .coupon {
+    margin-top: 10px;
+    padding-top: 10px;
+    background: url("../img/background/line_dot_01.gif") repeat-x top;
+}
+#cart_area .coupon .point_announce {
+    padding: 2px 0 2px 20px;
+    background: url("../img/icon/ico_price.gif") no-repeat left top;
+}
+#cart_area .btn {
+    padding: 10px 0;
+    background: url("../img/background/line_dot_01.gif") repeat-x top #f7f7e6;
+    text-align: center;
+}

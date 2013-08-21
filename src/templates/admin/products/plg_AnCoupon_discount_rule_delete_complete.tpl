@@ -1,5 +1,4 @@
-<?php
-/*
+<!--{*
  * アフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
@@ -17,11 +16,20 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ *}-->
 
-require_once PLUGIN_UPLOAD_REALDIR .  'AnCoupon/pages/plg_AnCoupon_LC_Page_Config.php';
-
-$page = new plg_AnCoupon_LC_Page_Config();
-register_shutdown_function(array($page, 'destroy'));
-$page->init();
-$page->process();
+<div id="complete">
+    <div class="complete-top"></div>
+    <div class="contents">
+        <div class="message">
+            <!--{$deleted_items_number|number_format}-->件の削除が完了致しました。
+        </div>
+    </div>
+    <div class="btn-area-top"></div>
+    <div class="btn-area">
+        <ul>
+            <li><a class="btn-action" href="plg_AnCoupon_discount_rule_list.php"><span class="btn-next">一覧に移動する</span></a></li>
+        </ul>
+    </div>
+    <div class="btn-area-bottom"></div>
+</div>

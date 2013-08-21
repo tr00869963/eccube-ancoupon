@@ -19,9 +19,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once PLUGIN_UPLOAD_REALDIR .  'AnCoupon/pages/plg_AnCoupon_LC_Page_Config.php';
+require_once '../require.php';
+require_once PLUGIN_UPLOAD_REALDIR .  'AnCoupon/pages/plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete.php';
 
-$page = new plg_AnCoupon_LC_Page_Config();
+$page = new plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete();
 register_shutdown_function(array($page, 'destroy'));
 $page->init();
 $page->process();
