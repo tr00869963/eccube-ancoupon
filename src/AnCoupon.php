@@ -707,5 +707,7 @@ __SQL__;
             $coupon = An_Eccube_Coupon::findByCode($coupon_code);
             $coupon->useToOrder($order_id, $discount);
         }
+        
+        $this->clearUsingCouponCode();
     }
 }
