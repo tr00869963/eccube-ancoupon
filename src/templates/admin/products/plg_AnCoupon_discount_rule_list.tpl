@@ -37,7 +37,7 @@
             <tbody>
                 <!--{foreach from=$discount_rules|smarty:nodefaults item=discount_rule key=index}-->
                     <tr>
-                        <td><!--{$discount_rule->name|h}--></td>
+                        <td><a href="plg_AnCoupon_discount_rule_edit.php?discount_rule_id=<!--{$discount_rule->discount_rule_id|h}-->"><!--{$discount_rule->name|h}--></a></td>
                         <td class="center"><a href="plg_AnCoupon_coupon_edit.php?discount_rule_id[]=<!--{$discount_rule->discount_rule_id|h}-->">クーポン発行</a></td>
                         <td><!--{$discount_rule->effective_from|date_format:'%Y/%m/%d'|h}--> から <!--{$discount_rule->effective_to|date_format:'%Y/%m/%d'|h}--> まで</td>
                         <td class="center"><!--{if $discount_rule->enabled}-->有効<!--{else}-->無効<!--{/if}--></td>
