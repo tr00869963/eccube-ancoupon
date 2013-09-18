@@ -201,6 +201,7 @@ class AnCoupon extends SC_Plugin_Base {
         $plugin_helper->addAction('LC_Page_Shopping_Payment_action_before', array($this, 'hook_LC_Page_Shopping_Payment_action_before'));
         $plugin_helper->addAction('LC_Page_Shopping_Payment_action_after', array($this, 'hook_LC_Page_Shopping_Payment_action_after'));
         $plugin_helper->addAction('LC_Page_Shopping_Payment_action_confirm', array($this, 'hook_LC_Page_Shopping_Payment_action_confirm'));
+        $plugin_helper->addAction('LC_Page_Shopping_Confirm_action_before', array($this, 'hook_LC_Page_Shopping_Confirm_action_before'));
         $plugin_helper->addAction('LC_Page_Shopping_Confirm_action_after', array($this, 'hook_LC_Page_Shopping_Confirm_action_after'));
         $plugin_helper->addAction('LC_Page_Shopping_Confirm_action_confirm', array($this, 'hook_LC_Page_Shopping_Confirm_action_confirm'));
         $plugin_helper->addAction('LC_Page_FrontParts_Bloc_Cart_action_after', array($this, 'hook_LC_Page_FrontParts_Bloc_Cart_action_after'));
@@ -668,6 +669,27 @@ __SQL__;
         $where_params = array($order_id);
         @list($order_coupon) = $query->select($columns, $from, $where, $where_params);
         $page->tpl_order_coupon = $order_coupon;
+    }
+    
+    /**
+     * @param LC_Page_EX $page
+     */
+    public function hook_LC_Page_Shopping_Confirm_action_before(LC_Page_EX $page) {
+        switch ($page->getMode()) {
+            case 'confirm':
+                $coupon_codes = $this->getUsingCouponCodes();
+                $used_time = $this->getCouponUsedTime();
+                foreach ($coupon_codes as $coupon_code) {
+                    $coupon = An_Eccube_Coupon::findByCode($coupon_code);
+                    if (!$coupon || !$coupon->isAvailable($used_time)) {
+                        $this->clearUsingCouponCode();
+                        $destination = CART_URLPATH;
+                        $path = ROOT_URLPATH . 'cart/plg_AnCoupon_coupon_use.php?coupon_expired_error=1&destination=' . rawurldecode($destination);
+                        SC_Response_Ex::sendRedirect($path);
+                    }
+                }
+                break;
+        }
     }
     
     /**

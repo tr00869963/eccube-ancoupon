@@ -91,6 +91,8 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
         $params = $this->buildFormParam($this->context);
         $form = $this->buildForm($params, $errors);
         $this->form = $form;
+        
+        $this->coupon_expired_error = isset($_GET['coupon_expired_error']);
     }
     
     protected function doUse() {
