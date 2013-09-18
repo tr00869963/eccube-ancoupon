@@ -1,6 +1,6 @@
 <?php
 
-class AN_Eccube_Utils {
+class An_Eccube_Utils {
     /**
      * @param SC_Query_Ex $query
      * @return MDB2
@@ -87,10 +87,10 @@ class AN_Eccube_Utils {
             if (PEAR::isError($info)) {
                 throw new RuntimeException($info->toString());
             }
-            $info = array_pop($info);
+            $info = array_shift($info);
 
             $field_def = array(
-                'type' => $info['mdb2type'],
+                'type' => $info['type'],
             ) + array_intersect_key($info, $needs);
             
             // MySQL は Boolean 型ないんで…MDB2は悪くないんで…
@@ -183,6 +183,30 @@ class AN_Eccube_Utils {
         return $def;
     }
     
+    /**
+     * @param MDB2_Driver_Datatype_Common $db
+     * @param string $caller
+     * @param array $parameter
+     */
+    public static function callbackTypeTimestamp(MDB2_Driver_Common $db, $method, $parameter) {
+        switch ($method) {
+            case 'getDeclaration':
+                extract($parameter, EXTR_OVERWRITE);
+                $name = $db->quoteIdentifier($name, true);
+                $declaration_options = $db->datatype->_getDeclarationOptions($field);
+                if (PEAR::isError($declaration_options)) {
+                    return $declaration_options;
+                }
+                return $name . ' TIMESTAMP ' . $declaration_options;
+                
+            case 'quote':
+                extract($parameter, EXTR_OVERWRITE);
+                return $db->_quoteTimestamp($value, $quote, $escape_wildcards);
+        }
+        
+        throw new RuntimeException('Not supported callback ' . $method);
+    }
+    
     public static function createTable(SC_Query_Ex $query, $table_name, $table_def) {
         $mdb2 = self::getMDB2($query);
         $mdb2->loadModule('Manager');
@@ -190,10 +214,16 @@ class AN_Eccube_Utils {
         $options = array(
             'decimal_places' => 0,
             'idxname_format' => '%s',
+            'datatype_map' => array(
+                'timestamp' => 'timestamp',
+            ),
+            'datatype_map_callback' => array(
+                'timestamp' => array(__CLASS__, 'callbackTypeTimestamp'),
+            ),
         );
         $org_options = array();
         foreach ($options as $key => $value) {
-            $org_options[$value] = $mdb2->getOption($key);
+            $org_options[$key] = $mdb2->getOption($key);
             $mdb2->setOption($key, $value);
         }
         

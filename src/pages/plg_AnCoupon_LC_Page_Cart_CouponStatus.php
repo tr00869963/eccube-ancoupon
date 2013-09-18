@@ -78,7 +78,7 @@ class plg_AnCoupon_LC_Page_Cart_CouponStatus extends LC_Page_Ex {
     }
     
     /**
-     * @param array<AN_Eccube_DiscountRule> $discount_rules
+     * @param array<An_Eccube_DiscountRule> $discount_rules
      */
     protected function getDiscountInfo(array $discount_rules, $used_time) {
         $info = array(

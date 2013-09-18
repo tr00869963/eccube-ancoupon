@@ -3,7 +3,7 @@
     <a class="btn-action" href="plg_AnCoupon_discount_rule_edit.php"><span class="btn-next">割引条件を追加</span></a>
 </div>
 
-<form name="form1" id="form1" method="post" action="POST">    
+<form name="form1" id="form1" method="post" action="?">    
     <div id="coupon" class="contents-main">
         <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
         <input type="hidden" name="mode" value="" />

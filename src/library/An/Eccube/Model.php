@@ -19,7 +19,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-abstract class AN_Eccube_Model {
+abstract class An_Eccube_Model {
     private $stored = false;
     
     /**
@@ -78,14 +78,14 @@ abstract class AN_Eccube_Model {
     }
     
     /**
-     * @return AN_Eccube_Transaction
+     * @return An_Eccube_Transaction
      */
     public static function beginTransaction(SC_Query_Ex $query = null) {
         if (!$query) {
             $query = self::getQuery();
         }
         
-        $tx = new AN_Eccube_Transaction($query);
+        $tx = new An_Eccube_Transaction($query);
         return $tx;
     }
 

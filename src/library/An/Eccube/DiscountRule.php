@@ -19,7 +19,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-class AN_Eccube_DiscountRule extends AN_Eccube_Model {
+class An_Eccube_DiscountRule extends An_Eccube_Model {
     public $discount_rule_id;
     public $code;
     public $name;
@@ -75,7 +75,7 @@ class AN_Eccube_DiscountRule extends AN_Eccube_Model {
     /**
      * 
      * @param string $coupon_id
-     * @return AN_Eccube_Coupon
+     * @return An_Eccube_Coupon
      */
     public static function load($discount_rule_id, array $options = array()) {
         $where = 'discount_rule_id = ?';

@@ -95,7 +95,7 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
     
     protected function doUse() {
         try {
-            $tx = AN_Eccube_Model::beginTransaction();
+            $tx = An_Eccube_Model::beginTransaction();
             
             $params = $this->buildFormParam($this->context);
             $params->setParam($_POST);
@@ -178,8 +178,8 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
         $title = $params->disp_name[array_search($name, $params->keyname)];
         if ($value == '') {
         } else {
-            $coupon_code = AN_Eccube_Coupon::normalizeCode($value);
-            $coupon = AN_Eccube_Coupon::findByCode($coupon_code);
+            $coupon_code = An_Eccube_Coupon::normalizeCode($value);
+            $coupon = An_Eccube_Coupon::findByCode($coupon_code);
             if (!$coupon) {
                 $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。入力内容に間違えがないかご確認下さい。<br />";
             } elseif ($coupon->limit_uses && ($coupon->uses >= $coupon->max_uses)) {

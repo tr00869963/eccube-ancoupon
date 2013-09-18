@@ -97,10 +97,10 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponList extends LC_Page_Admin_Ex {
         $sort_order = 'DESC';
         $offset = max(0, $search_page_max * ($search_pageno - 1));
         $limit = min(1000, $search_page_max);
-        $coupons = AN_Eccube_Coupon::findByWhere($columns, $where, $where_params, $limit, $offset, $sort_key, $sort_order);
+        $coupons = An_Eccube_Coupon::findByWhere($columns, $where, $where_params, $limit, $offset, $sort_key, $sort_order);
         $this->coupons = $coupons;
         
-        $total = AN_Eccube_Coupon::count($where, $where_params);
+        $total = An_Eccube_Coupon::count($where, $where_params);
         
         $pager = new SC_PageNavi_Ex($search_pageno, $total, $search_page_max, 'fnNaviSearchPage');
         $this->arrPagenavi = $pager->arrPagenavi;
@@ -113,7 +113,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponList extends LC_Page_Admin_Ex {
         
         if (empty($errors['code'])) {
             $code = $params->getValue('code');
-            if ($name != '') {
+            if ($code != '') {
                 $wheres[] = "code LIKE ?";
                 $values[] = "%{$code}%";
             }

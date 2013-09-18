@@ -92,7 +92,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
         
         $columns = 'name, update_date';
         list($where, $where_params) = $this->buildDeleteQueryCondition($discount_rule_ids);
-        $discount_rules = AN_Eccube_DiscountRule::findByWhere($columns, $where, $where_params, null, null, 'name', 'ASC');
+        $discount_rules = An_Eccube_DiscountRule::findByWhere($columns, $where, $where_params, null, null, 'name', 'ASC');
         
         
         $this->discount_rules = $discount_rules;
@@ -117,7 +117,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
     
     protected function doDelete() {
         try {
-            $tx = AN_Eccube_Model::beginTransaction();
+            $tx = An_Eccube_Model::beginTransaction();
 
             $discount_rule_ids = $this->context->session['discount_rule_ids'];
             $params = $this->buildFormParam($discount_rule_ids);
@@ -131,7 +131,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
             }
 
             list($where, $where_params) = $this->buildDeleteQueryCondition($discount_rule_ids);
-            $deleted_items_number = AN_Eccube_DiscountRule::deleteByWhere($where, $where_params);
+            $deleted_items_number = An_Eccube_DiscountRule::deleteByWhere($where, $where_params);
             
             $tx->rollback();
             

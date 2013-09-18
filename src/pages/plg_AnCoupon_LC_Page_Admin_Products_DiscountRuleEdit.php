@@ -88,10 +88,10 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleEdit extends LC_Page_Admin
     protected function initializeContext(An_Eccube_PageContext $context) {
         if (isset($_GET['discount_rule_id'])) {
             $discount_rule_id = (string)$_GET['discount_rule_id'];
-            $discount_rule = AN_Eccube_DiscountRule::load($discount_rule_id);
+            $discount_rule = An_Eccube_DiscountRule::load($discount_rule_id);
         } else {
-            $discount_rule = new AN_Eccube_DiscountRule();
-            $discount_rule->name = AN_Eccube_DiscountRule::getDefaultUniqueName();
+            $discount_rule = new An_Eccube_DiscountRule();
+            $discount_rule->name = An_Eccube_DiscountRule::getDefaultUniqueName();
         }
         $context->session['discount_rule'] = $discount_rule;
     }
@@ -192,11 +192,11 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
     
     protected function doSave() {
         try {
-            $tx = AN_Eccube_Model::beginTransaction();
+            $tx = An_Eccube_Model::beginTransaction();
 
             $discount_rule = $this->context->session['discount_rule'];
             if ($discount_rule->isStored()) {
-                $lock = AN_Eccube_DiscountRule::load($discount_rule->discount_rule_id, array('for_update' => true));
+                $lock = An_Eccube_DiscountRule::load($discount_rule->discount_rule_id, array('for_update' => true));
             }
             
             $params = $this->buildFormParam($discount_rule);
@@ -322,7 +322,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
      * @param object $coupon
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam(AN_Eccube_DiscountRule $discount_rule) {
+    protected function buildFormParam(An_Eccube_DiscountRule $discount_rule) {
         $params = new SC_FormParam_Ex();
 
         $params->addParam('割引条件名', 'name', 100, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $discount_rule->name);
@@ -454,7 +454,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         return $errors;
     }
     
-    protected function applyFormParam(SC_FormParam_Ex $params, AN_Eccube_DiscountRule $discount_rule) {
+    protected function applyFormParam(SC_FormParam_Ex $params, An_Eccube_DiscountRule $discount_rule) {
 //         $discount_rule->code = $params->getValue('code');
         $discount_rule->name = $params->getValue('name');
         $discount_rule->enabled = $params->getValue('enabled');

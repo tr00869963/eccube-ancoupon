@@ -19,7 +19,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-class AN_Eccube_Coupon extends AN_Eccube_Model {
+class An_Eccube_Coupon extends An_Eccube_Model {
     public $coupon_id;
     public $code;
     public $enabled = true;
@@ -55,7 +55,7 @@ class AN_Eccube_Coupon extends AN_Eccube_Model {
     }
     
     /**
-     * @see AN_Eccube_Model::getStorableProperties()
+     * @see An_Eccube_Model::getStorableProperties()
      */
     protected function getStorableProperties() {
         $properties = parent::getStorableProperties();
@@ -68,7 +68,7 @@ class AN_Eccube_Coupon extends AN_Eccube_Model {
     /**
      * 
      * @param string $coupon_id
-     * @return AN_Eccube_Coupon
+     * @return An_Eccube_Coupon
      */
     public static function load($coupon_id, array $options = array()) {
         $where = 'coupon_id = ?';
@@ -94,7 +94,7 @@ class AN_Eccube_Coupon extends AN_Eccube_Model {
      * @param string $where
      * @param array $params
      * @param array $options
-     * @return array <AN_Eccube_Coupon>
+     * @return array <An_Eccube_Coupon>
      */
     public static function findByWhere($columns, $where, array $params = array(), $limit = null, $offset = null, $sort_key = null, $sort_order = 'ASC', $additional = null) {
         $query = self::getQuery();
@@ -142,8 +142,8 @@ class AN_Eccube_Coupon extends AN_Eccube_Model {
     }
     
     /**
-     * @param AN_Eccube_Coupon $cupon_code
-     * @return AN_Eccube_Coupon
+     * @param An_Eccube_Coupon $cupon_code
+     * @return An_Eccube_Coupon
      */
     public static function findByCode($cupon_code) {
         $where = 'code = ?';
@@ -242,7 +242,7 @@ class AN_Eccube_Coupon extends AN_Eccube_Model {
     }
     
     /**
-     * @return array <AN_Eccube_DiscountRule>
+     * @return array <An_Eccube_DiscountRule>
      */
     public function getDiscountRules() {
         return self::getDiscountRulesByCouponCode($this->code);
@@ -250,7 +250,7 @@ class AN_Eccube_Coupon extends AN_Eccube_Model {
     
     /**
      * @param array $coupon_codes
-     * @return array <AN_Eccube_DiscountRule>
+     * @return array <An_Eccube_DiscountRule>
      */
     public static function getDiscountRulesByCouponCode(array $coupon_codes) {
         if (!$coupon_codes) {
@@ -270,7 +270,7 @@ discount_rule_id IN (
 )
 __SQL__;
         $where_params = $coupon_codes;
-        $discount_rules = AN_Eccube_DiscountRule::findByWhere('*', $where, $where_params);
+        $discount_rules = An_Eccube_DiscountRule::findByWhere('*', $where, $where_params);
         return $discount_rules;
     }
     

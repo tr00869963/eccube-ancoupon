@@ -19,7 +19,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-class AN_Eccube_Transaction {
+class An_Eccube_Transaction {
     protected $query;
     protected $alive = false;
     
@@ -29,7 +29,7 @@ class AN_Eccube_Transaction {
     }
     
     protected function begin() {
-        $mdb2 = AN_Eccube_Utils::getMDB2($this->query);
+        $mdb2 = An_Eccube_Utils::getMDB2($this->query);
         $result = $mdb2->beginNestedTransaction();
         if (PEAR::isError($result)) {
             throw new RuntimeException($result->toString());
@@ -43,7 +43,7 @@ class AN_Eccube_Transaction {
             throw new RuntimeException('Failed to rollback. transaction was already closed.');
         }
         
-        $mdb2 = AN_Eccube_Utils::getMDB2($this->query);
+        $mdb2 = An_Eccube_Utils::getMDB2($this->query);
         $result = $mdb2->completeNestedTransaction();
         if (PEAR::isError($result)) {
             throw new RuntimeException($result->toString());
@@ -57,7 +57,7 @@ class AN_Eccube_Transaction {
             throw new RuntimeException('Failed to rollback. transaction was already closed.');
         }
  
-        $mdb2 = AN_Eccube_Utils::getMDB2($this->query);
+        $mdb2 = An_Eccube_Utils::getMDB2($this->query);
         $result = $mdb2->failNestedTransaction();
         if (PEAR::isError($result)) {
             throw new RuntimeException($result->toString());

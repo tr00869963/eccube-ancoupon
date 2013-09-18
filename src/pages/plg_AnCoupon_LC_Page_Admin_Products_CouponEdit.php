@@ -80,9 +80,9 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
     protected function initializeContext(An_Eccube_PageContext $context) {
         if (isset($_GET['coupon_id'])) {
             $coupon_id = (string)$_GET['coupon_id'];
-            $coupon = AN_Eccube_Coupon::load($coupon_id);
+            $coupon = An_Eccube_Coupon::load($coupon_id);
         } else {
-            $coupon = new AN_Eccube_Coupon();
+            $coupon = new An_Eccube_Coupon();
             $discount_rule_ids = (array)@$_GET['discount_rule_id'];
             $coupon->discount_rules = $discount_rule_ids;
         }
@@ -109,11 +109,11 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
     
     public function doSave() {
         try {
-            $tx = AN_Eccube_Model::beginTransaction();
+            $tx = An_Eccube_Model::beginTransaction();
 
             $coupon = $this->context->session['coupon'];
             if ($coupon->isStored()) {
-                $lock = AN_Eccube_Coupon::load($coupon->coupon_id, array('for_update' => true));
+                $lock = An_Eccube_Coupon::load($coupon->coupon_id, array('for_update' => true));
             }
             
             $params = $this->buildFormParam($coupon);
@@ -174,7 +174,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
             0 => '制限しない',
         );
         
-        $discount_rules = AN_Eccube_DiscountRule::findByWhere('discount_rule_id, name', 'enabled = ?', array(1), null, null, 'name');
+        $discount_rules = An_Eccube_DiscountRule::findByWhere('discount_rule_id, name', 'enabled = ?', array(1), null, null, 'name');
         $options = array('' => '');
         foreach ($discount_rules as $discount_rule) {
             $options[$discount_rule->discount_rule_id] = $discount_rule->name;
@@ -202,7 +202,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
      * @param object $coupon
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam(AN_Eccube_Coupon $coupon) {
+    protected function buildFormParam(An_Eccube_Coupon $coupon) {
         $params = new SC_FormParam_Ex();
         
         $params->addParam('クーコンコード', 'code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $coupon->code);
@@ -276,7 +276,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         } else {
             $where = 'discount_rule_id = ?';
             $where_params = array($value);
-            $exists = AN_Eccube_DiscountRule::findByWhere('1', $where, $where_params, 1, 0);
+            $exists = An_Eccube_DiscountRule::findByWhere('1', $where, $where_params, 1, 0);
             if (!$exists) {
                 $errors[$name] = "※ {$title}の選択肢が不正です。<br />";
             }
@@ -313,7 +313,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         return $errors;
     }
     
-    protected function applyFormParam(SC_FormParam_Ex $params, AN_Eccube_Coupon $coupon) {
+    protected function applyFormParam(SC_FormParam_Ex $params, An_Eccube_Coupon $coupon) {
         $coupon->code = $params->getValue('code');
         $coupon->enabled = $params->getValue('enabled');
         $coupon->memo = $params->getValue('memo');

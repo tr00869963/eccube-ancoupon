@@ -101,13 +101,13 @@ class AnCoupon extends SC_Plugin_Base {
         
         // プラグイン用のデータベースを作成。
         $json = file_get_contents(PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/schema.json");
-        $schema = AN_Eccube_Utils::decodeJson($json, true);
+        $schema = An_Eccube_Utils::decodeJson($json, true);
         $query = SC_Query_Ex::getSingletonInstance();
-        AN_Eccube_Utils::createDatabase($query, $schema);
+        An_Eccube_Utils::createDatabase($query, $schema);
         
         // データベースに初期データを投入。
         $json = file_get_contents(PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/initial_data.json");
-        $data = AN_Eccube_Utils::decodeJson($json, true);
+        $data = An_Eccube_Utils::decodeJson($json, true);
         self::installInitialData($query, $data);
     }
     
@@ -129,31 +129,35 @@ class AnCoupon extends SC_Plugin_Base {
         // 管理用のページを削除。 
         $target_dir = HTML_REALDIR . ADMIN_DIR;
         $source_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/admin/";
-        AN_Eccube_Utils::deleteFileByMirror($target_dir, $source_dir);
+        An_Eccube_Utils::deleteFileByMirror($target_dir, $source_dir);
 
         // 顧客用のページを削除。
         $target_dir = HTML_REALDIR;
         $source_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/customer/";
-        AN_Eccube_Utils::deleteFileByMirror($target_dir, $source_dir);
+        An_Eccube_Utils::deleteFileByMirror($target_dir, $source_dir);
         
         // 公開ファイルを削除。 
         $target_dir = PLUGIN_HTML_REALDIR . "{$plugin_code}/";
         $source_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/assets/";
-        AN_Eccube_Utils::deleteFileByMirror($target_dir, $source_dir);
+        An_Eccube_Utils::deleteFileByMirror($target_dir, $source_dir);
         
         // テンプレートを削除。 
         $target_dir = SMARTY_TEMPLATES_REALDIR;
         $source_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/templates/";
-        AN_Eccube_Utils::deleteFileByMirror($target_dir, $source_dir);
+        An_Eccube_Utils::deleteFileByMirror($target_dir, $source_dir);
 
-        // プラグイン用のデータベースを削除。
-        $json = file_get_contents(PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/schema.json");
-        $schema = AN_Eccube_Utils::decodeJson($json, true);
-        $query = SC_Query_Ex::getSingletonInstance();
-        AN_Eccube_Utils::deleteDatabase($query, $schema);
-        
-        // データベースから初期データを削除。
-        self::deleteInitialData($query);
+        try {
+            // プラグイン用のデータベースを削除。
+            $json = file_get_contents(PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/schema.json");
+            $schema = An_Eccube_Utils::decodeJson($json, true);
+            $query = SC_Query_Ex::getSingletonInstance();
+            An_Eccube_Utils::deleteDatabase($query, $schema);
+            
+            // データベースから初期データを削除。
+            self::deleteInitialData($query);
+        } catch (Exception $e) {
+            GC_Utils_Ex::gfPrintLog($e->__toString());
+        }
     }
     
     /**
@@ -309,28 +313,28 @@ __SQL__;
         
         switch ($device_type_id) {
             case DEVICE_TYPE_PC:
-                if (AN_Eccube_Utils::isStringEndWith($filename, 'frontparts/bloc/cart.tpl')) {
+                if (An_Eccube_Utils::isStringEndWith($filename, 'frontparts/bloc/cart.tpl')) {
                     $template_path = "frontparts/bloc/plg_AnCoupon_cart_coupon.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('div.information')->appendChild($template);
                     break;
                 }
                 
-                if (AN_Eccube_Utils::isStringEndWith($filename, 'products/list.tpl')) {
+                if (An_Eccube_Utils::isStringEndWith($filename, 'products/list.tpl')) {
                     $template_path = "products/plg_AnCoupon_list_discount.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('.pricebox')->appendChild($template);
                     break;
                 }
                 
-                if (AN_Eccube_Utils::isStringEndWith($filename, 'products/detail.tpl')) {
+                if (An_Eccube_Utils::isStringEndWith($filename, 'products/detail.tpl')) {
                     $template_path = "products/plg_AnCoupon_detail_discount.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('.relative_cat')->insertBefore($template);
                     break;
                 }
 
-                if (AN_Eccube_Utils::isStringEndWith($filename, 'cart/index.tpl')) {
+                if (An_Eccube_Utils::isStringEndWith($filename, 'cart/index.tpl')) {
                     $template_path = "cart/plg_AnCoupon_index_discount_row.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('tr', 3)->insertBefore($template);
@@ -341,7 +345,7 @@ __SQL__;
                     break;
                 }
 
-                if (AN_Eccube_Utils::isStringEndWith($filename, 'shopping/confirm.tpl')) {
+                if (An_Eccube_Utils::isStringEndWith($filename, 'shopping/confirm.tpl')) {
                     $template_path = "shopping/plg_AnCoupon_confirm_discount_row.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('tr', 3)->insertBefore($template);
@@ -352,28 +356,28 @@ __SQL__;
                 
             case DEVICE_TYPE_ADMIN:
             default:
-                if (DEBUG_MODE && AN_Eccube_Utils::isStringEndWith($filename, 'system/subnavi.tpl')) {
+                if (DEBUG_MODE && An_Eccube_Utils::isStringEndWith($filename, 'system/subnavi.tpl')) {
                     $template_path = "system/plg_AnCoupon_subnavi_item.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('ul')->appendChild($template);
                     break;
                 }
                 
-                if (AN_Eccube_Utils::isStringEndWith($filename, 'products/subnavi.tpl')) {
+                if (An_Eccube_Utils::isStringEndWith($filename, 'products/subnavi.tpl')) {
                     $template_path = "products/plg_AnCoupon_subnavi_item.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('ul')->appendChild($template);
                     break;
                 }
                 
-//                 if (AN_Eccube_Utils::isStringEndWith($filename, 'products/product.tpl')) {
+//                 if (An_Eccube_Utils::isStringEndWith($filename, 'products/product.tpl')) {
 //                     $template_path = "products/plg_AnCoupon_product_edit.tpl";
 //                     $template = "<!--{include file='{$template_path}'}-->";
 //                     $transformer->select('#product')->insertBefore($template);
 //                     break;
 //                 }
                 
-                if (AN_Eccube_Utils::isStringEndWith($filename, 'order/edit.tpl')) {
+                if (An_Eccube_Utils::isStringEndWith($filename, 'order/edit.tpl')) {
                     $template_path = "order/plg_AnCoupon_edit_coupon.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('#order-edit-products')->insertAfter($template);
@@ -387,11 +391,11 @@ __SQL__;
     }
     
     /**
-     * @return array <AN_Eccube_DiscountRule>
+     * @return array <An_Eccube_DiscountRule>
      */
     public function getCurrentDiscountRules() {
         $coupon_codes = $this->getUsingCouponCodes();
-        $discount_rules = AN_Eccube_Coupon::getDiscountRulesByCouponCode($coupon_codes);
+        $discount_rules = An_Eccube_Coupon::getDiscountRulesByCouponCode($coupon_codes);
         return $discount_rules;
     }
     
@@ -478,7 +482,7 @@ __SQL__;
         
         $discount_rule_ids = array_keys($discount_rules);
         $product_ids = array_keys($page->arrProducts);
-        $classes = AN_Eccube_DiscountRule::getTargetProductClasses($discount_rule_ids, $used_time, $product_ids);
+        $classes = An_Eccube_DiscountRule::getTargetProductClasses($discount_rule_ids, $used_time, $product_ids);
         
         foreach ($product_ids as $product_id) {
             $discount = array(
@@ -509,7 +513,7 @@ __SQL__;
         $product_id = $page->tpl_product_id;
 
         $discount_rule_ids = array_keys($discount_rules);
-        $classes = AN_Eccube_DiscountRule::getTargetProductClasses($discount_rule_ids, $used_time, array($product_id));
+        $classes = An_Eccube_DiscountRule::getTargetProductClasses($discount_rule_ids, $used_time, array($product_id));
 
         $discount = array(
             'available' => false,
@@ -700,7 +704,7 @@ __SQL__;
 
         $coupon_codes = array_keys($session['plg_AnCoupon']['using_coupons']);
         foreach ($coupon_codes as $coupon_code) {
-            $coupon = AN_Eccube_Coupon::findByCode($coupon_code);
+            $coupon = An_Eccube_Coupon::findByCode($coupon_code);
             $coupon->useToOrder($order_id, $discount);
         }
     }

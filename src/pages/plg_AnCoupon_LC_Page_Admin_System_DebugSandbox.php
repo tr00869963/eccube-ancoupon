@@ -120,7 +120,7 @@ class plg_AnCoupon_LC_Page_Admin_System_DebugSandbox extends LC_Page_Admin_Ex {
                 switch ($tx_mode) {
                     case 'use_commit':
                     case 'use_rollback':
-                        $tx = AN_Eccube_Model::beginTransaction();
+                        $tx = An_Eccube_Model::beginTransaction();
                         break;
                 
                     default:

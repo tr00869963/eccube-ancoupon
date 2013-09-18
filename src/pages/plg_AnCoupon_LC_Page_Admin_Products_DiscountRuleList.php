@@ -97,10 +97,10 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleList extends LC_Page_Admin
         $sort_order = 'ASC';
         $offset = max(0, $search_page_max * ($search_pageno - 1));
         $limit = min(1000, $search_page_max);
-        $discount_rules = AN_Eccube_DiscountRule::findByWhere($columns, $where, $where_params, $limit, $offset, $sort_key, $sort_order);
+        $discount_rules = An_Eccube_DiscountRule::findByWhere($columns, $where, $where_params, $limit, $offset, $sort_key, $sort_order);
         $this->discount_rules = $discount_rules;
         
-        $total = AN_Eccube_DiscountRule::count($where, $where_params);
+        $total = An_Eccube_DiscountRule::count($where, $where_params);
         
         $pager = new SC_PageNavi_Ex($search_pageno, $total, $search_page_max, 'fnNaviSearchPage');
         $this->arrPagenavi = $pager->arrPagenavi;

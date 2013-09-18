@@ -92,7 +92,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends LC_Page_Admin_Ex 
         
         $columns = 'code, update_date';
         list($where, $where_params) = $this->buildDeleteQueryCondition($coupon_ids);
-        $coupons = AN_Eccube_Coupon::findByWhere($columns, $where, $where_params);
+        $coupons = An_Eccube_Coupon::findByWhere($columns, $where, $where_params);
         
         $this->coupons = $coupons;
         
@@ -116,7 +116,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends LC_Page_Admin_Ex 
     
     protected function doDelete() {
         try {
-            $tx = AN_Eccube_Model::beginTransaction();
+            $tx = An_Eccube_Model::beginTransaction();
 
             $coupon_ids = $this->context->session['coupon_ids'];
             $params = $this->buildFormParam($coupon_ids);
@@ -130,7 +130,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends LC_Page_Admin_Ex 
             }
 
             list($where, $where_params) = $this->buildDeleteQueryCondition($coupon_ids);
-            $deleted_items_number = AN_Eccube_Coupon::deleteByWhere($where, $where_params);
+            $deleted_items_number = An_Eccube_Coupon::deleteByWhere($where, $where_params);
             
             $tx->commit();
             
