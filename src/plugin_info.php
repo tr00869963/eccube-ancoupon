@@ -27,14 +27,14 @@
  * @version $Id: $
  */
 class plugin_info {
-    /** プラグインコード(必須)：プラグインを識別する為キーで、他のプラグインと重複しない一意な値である必要がありま. */
+    /** プラグインコード(必須)：プラグインを識別する為キーで、他のプラグインと重複しない一意な値である必要があります。  */
     static $PLUGIN_CODE = "AnCoupon";
     
     /** プラグイン名(必須)：EC-CUBE上で表示されるプラグイン名. */
-    static $PLUGIN_NAME = "アフィリナビクーポンプラグイン";
+    static $PLUGIN_NAME = "クーポンプラグイン";
     
     /** プラグインバージョン(必須)：プラグインのバージョン. */
-    static $PLUGIN_VERSION = "1.0.0";
+    static $PLUGIN_VERSION = "1.0.1";
     
     /** 対応バージョン(必須)：対応するEC-CUBEバージョン. */
     static $COMPLIANT_VERSION = "2.12.0";
@@ -43,10 +43,10 @@ class plugin_info {
     static $AUTHOR = "M-soft";
     
     /** 説明(必須)：プラグインの説明. */
-    static $DESCRIPTION = "クーポンによる割引購入機能を追加します。またアフィリエイトシステム・アフィリナビのクーポンキャンペーンと連携が可能になります。";
+    static $DESCRIPTION = "クーポンによる割引購入機能を追加します。また、紹介クーポンサービス「アドパワー」などの連携システムにもなります。";
     
     /** プラグイン作者URL：プラグイン毎に設定出来るURL（説明ページなど） */
-    static $AUTHOR_SITE_URL = "http://affilinavi.com/";
+    static $AUTHOR_SITE_URL = "http://ad-power.jp/top/";
     
     /** クラス名(必須)：プラグインのクラス（拡張子は含まない） */
     static $CLASS_NAME = "AnCoupon";
@@ -55,7 +55,7 @@ class plugin_info {
     static $HOOK_POINTS = array();
     
     /** プラグインURL：プラグイン毎に設定出来るURL（説明ページなど） */
-    static $PLUGIN_SITE_URL = "http://affilinavi.com/";
+    static $PLUGIN_SITE_URL = "http://ad-power.jp/top/";
     
     /** ライセンス */
     static $LICENSE = "LGPL";
