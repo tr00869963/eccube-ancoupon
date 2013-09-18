@@ -89,21 +89,12 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         $context->session['coupon'] = $coupon;
     }
     
-    public function doEdit($validate) {
+    public function doEdit($errors = array()) {
         $coupon = $this->context->session['coupon'];
-        
-        $params = $this->buildFormParam($coupon);
-        
-        if ($validate) {
-            $params->setParam($_POST);
-            $errors = $this->validateFormParam($params);
-        } else {
-            $errors = array();
-        }
-
-        $form = $this->buildForm($params, $errors);
-
         $this->coupon = $coupon;
+        
+        $params = $this->buildFormParam($this->context);
+        $form = $this->buildForm($params, $errors);
         $this->form = $form;
     }
     
@@ -116,17 +107,18 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
                 $lock = An_Eccube_Coupon::load($coupon->coupon_id, array('for_update' => true));
             }
             
-            $params = $this->buildFormParam($coupon);
+            $params = $this->buildFormParam($this->context);
             $params->setParam($_POST);
             
-            $errors = $this->validateFormParam($params);
+            $errors = $this->validateFormParam($params, $this->context);
             if ($errors) {
                 $tx->rollback();
-                $this->doEdit(true);
+                $this->applyFormParam($params, $this->context);
+                $this->doEdit($errors);
                 return;
             }
 
-            $this->applyFormParam($params, $coupon);
+            $this->applyFormParam($params, $this->context);
             
             $coupon->save();
             
@@ -199,10 +191,12 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
     }
     
     /**
-     * @param object $coupon
+     * @param An_Eccube_PageContext $context
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam(An_Eccube_Coupon $coupon) {
+    protected function buildFormParam(An_Eccube_PageContext $context) {
+        $coupon = $context->session['coupon'];
+        
         $params = new SC_FormParam_Ex();
         
         $params->addParam('クーコンコード', 'code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $coupon->code);
@@ -229,10 +223,12 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
     
     /**
      * @param SC_FormParam_Ex $params
+     * @param An_Eccube_PageContext $context
      * @return array キーにフォーム名、値にエラーメッセージを収めた連想配列。
      */
-    function validateFormParam(SC_FormParam_Ex $params) {
+    function validateFormParam(SC_FormParam_Ex $params, An_Eccube_PageContext $context) {
         $errors = $params->checkError();
+        $coupon = $context->session['coupon'];
 
         // クーポンコード
         $name = 'code';
@@ -241,6 +237,9 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         if ($value == '') {
         } elseif (preg_match('/[^0-9A-Za-z-]/u', $value)) {
             $errors[$name] = "※ {$title}に使用できない文字が含まれています。<br />";
+        } elseif (An_Eccube_Coupon::exists('code = ? AND (? IS NULL OR coupon_id <> ?)', array($value, $coupon->coupon_id, $coupon->coupon_id))) {
+            $code = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            $errors[$name] = "※ {$title}の <code>{$code}</code> は既に使用されています。<br />";
         }
         
         // 状態
@@ -264,8 +263,9 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         $value = $params->getValue($name);
         $title = $params->disp_name[array_search($name, $params->keyname)];
         if ($value == '') {
-        } elseif ($value < 0) {
-            $errors[$name] = "※ {$title}を 0 未満にする事は出来ません。<br />";
+        } elseif ($value < $coupon->uses) {
+            $minimum = number_format($coupon->uses);
+            $errors[$name] = "※ {$title}を {$minimum} 未満にする事は出来ません。<br />";
         }
         
         // 割引条件
@@ -313,7 +313,9 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         return $errors;
     }
     
-    protected function applyFormParam(SC_FormParam_Ex $params, An_Eccube_Coupon $coupon) {
+    protected function applyFormParam(SC_FormParam_Ex $params, An_Eccube_PageContext $context) {
+        $coupon = $this->context->session['coupon'];
+
         $coupon->code = $params->getValue('code');
         $coupon->enabled = $params->getValue('enabled');
         $coupon->memo = $params->getValue('memo');

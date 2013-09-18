@@ -151,6 +151,16 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         $coupons = self::findByWhere('*', $where, $where_params);
         return reset($coupons);
     }
+
+    /**
+     * @param string $where
+     * @param array $params
+     * @return bool
+     */
+    public static function exists($where = '', array $params = array()) {
+        $query = self::getQuery();
+        return $query->exists('plg_AnCoupon_coupon', $where, $params);
+    }
     
     /**
      * @param string $where
