@@ -204,7 +204,9 @@ class AnCoupon extends SC_Plugin_Base {
         $plugin_helper->addAction('LC_Page_Shopping_Confirm_action_before', array($this, 'hook_LC_Page_Shopping_Confirm_action_before'));
         $plugin_helper->addAction('LC_Page_Shopping_Confirm_action_after', array($this, 'hook_LC_Page_Shopping_Confirm_action_after'));
         $plugin_helper->addAction('LC_Page_Shopping_Confirm_action_confirm', array($this, 'hook_LC_Page_Shopping_Confirm_action_confirm'));
+
         $plugin_helper->addAction('LC_Page_FrontParts_Bloc_Cart_action_after', array($this, 'hook_LC_Page_FrontParts_Bloc_Cart_action_after'));
+        $plugin_helper->addAction('LC_Page_FrontParts_Bloc_NaviHeader_action_after', array($this, 'hook_LC_Page_FrontParts_Bloc_Cart_action_after'));
     }
     
     /**
@@ -308,9 +310,9 @@ __SQL__;
     public function hook_prefilterTransform(&$source, LC_Page_Ex $page, $filename) {
         $transformer = new SC_Helper_Transform($source);
 
-        $device_type_id = $page instanceof LC_Page_Admin
+        $device_type_id = GC_Utils_Ex::isAdminFunction()
             ? DEVICE_TYPE_ADMIN
-            : (isset($page->arrPageLayout['device_type_id']) ? $page->arrPageLayout['device_type_id'] : DEVICE_TYPE_PC);
+            : (isset($page->arrPageLayout['device_type_id']) ? $page->arrPageLayout['device_type_id'] : SC_Display_Ex::detectDevice());
         
         switch ($device_type_id) {
             case DEVICE_TYPE_PC:
@@ -353,6 +355,47 @@ __SQL__;
                     break;
                 }
                 
+                break;
+                
+            case DEVICE_TYPE_SMARTPHONE:
+                if (An_Eccube_Utils::isStringEndWith($filename, 'frontparts/bloc/navi_header.tpl')) {
+                    $template_path = "frontparts/bloc/plg_AnCoupon_navi_header_coupon_status.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('.popup_cart')->appendChild($template);
+                    break;
+                }
+
+                if (An_Eccube_Utils::isStringEndWith($filename, 'products/list.tpl')) {
+                    $template_path = "products/plg_AnCoupon_list_discount.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('.listcomment')->insertBefore($template);
+                    break;
+                }
+                
+                if (An_Eccube_Utils::isStringEndWith($filename, 'products/detail.tpl')) {
+                    $template_path = "products/plg_AnCoupon_detail_discount.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('.product_detail')->appendChild($template);
+                    break;
+                }
+                
+                if (An_Eccube_Utils::isStringEndWith($filename, 'cart/index.tpl')) {
+                    $template_path = "cart/plg_AnCoupon_index_coupon_info.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('.information')->appendChild($template);
+
+                    $template_path = "cart/plg_AnCoupon_index_discount_row.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('.total_area')->appendFirst($template);
+                    break;
+                }
+
+                if (An_Eccube_Utils::isStringEndWith($filename, 'shopping/confirm.tpl')) {
+                    $template_path = "shopping/plg_AnCoupon_confirm_discount_row.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('.result_area li', 1)->insertAfter($template);
+                    break;
+                }
                 break;
                 
             case DEVICE_TYPE_ADMIN:
@@ -497,7 +540,7 @@ __SQL__;
                     $discount['available'] = true;
                     $discount['amount'] += $discount_rule->item_discount_amount;
                     $discount['rate'] += $discount_rule->item_discount_rate;
-                    // $discount['rate'] += $discount_rule->total_discount_rate;
+                    $discount['rate'] += $discount_rule->total_discount_rate;
                 }
             }
             $discount['rate'] = $discount['rate'] * 100;
@@ -528,7 +571,7 @@ __SQL__;
                 $discount['available'] = true;
                 $discount['amount'] += $discount_rule->item_discount_amount;
                 $discount['rate'] += $discount_rule->item_discount_rate;
-                // $discount['rate'] += $discount_rule->total_discount_rate;
+                $discount['rate'] += $discount_rule->total_discount_rate;
             }
         }
         
@@ -558,7 +601,7 @@ __SQL__;
         }
     }
     
-    public function hook_LC_Page_FrontParts_Bloc_Cart_action_after(LC_Page_FrontParts_Bloc_Cart $page) {
+    public function hook_LC_Page_FrontParts_Bloc_Cart_action_after(LC_Page_Ex $page) {
         $discount_rules = $this->getCurrentDiscountRules();
         $page->tpl_coupon_using = (bool)$discount_rules;
         
