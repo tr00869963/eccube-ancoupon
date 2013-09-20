@@ -251,6 +251,60 @@
                     'anywhere' : 0
                 }
             ]
+        },
+        {
+            "device_type_id" : 1,
+            "page_id" : null,
+            "page_name" : "クーポン/使用",
+            "url" : "cart/plg_AnCoupon_coupon_use.php",
+            "filename" : "cart/plg_AnCoupon_coupon_use",
+            "header_chk" : 1,
+            "footer_chk" : 1,
+            "edit_flg" : 2,
+            "author" : null,
+            "description" : null,
+            "keyword" : null,
+            "update_url" : null,
+            "create_date" : null,
+            "update_date" : null,
+            "dtb_blocpositions": [
+            ]
+        },
+        {
+            "device_type_id" : 1,
+            "page_id" : null,
+            "page_name" : "クーポン/使用状態",
+            "url" : "cart/plg_AnCoupon_coupon_status.php",
+            "filename" : "cart/plg_AnCoupon_coupon_status",
+            "header_chk" : 1,
+            "footer_chk" : 1,
+            "edit_flg" : 2,
+            "author" : null,
+            "description" : null,
+            "keyword" : null,
+            "update_url" : "",
+            "create_date" : null,
+            "update_date" : null,
+            "dtb_blocpositions": [
+            ]
+        },
+        {
+            "device_type_id" : 1,
+            "page_id" : null,
+            "page_name" : "クーポン/使用中止",
+            "url" : "cart/plg_AnCoupon_coupon_cancel.php",
+            "filename" : "cart/plg_AnCoupon_coupon_cancel",
+            "header_chk" : 1,
+            "footer_chk" : 1,
+            "edit_flg" : 2,
+            "author" : null,
+            "description" : null,
+            "keyword" : null,
+            "update_url" : "",
+            "create_date" : null,
+            "update_date" : null,
+            "dtb_blocpositions": [
+            ]
         }
     ]
 }
