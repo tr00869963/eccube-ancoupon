@@ -23,20 +23,40 @@
 <h2><!--{$tpl_subtitle|h}--></h2>
 
 <form name="form1" id="form1" method="post" action="<!--{$smarty.server.REQUEST_URI|h}-->">
-<input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
-<input type="hidden" name="mode" value="save" />
+    <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
+    <input type="hidden" name="mode" value="save" />
+    <input type="hidden" name="page_context_id" value="<!--{$context->id|h}-->" />
 
-<div class="btn-area">
-    <ul>
-        <li>
-            <a class="btn-action" href="#" onclick="window.close(); return false;"><span class="btn-next">閉じる</span></a>
-        </li>
-        <li>
-            <a class="btn-action" href="#" onclick="document.form1.submit(); return false;"><span class="btn-next">登録する</span></a>
-        </li>
-    </ul>
-</div>
+    <div class="coupon-settings-form">
+        <table class="form">
+            <tr>
+                <th><!--{$form.acceptable_chars.title|h}--><span class="attention"> *</span></th>
+                <td>
+                    <!--{if $form.acceptable_chars.error}--><span class="attention"><!--{$form.acceptable_chars.error}--></span><!--{/if}-->
+                    <input type="text" name="acceptable_chars" value="<!--{$form.acceptable_chars.value|h}-->" maxlength="<!--{$form.acceptable_chars.maxlength|h}-->" size="60" class="box60" <!--{if $form.acceptable_chars.error}--><!--{sfSetErrorStyle}--><!--{/if}--> />
+                </td>
+            </tr>
+            <tr>
+                <th><!--{$form.ignorable_chars.title|h}--><span class="attention"> *</span></th>
+                <td>
+                    <!--{if $form.ignorable_chars.error}--><span class="attention"><!--{$form.ignorable_chars.error}--></span><!--{/if}-->
+                    <input type="text" name="ignorable_chars" value="<!--{$form.ignorable_chars.value|h}-->" maxlength="<!--{$form.ignorable_chars.maxlength|h}-->" size="60" class="box60" <!--{if $form.ignorable_chars.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /><br />
+                    ここで指定した文字はクーポンコード入力時に取り除かれます。クーポンコードに区切り文字を入れたい時にご使用下さい。
+                </td>
+            </tr>
+        </table>
 
+        <div class="btn-area">
+            <ul>
+                <li>
+                    <a class="btn-action" href="#" onclick="window.close(); return false;"><span class="btn-next">閉じる</span></a>
+                </li>
+                <li>
+                    <a class="btn-action" href="#" onclick="document.form1.submit(); return false;"><span class="btn-next">登録する</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </form>
 
 <!--{include file="`$smarty.const.TEMPLATE_ADMIN_REALDIR`admin_popup_footer.tpl"}-->

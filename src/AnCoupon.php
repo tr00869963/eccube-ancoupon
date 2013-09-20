@@ -30,9 +30,9 @@ class AnCoupon extends SC_Plugin_Base {
     /**
      * プラグイン設定
      * 
-     * @var stdClass
+     * @var array
      */
-    static $settings;
+    protected static $settings;
     
     /**
      * @var string
@@ -45,22 +45,26 @@ class AnCoupon extends SC_Plugin_Base {
     public function __construct(array $info) {
         parent::__construct($info);
 
-        self::setupAutoloader($info);
+        self::setupAutoloader();
         
         // @see AnCoupon::getInstance()
         if (isset($info['plugin_id'])) {
             self::$plugin_id = $info['plugin_id'];
         }
+        
+        self::loadSettings();
     }
+    
+    protected static $isAutoloaderRegistered = false;
     
     /**
      * @param array $info
      */
-    protected static function setupAutoloader(array $info) {
-        // オートローダー用にライブラリへのパスを追加。
-        $plugin_code = $info['plugin_code'];
-        $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/library";
-        ini_set('include_path', ini_get('include_path') . PATH_SEPARATOR . $path);
+    public static function setupAutoloader() {
+        if (!self::$isAutoloaderRegistered) {
+            $path = dirname(__FILE__) . "/library";
+            ini_set('include_path', ini_get('include_path') . PATH_SEPARATOR . $path);
+        }
     }
     
     /**
@@ -109,6 +113,12 @@ class AnCoupon extends SC_Plugin_Base {
         $json = file_get_contents(PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/initial_data.json");
         $data = An_Eccube_Utils::decodeJson($json, true);
         self::installInitialData($query, $data);
+        
+        // 設定を初期化。
+        AnCoupon::loadSettings();
+        AnCoupon::setSetting('acceptable_chars', '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        AnCoupon::setSetting('ignorable_chars', '-');
+        AnCoupon::saveSettings();
     }
     
     /**
@@ -475,6 +485,51 @@ __SQL__;
         }
         
         $source = $transformer->getHTML();
+    }
+    
+    public static function getSetting($key, $default = null) {
+        if (self::$settings === null) {
+            self::loadSettings();
+        }
+        
+        return isset(self::$settings[$key]) ? self::$settings[$key] : $default;
+    }
+    
+    public static function setSetting($key, $value) {
+        if (self::$settings === null) {
+            self::loadSettings();
+        }
+        
+        self::$settings[$key] = $value;
+    }
+    
+    public static function loadSettings() {
+        $query = SC_Query::getSingletonInstance();
+        $row = $query->getCol('free_field1', 'dtb_plugin', 'plugin_code = ?', array(__CLASS__));
+        if (PEAR::isError($row)) {
+            throw new RuntimeException($row->toString());
+        }
+        
+        if (empty($row[0])) {
+            $settings = array();
+        } else {
+            $settings = An_Eccube_Utils::decodeJson($row[0], true);
+        }
+        
+        self::$settings = $settings;
+    }
+    
+    public static function saveSettings() {
+        $json = An_Eccube_Utils::encodeJson(self::$settings);
+        
+        $query = SC_Query::getSingletonInstance();
+        $values = array(
+            'free_field1' => $json,
+        );
+        $result = $query->update('dtb_plugin', $values, 'plugin_code = ?', array(__CLASS__));
+        if (PEAR::isError($result)) {
+            throw new RuntimeException($result->toString());
+        }
     }
     
     /**

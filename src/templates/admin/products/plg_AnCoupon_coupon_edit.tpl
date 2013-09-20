@@ -32,7 +32,7 @@
                 <td>
                     <!--{if $form.code.error}--><span class="attention"><!--{$form.code.error}--></span><!--{/if}-->
                     <input type="text" name="code" value="<!--{$form.code.value|h}-->" maxlength="<!--{$form.code.maxlength|h}-->" size="30" class="box30" <!--{if $form.code.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /><br />
-                    クーポンコードに使用出来る文字: <!--{$coupon_code_chars|h}-->
+                    クーポンコードに使用出来る文字: <code><!--{$acceptable_chars|h}--></code>
                 </td>
             </tr>
             <tr>

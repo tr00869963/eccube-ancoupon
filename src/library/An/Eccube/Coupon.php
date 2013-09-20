@@ -289,7 +289,9 @@ __SQL__;
      * @return string
      */
     public static function normalizeCode($coupon_code) {
-        $coupon_code = trim($coupon_code);
+        $ignorable_chars = "\t\n\r\0\x0B " . AnCoupon::getSetting('ignorable_chars', '-');
+        $pattern = '/[' . preg_quote($ignorable_chars, '/g') . ']/u';
+        $coupon_code = preg_replace($pattern, '', $coupon_code);
         return $coupon_code;
     }
     

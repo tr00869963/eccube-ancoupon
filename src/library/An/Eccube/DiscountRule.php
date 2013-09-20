@@ -119,6 +119,7 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
             $query->setOrder($order);
         }
 
+        $discount_rules = array();
         $query = self::getQuery();
         $rows = $query->select($columns, 'plg_AnCoupon_discount_rule', $where, $params);
         foreach ($rows as $row) {

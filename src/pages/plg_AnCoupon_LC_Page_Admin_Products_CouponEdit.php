@@ -96,6 +96,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         $params = $this->buildFormParam($this->context);
         $form = $this->buildForm($params, $errors);
         $this->form = $form;
+        
+        $this->acceptable_chars = AnCoupon::getSetting('acceptable_chars');
     }
     
     public function doSave() {
@@ -234,8 +236,10 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         $name = 'code';
         $value = $params->getValue($name);
         $title = $params->disp_name[array_search($name, $params->keyname)];
+        $acceptable_chars = AnCoupon::getSetting('acceptable_chars', '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        $pattern = '/[^' . preg_quote($acceptable_chars, '/') . ']/u';
         if ($value == '') {
-        } elseif (preg_match('/[^0-9A-Za-z-]/u', $value)) {
+        } elseif (preg_match($pattern, $value)) {
             $errors[$name] = "※ {$title}に使用できない文字が含まれています。<br />";
         } elseif (An_Eccube_Coupon::exists('code = ? AND (? IS NULL OR coupon_id <> ?)', array($value, $coupon->coupon_id, $coupon->coupon_id))) {
             $code = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');

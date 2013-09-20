@@ -111,6 +111,7 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
             }
 
             $coupon_code = $params->getValue('coupon_code');
+            $coupon_code = An_Eccube_Coupon::normalizeCode($coupon_code);
             $plugin = AnCoupon::getInstance();
             $plugin->clearUsingCouponCode();
             $plugin->useCouponCode($coupon_code);
