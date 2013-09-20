@@ -398,6 +398,49 @@ __SQL__;
                 }
                 break;
                 
+            case DEVICE_TYPE_MOBILE:
+                if (An_Eccube_Utils::isStringEndWith($filename, 'cart/index.tpl')) {
+                    $template_path = "cart/plg_AnCoupon_index_discount_row.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $source = preg_replace('#商品合計:.+<br>#u', "\$0{$template}", $source);
+                    
+                    $template_path = "cart/plg_AnCoupon_index_coupon_info.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $source .= $template;
+
+                    $transformer = new SC_Helper_Transform_Ex($source);
+                    break;
+                }
+
+                if (An_Eccube_Utils::isStringEndWith($filename, 'products/list.tpl')) {
+                    $template_path = "products/plg_AnCoupon_list_discount.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $source = preg_replace('#<div align="right">#u', "{$template}\$0", $source);
+                    
+                    $transformer = new SC_Helper_Transform_Ex($source);
+                    break;
+                }
+                
+                if (An_Eccube_Utils::isStringEndWith($filename, 'products/detail.tpl')) {
+                    $template_path = "products/plg_AnCoupon_detail_discount.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $source = preg_replace('#<!--★関連カテゴリ★-->#u', "{$template}\$0", $source);
+
+                    $transformer = new SC_Helper_Transform_Ex($source);
+                    break;
+                }
+
+                if (An_Eccube_Utils::isStringEndWith($filename, 'shopping/confirm.tpl')) {
+                    $template_path = "shopping/plg_AnCoupon_confirm_discount_row.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $source = preg_replace('#送料：#u', "{$template}\$0", $source);
+                    
+                    $transformer = new SC_Helper_Transform_Ex($source);
+                    break;
+                }
+                
+                break;
+                
             case DEVICE_TYPE_ADMIN:
             default:
                 if (DEBUG_MODE && An_Eccube_Utils::isStringEndWith($filename, 'system/subnavi.tpl')) {
