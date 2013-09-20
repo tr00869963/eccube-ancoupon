@@ -688,9 +688,6 @@ __SQL__;
                 );
                 $purchase->saveOrderTemp($page->tpl_uniqid, $params);
                 return;
-                
-            case 'select_deliv':
-                return;
         }
         
         $carts = new SC_CartSession_Ex();
