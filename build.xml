@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="AnCoupon" default="build">
+    <property name="archive_prefix" value="AnCoupon" />
+    <property name="src_dir" value="src" />
+    <property name="build_dir" value="build" />
+    <property name="eccube_html_dir" value="E:/Www/dev/eccube-2.12/html" />
+    
+    <target name="prepare">
+        <mkdir dir="${build_dir}" />
+    </target>
+    
+    <target name="build" depends="prepare">
+        <property name="archive" value="${build_dir}/${archive_prefix}.tar.gz" />
+        <delete file="${archive}" quiet="true" />
+        <tar basedir="${src_dir}" destfile="${archive}" compression="gzip" />
+    </target>
+    
+    <target name="update-schema">
+        <exec executable="php" output="${src_dir}/data/db/schema.json" checkreturn="true">
+            <arg value="tools/schema.php" />
+            <arg value="${eccube_html_dir}" />
+        </exec>
+    </target>
+</project>

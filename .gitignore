@@ -4,5 +4,5 @@
 /.project
 /.buildpath
 
-# package
-AnCoupon.tar.gz
+# for Phing
+build

@@ -1,6 +1,15 @@
 <?php
 
-$eccube_html_dir = 'E:/Www/dev/eccube-2.12/html';
+// スクリプト名はポイ
+array_shift($argv);
+
+/// EC-CUBEのHTMLディレクトリ
+$eccube_html_dir = array_shift($argv);
+
+if (!file_exists($eccube_html_dir) || !is_dir($eccube_html_dir)) {
+    fwrite(STDERR, 'Not found EC-CUBE html directory. ' . PHP_EOL . 'given path: ' . $eccube_html_dir . PHP_EOL);
+    exit(1);
+}
 
 require_once "{$eccube_html_dir}/require.php";
 
