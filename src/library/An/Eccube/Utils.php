@@ -448,4 +448,13 @@ class An_Eccube_Utils {
     public static function isStringEndWith($target, $tail) {
         return !substr_compare($target, $tail, -strlen($tail));
     }
+    
+    /**
+     * タイムゾーンのない日付からタイムゾーン付きの日付に変換します。
+     * 
+     * @param string $date
+     */
+    public static function toDateTimeWithTimezone($datetime) {
+        return date('Y-m-d\TH:i:sP', strtotime($datetime)); 
+    }
 }

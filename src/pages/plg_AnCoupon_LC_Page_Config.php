@@ -92,6 +92,9 @@ class plg_AnCoupon_LC_Page_Config extends LC_Page_Admin_Ex {
 
         $context->session['acceptable_chars'] = AnCoupon::getSetting('acceptable_chars', '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
         $context->session['ignorable_chars'] = AnCoupon::getSetting('ignorable_chars', '-');
+        $context->session['api_key'] = AnCoupon::getSetting('api_key');
+        $context->session['an7_api_endpoint'] = AnCoupon::getSetting('an7_api_endpoint');
+        $context->session['an7_api_key'] = AnCoupon::getSetting('an7_api_key');
     }
     
     protected function doEdit($errors = array()) {
@@ -106,22 +109,25 @@ class plg_AnCoupon_LC_Page_Config extends LC_Page_Admin_Ex {
             
             $params = $this->buildFormParam($this->context);
             $params->setParam($_POST);
+            $this->updateContext($this->context, $params);
             
             $errors = $this->validateFormParam($params, $this->context);
             if ($errors) {
                 $tx->rollback();
-
-                $this->context->session['acceptable_chars'] = $params->getValue('acceptable_chars');
-                $this->context->session['ignorable_chars'] = $params->getValue('ignorable_chars');
                 $this->doEdit($errors);
                 return;
             }
 
-            $acceptable_chars = implode('', array_unique(str_split($params->getValue('acceptable_chars'))));
+            $acceptable_chars = implode('', array_unique(str_split($this->context->session['acceptable_chars'])));
             AnCoupon::setSetting('acceptable_chars', $acceptable_chars);
-            
-            $ignorable_chars = implode('', array_unique(str_split($params->getValue('ignorable_chars'))));
+
+            $ignorable_chars = implode('', array_unique(str_split($this->context->session['ignorable_chars'])));
             AnCoupon::setSetting('ignorable_chars', $ignorable_chars);
+            
+            AnCoupon::setSetting('api_key', $this->context->session['api_key']);
+            AnCoupon::setSetting('an7_url', $this->context->session['an7_url']);
+            AnCoupon::setSetting('an7_api_endpoint', $this->context->session['an7_api_endpoint']);
+            AnCoupon::setSetting('an7_api_key', $this->context->session['an7_api_key']);
             
             AnCoupon::saveSettings();
             
@@ -130,14 +136,25 @@ class plg_AnCoupon_LC_Page_Config extends LC_Page_Admin_Ex {
             $this->context->dispose();
 
             $this->tpl_javascript = "$(window).load(function () { alert('登録しました。'); });";
-            $this->context->session['acceptable_chars'] = $acceptable_chars;
-            $this->context->session['ignorable_chars'] = $ignorable_chars;
             $this->doEdit();
         } catch (Exception $e) {
             $tx->rollback();
             
             throw $e;
         }
+    }
+    
+    protected function updateContext(An_Eccube_PageContext $context, SC_FormParam $params) {
+        $context->session['acceptable_chars'] = $params->getValue('acceptable_chars');
+        $context->session['ignorable_chars'] = $params->getValue('ignorable_chars');
+        
+        if ($params->getValue('generate_api_key')) {
+            $api_key = sha1(mt_rand() . time());
+            $context->session['api_key'] = $api_key;
+        }
+
+        $context->session['an7_api_endpoint'] = $params->getValue('an7_api_endpoint');
+        $context->session['an7_api_key'] = $params->getValue('an7_api_key');
     }
     
     /**
@@ -173,6 +190,12 @@ class plg_AnCoupon_LC_Page_Config extends LC_Page_Admin_Ex {
         
         $params->addParam('クーポンコードに使用する文字', 'acceptable_chars', 256, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $context->session['acceptable_chars']);
         $params->addParam('クーポンコードから無視する文字', 'ignorable_chars', 256, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $context->session['ignorable_chars']);
+
+        $params->addParam('API鍵', 'api_key', 256, '', array(), $context->session['api_key']);
+        $params->addParam('API鍵生成', 'generate_api_key', 16, '', array());
+        
+        $params->addParam('AN7のAPIエンドポイント', 'an7_api_endpoint', 2048, '', array('MAX_LENGTH_CHECK'), $context->session['an7_api_endpoint']);
+        $params->addParam('AN7のAPI鍵', 'an7_api_key', 2048, '', array('MAX_LENGTH_CHECK'), $context->session['an7_api_key']);
         
         return $params;
     }
@@ -207,6 +230,47 @@ class plg_AnCoupon_LC_Page_Config extends LC_Page_Admin_Ex {
             $available_chars = array_diff($acceptable_chars, $ignorable_chars);
             if (!$available_chars) {
                 $errors['acceptable_chars'] = "※ クーポンコードとして使用できる文字がありません。使用する文字と無視する文字を見直して下さい。";
+            }
+        }
+
+        // AN7のAPIエンドポイント
+        $name = 'an7_api_endpoint';
+        $value = $params->getValue($name);
+        $title = htmlspecialchars($params->disp_name[array_search($name, $params->keyname)], ENT_QUOTES, 'UTF-8');
+        if ($value == '') {
+        } elseif (!preg_match('#^https?://.+#', $value)) {
+            $errors[$name] = "※ {$title}が正しいURLではありません。";
+        } else {
+            $an7_api_endpoint = $value;
+        }
+
+        // AN7のAPI鍵
+        $name = 'an7_api_key';
+        $value = $params->getValue($name);
+        $title = htmlspecialchars($params->disp_name[array_search($name, $params->keyname)], ENT_QUOTES, 'UTF-8');
+        if ($value == '') {
+        } else {
+            $an7_api_key = $value;
+        }
+        
+        if (isset($an7_api_endpoint) && isset($an7_api_key)) {
+            $options = array(
+                'endpoint' => $an7_api_endpoint,
+                'api_key' => $an7_api_key,
+            );
+            $result = AnCoupon::invokeAn7Api('tests/connection', 'GET', array(), null, true, $options);
+            if (!$result->successed) {
+                switch ($result->content->code) {
+                    case '401':
+                        $reason = htmlspecialchars($result->content->message, ENT_QUOTES, 'UTF-8');
+                        $errors['an7_api_key'] = "※ 認証に失敗しました。API鍵を確認して下さい。{$reason}";
+                        break;
+                        
+                    default:
+                        $reason = htmlspecialchars($result->content->message, ENT_QUOTES, 'UTF-8');
+                        $errors['an7_api_endpoint'] = "※ AN7との接続に失敗しました。設定を確認して下さい。{$reason}";
+                        break;
+                }
             }
         }
         

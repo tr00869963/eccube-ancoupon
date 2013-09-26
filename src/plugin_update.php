@@ -148,6 +148,27 @@ class plugin_update {
             SC_Helper_FileManager_Ex::deleteFile($path, false);
         }
         
+        // 管理用のページを更新。
+        $plugin_code = $info['plugin_code'];
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/admin/";
+        $dest_dir = HTML_REALDIR . ADMIN_DIR;
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+        
+        // 顧客用のページを更新。
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/customer/";
+        $dest_dir = HTML_REALDIR;
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+        
+        // 公開ファイルを更新。
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/assets/";
+        $dest_dir = PLUGIN_HTML_REALDIR . "{$plugin_code}/";
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+        
+        // テンプレートを更新。
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/templates/";
+        $dest_dir = SMARTY_TEMPLATES_REALDIR;
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+        
         return $info;
     }
 }

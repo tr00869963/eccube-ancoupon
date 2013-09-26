@@ -118,6 +118,7 @@ class AnCoupon extends SC_Plugin_Base {
         AnCoupon::loadSettings();
         AnCoupon::setSetting('acceptable_chars', '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ');
         AnCoupon::setSetting('ignorable_chars', '-');
+        AnCoupon::setSetting('api_key', sha1(mt_rand()));
         AnCoupon::saveSettings();
     }
     
@@ -485,6 +486,42 @@ __SQL__;
         }
         
         $source = $transformer->getHTML();
+    }
+    
+    public function preProcess(LC_Page_Ex $page) {
+        if (!($page instanceof LC_Page_Admin) && self::integrationEnabled() && isset($_GET['_c'])) {
+            @list($campaign_id, $channel_id) = (array)explode('.', $_GET['_c']);
+            $body = array(
+                'campaign_id' => $campaign_id,
+                'channel_id' => $channel_id,
+            );
+            $response = self::invokeAn7Api('create_coupon', 'POST', $query, $body, true);
+            if (!$response->successed) {
+                $message = sprintf('リンククーポンの作成に失敗しました。%s:%s', $response->content->code, $response->content->message);
+                trigger_error($message, E_USER_WARNING);
+                return;
+            }
+            
+            $source = $response->content;
+            
+            $coupon = new An_Eccube_Coupon();
+            $coupon->code = $source->code;
+            $coupon->memo = $source->memo;
+            $coupon->limit_uses = $source->limit_uses;
+            $coupon->max_uses = $source->max_uses;
+            $coupon->discount_rules = $source->discount_rule_ids;
+            $coupon->effective_from = $source->effective_from;
+            $coupon->effective_to = $source->effective_to;
+            $coupon->save();
+            
+            $this->useCouponCode($coupon->code);
+            
+            $message = sprintf('リンククーポンを作成しました。クーポンコード:%s', $coupon->code);
+            GC_Utils_Ex::gfPrintLog($message);
+            
+            $redirect_url = preg_replace('/(?<=\?|&)_c=[^&]*(&|$)/u', '', $_SERVER['REQUEST_URI']);
+            SC_Response_Ex::sendRedirect($redirect_url);
+        }
     }
     
     public static function getSetting($key, $default = null) {
@@ -866,8 +903,121 @@ __SQL__;
         foreach ($coupon_codes as $coupon_code) {
             $coupon = An_Eccube_Coupon::findByCode($coupon_code);
             $coupon->useToOrder($order_id, $discount);
+
+            // AN7との連携
+            if (self::integrationEnabled()) {
+                $query = array();
+                $body = array(
+                    'coupon_code' => $coupon->code,
+                    'sales' => $order['subtotal'],
+                );
+                $response = self::invokeAn7Api('use_coupon', 'POST', $query, $body, true);
+                if (!$response->successed) {
+                    $message = sprintf('リンククーポンの使用に失敗しました。%s:%s', $response->content->code, $response->content->message);
+                    trigger_error($message, E_USER_WARNING);
+                    return;
+                }
+            
+                $message = sprintf('リンククーポンの使用を送信しました。クーポンコード:%s', $coupon->code);
+                GC_Utils_Ex::gfPrintLog($message);
+            }
         }
         
         $this->clearUsingCouponCode();
+    }
+    
+    public static function integrationEnabled() {
+        return self::getSetting('an7_api_endpoint') != '';
+    }
+    
+    public static function invokeAn7Api($resource, $method = 'GET', $query = array(), $data = null, $authenticate = false, $options = array()) {
+        if (isset($options['endpoint'])) {
+            $endpoint = $options['endpoint'];
+        } else {
+            $endpoint = self::getSetting('an7_api_endpoint');
+        }
+
+        if (isset($options['api_key'])) {
+            $api_key = $options['api_key'];
+        } else {
+            $api_key = self::getSetting('an7_api_key');
+        }
+        
+        $url = rtrim($endpoint, '/') . '/' . $resource;
+
+        if ($authenticate) {
+            $query['api_key'] = $api_key;
+        }
+    
+        if ($query) {
+            $sep = strpos($endpoint, '?') === false ? '?' : '&';
+            $url .= $sep . http_build_query($query);
+        }
+    
+        $headers = array();
+        $headers[] = "Content-Type: application/json";
+        
+        if ($data !== null) {
+            if (!is_scalar($data) || is_bool($data)) {
+                $payload = An_Eccube_Utils::encodeJson($data);
+            }  else {
+                $payload = $data;
+            }
+            $headers[] = "Content-Length: " . strlen($payload);
+        } else {
+            $payload = '';
+        }
+        
+        $header = implode("\r\n", $headers);
+    
+        $options = array(
+            'http' => array(
+                'method'        => $method,
+                'header'        => $header,
+                'content'       => $payload,
+                'ignore_errors' => true,
+            ),
+        );
+        $context = stream_context_create($options);
+        $stream = fopen($url, 'r', false, $context);
+        $response = stream_get_contents($stream);
+        $metadata = stream_get_meta_data($stream);
+        fclose($stream);
+
+        $result = (object)array(
+            'successed' => false,
+            'content' => null,
+        );
+    
+        list($version, $code, $message) = explode(' ', $metadata['wrapper_data'][0], 3);
+        try {
+            $response = An_Eccube_Utils::decodeJson($response);
+        } catch (Exception $e) {
+            $result->successed = false;
+            $result->content = (object)array(
+                'message' => 'Response was broken.',
+                'code'    => 500,
+            );
+            return $result;
+        }
+    
+        if ($code != '200') {
+            $result->successed = false;
+    
+            if (!$response) {
+                $result->content = (object)array(
+                    'message' => $message,
+                    'code'    => $code,
+                );
+            } else {
+                $result->content = $response->error;
+            }
+    
+            return $result;
+        }
+    
+        $result->successed = true;
+        $result->content = $response;
+        return $result;
     }
 }
