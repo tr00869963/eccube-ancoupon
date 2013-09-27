@@ -116,7 +116,6 @@ class An_Eccube_Coupon extends An_Eccube_Model {
             $query->setOption($additional);
         }
 
-        $query = self::getQuery();
         $rows = $query->select($columns, 'plg_AnCoupon_coupon', $where, $params);
         foreach ($rows as $row) {
             $coupon = new self($row);
