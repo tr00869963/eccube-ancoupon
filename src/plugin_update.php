@@ -117,7 +117,37 @@ class plugin_update {
      */
     protected static function upTo_1_1_0($info) {
         $info['plugin_version'] = '1.1.0';
-
+        
+        // 不要になった管理者用ページを削除
+        $plugin_code = $info['plugin_code'];
+        $files = array(
+            'system/plg_AnCoupon_debug_sandbox.php' => 'plg_AnCoupon_LC_Page_Admin_System_DebugSandbox.php',
+        );
+        foreach ($files as $file => $page) {
+            $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/pages/$page";
+            SC_Helper_FileManager_Ex::deleteFile($path, false);
+            
+            $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/admin/$file";
+            SC_Helper_FileManager_Ex::deleteFile($path, false);
+        
+            $path = HTML_REALDIR . ADMIN_DIR . $file;
+            SC_Helper_FileManager_Ex::deleteFile($path, false);
+        }
+        
+        // 不要になったテンプレートを削除
+        $plugin_code = $info['plugin_code'];
+        $files = array(
+            'admin/system/plg_AnCoupon_debug_sandbox.tpl',
+            'admin/system/plg_AnCoupon_subnavi_item.tpl',
+        );
+        foreach ($files as $file) {
+            $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/templates/$file";
+            SC_Helper_FileManager_Ex::deleteFile($path, false);
+        
+            $path = SMARTY_TEMPLATES_REALDIR . $file;
+            SC_Helper_FileManager_Ex::deleteFile($path, false);
+        }
+        
         return $info;
     }
 }
