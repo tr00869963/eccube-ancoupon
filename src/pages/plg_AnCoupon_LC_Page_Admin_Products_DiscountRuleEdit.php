@@ -119,6 +119,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleEdit extends LC_Page_Admin
         $query = SC_Query_Ex::getSingletonInstance();
         $from = "
 dtb_products AS product
+JOIN (SELECT product_id, MIN(price02) AS min_price, MAX(price02) AS max_price FROM dtb_products_class GROUP BY product_id) AS product_class ON product_class.product_id = product.product_id
 ";
         $ph_product_ids = implode(',', array_pad(array(), count($product_ids), '?'));
         $where = "product.product_id IN ($ph_product_ids)";
@@ -127,8 +128,8 @@ dtb_products AS product
         $columns = implode(',', array(
             'product.product_id',
             'product.name',
-            '0 AS min_price',
-            '1 AS max_price',
+            'product_class.min_price AS min_price',
+            'product_class.max_price AS max_price',
         ));
         $rows = $query->select($columns, $from, $where, $where_params);
         foreach ($rows as $row) {
