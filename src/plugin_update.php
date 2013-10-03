@@ -110,4 +110,14 @@ class plugin_update {
         }
         $query->update('dtb_plugin', $values, 'plugin_code = ?', array($old_info['plugin_code']));
     }
+
+    /**
+     * @param array $info
+     * @return array
+     */
+    protected static function upTo_1_1_0($info) {
+        $info['plugin_version'] = '1.1.0';
+
+        return $info;
+    }
 }
