@@ -69,7 +69,7 @@ class An_Eccube_PageContext {
             return;
         }
         
-        $storage[$this->id] = $this;
+        $storage[$this->id] = (object)(array)$this;
     }
     
     public function allocate() {
@@ -79,7 +79,7 @@ class An_Eccube_PageContext {
         } while (isset($storage[$id]));
         
         $this->id = $id;
-        $storage[$id] = $this;
+        $this->save();
     }
     
     public function restore() {
