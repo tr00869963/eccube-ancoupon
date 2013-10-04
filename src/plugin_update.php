@@ -48,6 +48,8 @@ class plugin_update {
         $points = self::getMigrationPoints();
         foreach ($points as $point) {
             if (version_compare($info['plugin_version'], $point['version'], '<')) {
+                $log = sprintf('アップデートを実行: %s => %s', $info['plugin_version'], $point['version']);
+                GC_Utils_Ex::gfPrintLog($log);
                 $info = call_user_func($point['up_to'], $info);
             }
         }
@@ -147,6 +149,11 @@ class plugin_update {
             $path = SMARTY_TEMPLATES_REALDIR . $file;
             SC_Helper_FileManager_Ex::deleteFile($path, false);
         }
+        
+        // プラグイン関連のファイルを全て更新
+        $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
+        $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
         
         // 管理用のページを更新。
         $plugin_code = $info['plugin_code'];
