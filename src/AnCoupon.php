@@ -454,13 +454,6 @@ __SQL__;
                 
             case DEVICE_TYPE_ADMIN:
             default:
-                if (DEBUG_MODE && An_Eccube_Utils::isStringEndWith($filename, 'system/subnavi.tpl')) {
-                    $template_path = "system/plg_AnCoupon_subnavi_item.tpl";
-                    $template = "<!--{include file='{$template_path}'}-->";
-                    $transformer->select('ul')->appendChild($template);
-                    break;
-                }
-                
                 if (An_Eccube_Utils::isStringEndWith($filename, 'products/subnavi.tpl')) {
                     $template_path = "products/plg_AnCoupon_subnavi_item.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
