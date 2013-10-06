@@ -16,10 +16,8 @@
         <tar basedir="${src_dir}" destfile="${archive}" compression="gzip" />
     </target>
     
-    <target name="update-schema">
-        <exec executable="php" output="${src_dir}/data/db/schema.json" checkreturn="true">
-            <arg value="tools/schema.php" />
-            <arg value="${eccube_html_dir}" />
-        </exec>
+    <target name="build-schema">
+        <property name="schema" value="${src_dir}/data/db/schema.json" />
+        <exec command="php tools/schema.php ${eccube_html_dir} | node tools/jsonbeautifier.js > ${schema}" escape="false" />
     </target>
 </project>

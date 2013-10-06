@@ -100,6 +100,11 @@ class An_Eccube_Utils {
             }
             
             // そのまま MDB2#createTable に渡すとコケるので（激おこ）
+            if ($field_def['type'] != 'text' && isset($field_def['default']) && $field_def['default'] === '') {
+                unset($field_def['default']);
+            }
+            
+            // そのまま MDB2#createTable に渡すとコケるので（激おこ）
             if ($field_def['type'] == 'decimal' && isset($field_def['length'])) {
                 list($scale, $precision) = (array)explode(',', $field_def['length']);
                 $field_def['length'] = $scale;
@@ -146,7 +151,7 @@ class An_Eccube_Utils {
             if (PEAR::isError($const_def)) {
                 throw new RuntimeException($const_def->toString());
             }
-            $const_full_name = $table_name . '_' . $const_name;
+            $const_full_name = $const_name == 'primary' ? $table_name . '_' . $const_name : $const_name;
             $const_defs[$const_full_name] = $const_def;
         }
         
@@ -168,7 +173,7 @@ class An_Eccube_Utils {
             if (PEAR::isError($index_def)) {
                 throw new RuntimeException($index_def->toString());
             }
-            $index_full_name = $table_name . '_' . $index_name;
+            $index_full_name = $index_name;
             $index_defs[$index_full_name] = $index_def;
         }
         
