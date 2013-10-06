@@ -20,4 +20,10 @@
         <property name="schema" value="${src_dir}/data/db/schema.json" />
         <exec command="php tools/schema.php ${eccube_html_dir} | node tools/jsonbeautifier.js > ${schema}" escape="false" />
     </target>
+    
+    <target name="build-migration">
+        <input message="Version?" propertyName="version" />
+        <property name="schema" value="${src_dir}/data/db/migration-${version}.json" />
+        <exec command="php tools/schema.php ${eccube_html_dir} | node tools/jsonbeautifier.js > ${schema}" escape="false" />
+    </target>
 </project>
