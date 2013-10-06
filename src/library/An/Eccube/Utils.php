@@ -15,6 +15,8 @@ class An_Eccube_Utils {
         $mdb2->loadModule('Manager');
         $mdb2->loadModule('Reverse');
         
+        $org_options = self::overrideMDB2options($mdb2);
+        
         if (!$tables) {
             $table_names = $mdb2->listTables();
             if (PEAR::isError($tables)) {
@@ -41,6 +43,8 @@ class An_Eccube_Utils {
             $def['sequences'][$seq_name] = $init;
         }
         
+        self::restoreMDB2options($mdb2, $org_options);
+        
         return $def;
     }
     
@@ -50,15 +54,7 @@ class An_Eccube_Utils {
         $mdb2->loadModule('Manager');
         $mdb2->loadModule('Reverse');
         
-        $options = array(
-            'decimal_places' => 0,
-            'idxname_format' => '%s',
-        );
-        $org_options = array();
-        foreach ($options as $key => $value) {
-            $org_options[$value] = $mdb2->getOption($key);
-            $mdb2->setOption($key, $value);
-        }
+        $org_options = self::overrideMDB2options($mdb2);
         
         $def = array(
             'fields' => array(),
@@ -181,9 +177,7 @@ class An_Eccube_Utils {
             $def['indexes'] = $index_defs;
         }
         
-        foreach ($options as $key => $value) {
-            $mdb2->setOption($key, $org_options[$key]);
-        }
+        self::restoreMDB2options($mdb2, $org_options);
         
         return $def;
     }
@@ -212,10 +206,7 @@ class An_Eccube_Utils {
         throw new RuntimeException('Not supported callback ' . $method);
     }
     
-    public static function createTable(SC_Query_Ex $query, $table_name, $table_def) {
-        $mdb2 = self::getMDB2($query);
-        $mdb2->loadModule('Manager');
-
+    public static function overrideMDB2options(MDB2_Driver_Common $mdb2) {
         $options = array(
             'decimal_places' => 0,
             'idxname_format' => '%s',
@@ -232,7 +223,22 @@ class An_Eccube_Utils {
             $mdb2->setOption($key, $value);
         }
         
-        if (empty($table_def->partial)) {
+        return $org_options;
+    }
+    
+    public static function restoreMDB2options(MDB2_Driver_Common $mdb2, array $options) {
+        foreach ($options as $key => $value) {
+            $mdb2->setOption($key, $org_options[$key]);
+        }
+    }
+    
+    public static function createTable(SC_Query_Ex $query, $table_name, $table_def) {
+        $mdb2 = self::getMDB2($query);
+        $mdb2->loadModule('Manager');
+
+        $org_options = self::overrideMDB2options($mdb2);
+        
+        if (empty($table_def['partial'])) {
             $result = $mdb2->createTable($table_name, $table_def['fields']);
             if (PEAR::isError($result)) {
                 throw new RuntimeException($result->toString());
@@ -240,6 +246,31 @@ class An_Eccube_Utils {
         } else {
             if (!empty($table_def['fields'])) {
                 $result = $mdb2->alterTable($table_name, array('add' => $table_def['fields']));
+                if (PEAR::isError($result)) {
+                    throw new RuntimeException($result->toString());
+                }
+            }
+        }
+
+        if (isset($table_def['alter_fields'])) {
+            $result = $mdb2->alterTable($table_name, $table_def['alter_fields']);
+            if (PEAR::isError($result)) {
+                throw new RuntimeException($result->toString());
+            }
+        }
+
+        if (isset($table_def['drop_constraints'])) {
+            foreach ($table_def['drop_constraints'] as $const_name => $options) {
+                $result = $mdb2->dropConstraint($table_name, $const_name, $options);
+                if (PEAR::isError($result)) {
+                    throw new RuntimeException($result->toString());
+                }
+            }
+        }
+
+        if (isset($table_def['drop_indexes'])) {
+            foreach ($table_def['drop_indexes'] as $index_name) {
+                $result = $mdb2->dropIndex($table_name, $index_name);
                 if (PEAR::isError($result)) {
                     throw new RuntimeException($result->toString());
                 }
@@ -264,24 +295,14 @@ class An_Eccube_Utils {
             }
         }
 
-        foreach ($options as $key => $value) {
-            $mdb2->setOption($key, $org_options[$key]);
-        }
+        self::restoreMDB2options($mdb2, $org_options);
     }
     
     public static function deleteTable(SC_Query_Ex $query, $table_name, $table_def) {
         $mdb2 = self::getMDB2($query);
         $mdb2->loadModule('Manager');
 
-        $options = array(
-            'decimal_places' => 0,
-            'idxname_format' => '%s',
-        );
-        $org_options = array();
-        foreach ($options as $key => $value) {
-            $org_options[$value] = $mdb2->getOption($key);
-            $mdb2->setOption($key, $value);
-        }
+        $org_options = self::overrideMDB2options($mdb2);
 
         if (isset($table_def['indexes'])) {
             foreach ($table_def['indexes'] as $index_name => $index_def) {
@@ -311,14 +332,32 @@ class An_Eccube_Utils {
             $result = $mdb2->alterTable($table_name, array('remove' => $table_def['fields']));
         }
 
-        foreach ($options as $key => $value) {
-            $mdb2->setOption($key, $org_options[$key]);
-        }
+        self::restoreMDB2options($mdb2, $options);
     }
     
     public static function createDatabase(SC_Query_Ex $query, $schema) {
         $mdb2 = self::getMDB2($query);
         $mdb2->loadModule('Manager');
+
+        $org_options = self::overrideMDB2options($mdb2);
+
+        if (isset($schema['drop_sequences'])) {
+            foreach ($schema['drop_sequences'] as $seq_name) {
+                $result = $mdb2->dropSequence($seq_name);
+                if (PEAR::isError($result)) {
+                    throw new RuntimeException($result->toString());
+                }
+            }
+        }
+
+        if (isset($schema['drop_tables'])) {
+            foreach ($schema['drop_tables'] as $table_name) {
+                $result = $mdb2->dropTable($table_name);
+                if (PEAR::isError($result)) {
+                    throw new RuntimeException($result->toString());
+                }
+            }
+        }
 
         if (isset($schema['tables'])) {
             foreach ($schema['tables'] as $name => $def) {
@@ -334,6 +373,8 @@ class An_Eccube_Utils {
                 }
             }
         }
+        
+        self::restoreMDB2options($mdb2, $org_options);
     }
     
     public static function deleteDatabase(SC_Query_Ex $query, $schema) {
@@ -365,6 +406,10 @@ class An_Eccube_Utils {
                 }
             }
         }
+    }
+    
+    public static function alterTable(SC_Query_Ex $query, $schema) {
+        self::createDatabase($query, $schema);
     }
     
     public static function encodeJson($data) {
