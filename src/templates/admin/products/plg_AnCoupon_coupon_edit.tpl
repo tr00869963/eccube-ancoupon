@@ -52,6 +52,18 @@
                 </td>
             </tr>
             <tr>
+                <th><!--{$form.memo.title|h}--></th>
+                <td>
+                    <!--{if $form.memo.error}--><span class="attention"><!--{$form.memo.error}--></span><!--{/if}-->
+                    <textarea name="memo" maxlength="<!--{$form.memo.maxlength|h}-->" size="80" rows="6" class="area80" <!--{if $form.memo.error}--><!--{sfSetErrorStyle}--><!--{/if}-->><!--{$form.memo.value|h}--></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <h2>使用条件</h2>
+        
+        <table class="form">
+            <tr>
                 <th><!--{$form.limit_uses.title|h}--><span class="attention"> *</span></th>
                 <td>
                     <!--{if $form.limit_uses.error}--><span class="attention"><!--{$form.limit_uses.error}--></span><!--{/if}-->
@@ -92,14 +104,16 @@
                     <select name="effective_to_day" <!--{if $form.effective_to_day.error || $form.effective_to.error}--><!--{sfSetErrorStyle}--><!--{/if}--> >
                         <!--{html_options options=$form.effective_to_day.options selected=$form.effective_to_day.value}-->
                     </select>日 まで使用可能<br />
-                    <span class="attention">※割引適用期間とは別にチェックされます。</span>
+                    <span class="attention">※割引条件の適用期間とは別にチェックされます。</span>
                 </td>
             </tr>
             <tr>
-                <th><!--{$form.memo.title|h}--></th>
+                <th>対象ユーザー</th>
                 <td>
-                    <!--{if $form.memo.error}--><span class="attention"><!--{$form.memo.error}--></span><!--{/if}-->
-                    <textarea name="memo" maxlength="<!--{$form.memo.maxlength|h}-->" size="80" rows="6" class="area80" <!--{if $form.memo.error}--><!--{sfSetErrorStyle}--><!--{/if}-->><!--{$form.memo.value|h}--></textarea>
+                    <!--{if $form.allow_guest.error}--><span class="attention"><!--{$form.allow_guest.error}--></span><!--{/if}-->
+                    <label><input type="checkbox" name="allow_guest" value="1" <!--{if $form.allow_guest.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_guest.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_guest.title|h}--></label><br /> 
+                    <!--{if $form.allow_member.error}--><span class="attention"><!--{$form.allow_member.error}--></span><!--{/if}-->
+                    <label><input type="checkbox" name="allow_member" value="1" <!--{if $form.allow_member.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_member.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_member.title|h}--></label><br /> 
                 </td>
             </tr>
         </table>

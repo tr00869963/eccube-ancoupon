@@ -183,12 +183,18 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
         } else {
             $coupon_code = An_Eccube_Coupon::normalizeCode($value);
             $coupon = An_Eccube_Coupon::findByCode($coupon_code);
+            $customer = new SC_Customer_Ex();
+            $used_time = time();
             if (!$coupon) {
                 $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。入力内容に間違えがないかご確認下さい。<br />";
-            } elseif ($coupon->limit_uses && ($coupon->uses >= $coupon->max_uses)) {
+            } elseif ($coupon->isUsesLimitReached()) {
                 $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。使用回数を超えています。<br />";
-            } elseif (!$coupon->isAvailable(time())) {
+            } elseif (!$coupon->isUserTargeted($customer)) {
+                $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。使用できるユーザーをご確認下さい。<br />";
+            } elseif (!$coupon->isInPeriod(time())) {
                 $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。有効期間を過ぎています。<br />";
+            } elseif (!$coupon->isAvailable($used_time, $customer)) {
+                $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。<br />";
             }
         }
         

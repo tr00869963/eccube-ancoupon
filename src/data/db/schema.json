@@ -36,6 +36,18 @@
                     "length": 1,
                     "default": "0"
                 },
+                "allow_guest": {
+                    "type": "integer",
+                    "notnull": true,
+                    "length": 1,
+                    "default": "1"
+                },
+                "allow_member": {
+                    "type": "integer",
+                    "notnull": true,
+                    "length": 1,
+                    "default": "1"
+                },
                 "memo": {
                     "type": "clob",
                     "notnull": false
@@ -198,6 +210,18 @@
                     "length": "3",
                     "default": "0.00",
                     "scale": "2"
+                },
+                "allow_guest": {
+                    "type": "integer",
+                    "notnull": true,
+                    "length": 1,
+                    "default": "1"
+                },
+                "allow_member": {
+                    "type": "integer",
+                    "notnull": true,
+                    "length": 1,
+                    "default": "1"
                 },
                 "create_date": {
                     "type": "timestamp",

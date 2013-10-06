@@ -202,6 +202,8 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
             
             $params = $this->buildFormParam($discount_rule);
             $values = $_POST + array(
+                'allow_guest' => 0,
+                'allow_member' => 0,
                 'category' => array(),
                 'product' => array(),
                 'product_remove' => array(),
@@ -330,6 +332,9 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
 //         $params->addParam('割引条件コード', 'code', 60, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $discount_rule->code);
         $params->addParam('状態', 'enabled', 1, 'n', array('MAX_LENGTH_CHECK', 'SELECT_CHECK'), (int)$discount_rule->enabled);
         $params->addParam('管理者メモ', 'memo', 1000, 'n', array('MAX_LENGTH_CHECK'), $discount_rule->memo);
+
+        $params->addParam('ゲスト', 'allow_guest', 1, 'n', array('MAX_LENGTH_CHECK'), (int)$discount_rule->allow_guest);
+        $params->addParam('会員', 'allow_member', 1, 'n', array('MAX_LENGTH_CHECK'), (int)$discount_rule->allow_member);
 
         $params->addParam('定額小計割引', 'total_discount_amount', PRICE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->total_discount_amount);
         $params->addParam('比例小計割引', 'total_discount_rate', PERCENTAGE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->total_discount_rate * 100);
@@ -464,6 +469,9 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         $discount_rule->total_discount_rate = $params->getValue('total_discount_rate') / 100;
         $discount_rule->item_discount_amount = $params->getValue('item_discount_amount');
         $discount_rule->item_discount_rate = $params->getValue('item_discount_rate') / 100;
+        
+        $discount_rule->allow_guest = (bool)$params->getValue('allow_guest');
+        $discount_rule->allow_member = (bool)$params->getValue('allow_member');
         
         $year = $params->getValue('effective_from_year');
         $month = $params->getValue('effective_from_month');

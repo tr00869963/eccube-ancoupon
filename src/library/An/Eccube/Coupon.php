@@ -28,6 +28,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     public $max_uses = 1;
     public $effective_from;
     public $effective_to;
+    public $allow_guest = true;
+    public $allow_member = true;
     public $memo;
     public $create_date;
     public $update_date;
@@ -63,6 +65,16 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         unset($properties['discount_rules']);
         
         return $properties;
+    }
+    
+    protected function toStorableValues() {
+        $values = parent::toStorableValues();
+
+        $values['enabled'] = (int)$values['enabled'];
+        $values['allow_guest'] = (int)$values['allow_guest'];
+        $values['allow_member'] = (int)$values['allow_member'];
+        
+        return $values;
     }
     
     /**
@@ -231,23 +243,47 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     
     /**
      * @param int $used_time
+     * @param array $session
      * @return boolean
      */
-    public function isAvailable($used_time) {
+    public function isAvailable($used_time, SC_Customer_Ex $customer = null) {
+        if ($customer === null) {
+            $customer = new SC_Customer_Ex();
+        }
+        
         // 利用可能か？
         $available = $this->enabled;
         
         // 使用日時が有効期間内か？
-        $in_from = $used_time >= strtotime($this->effective_from);
-        $in_to = $used_time < strtotime($this->effective_to);
-        $available = $available && $in_from && $in_to;
+        $available = $available && $this->isInPeriod($used_time);
         
         // 使用回数が上限に達していないか？
-        if ($this->limit_uses) {
-            $available = $available && $this->uses < $this->max_uses;
-        }
+        $available = $available && !$this->isUsesLimitReached();
+        
+        // ユーザーが対象か？
+        $available = $available && $this->isUserTargeted($customer);
         
         return $available;
+    }
+    
+    public function isUserTargeted(SC_Customer_Ex $customer) {
+        $loggedin = $customer->isLoginSuccess(true);
+        $targeted = ($this->allow_guest && !$loggedin) || ($this->allow_member && $loggedin);
+        return $targeted;
+    }
+    
+    public function isInPeriod($used_time) {
+        $in_from = $used_time >= strtotime($this->effective_from);
+        $in_to = $used_time < strtotime($this->effective_to);
+        return $in_from && $in_to;
+    }
+    
+    public function isUsesLimitReached() {
+        if (!$this->limit_uses) {
+            return false;
+        }
+        
+        return $this->uses >= $this->max_uses;
     }
     
     /**

@@ -1,0 +1,42 @@
+{
+    "tables": {
+        "plg_AnCoupon_coupon": {
+            "partial": true,
+            "alter_fields": {
+                "add": {
+                    "allow_guest": {
+                        "type": "integer",
+                        "notnull": true,
+                        "length": 1,
+                        "default": "1"
+                    },
+                    "allow_member": {
+                        "type": "integer",
+                        "notnull": true,
+                        "length": 1,
+                        "default": "1"
+                    }
+                }
+            }
+        },
+        "plg_AnCoupon_discount_rule": {
+            "partial": true,
+            "alter_fields": {
+                "add": {
+                    "allow_guest": {
+                        "type": "integer",
+                        "notnull": true,
+                        "length": 1,
+                        "default": "1"
+                    },
+                    "allow_member": {
+                        "type": "integer",
+                        "notnull": true,
+                        "length": 1,
+                        "default": "1"
+                    }
+                }
+            }
+        }
+    }
+}

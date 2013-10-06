@@ -52,7 +52,19 @@
                 </td>
             </tr>
             <tr>
-                <th rowspan="2">割引割引適用期間 <span class="attention"> *</span></th>
+                <th><!--{$form.memo.title|h}--></th>
+                <td>
+                    <!--{if $form.memo.error}--><span class="attention"><!--{$form.memo.error}--></span><!--{/if}-->
+                    <textarea name="memo" maxlength="<!--{$form.memo.maxlength|h}-->" size="80" rows="6" class="area80" <!--{if $form.memo.error}--><!--{sfSetErrorStyle}--><!--{/if}-->><!--{$form.memo.value|h}--></textarea>
+                </td>
+            </tr>
+        </table>
+
+        <h2>適用条件</h2>
+        
+        <table class="form">
+            <tr>
+                <th rowspan="2">適用期間 <span class="attention"> *</span></th>
                 <td>
                     <!--{if $form.effective_from.error}--><span class="attention"><!--{$form.effective_from.error}--></span><!--{/if}-->
                     <select name="effective_from_year" <!--{if $form.effective_from_year.error || $form.effective_from.error}--><!--{sfSetErrorStyle}--><!--{/if}--> >
@@ -81,10 +93,12 @@
                 </td>
             </tr>
             <tr>
-                <th><!--{$form.memo.title|h}--></th>
+                <th>対象ユーザー</th>
                 <td>
-                    <!--{if $form.memo.error}--><span class="attention"><!--{$form.memo.error}--></span><!--{/if}-->
-                    <textarea name="memo" maxlength="<!--{$form.memo.maxlength|h}-->" size="80" rows="6" class="area80" <!--{if $form.memo.error}--><!--{sfSetErrorStyle}--><!--{/if}-->><!--{$form.memo.value|h}--></textarea>
+                    <!--{if $form.allow_guest.error}--><span class="attention"><!--{$form.allow_guest.error}--></span><!--{/if}-->
+                    <label><input type="checkbox" name="allow_guest" value="1" <!--{if $form.allow_guest.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_guest.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_guest.title|h}--></label><br /> 
+                    <!--{if $form.allow_member.error}--><span class="attention"><!--{$form.allow_member.error}--></span><!--{/if}-->
+                    <label><input type="checkbox" name="allow_member" value="1" <!--{if $form.allow_member.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_member.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_member.title|h}--></label><br /> 
                 </td>
             </tr>
         </table>

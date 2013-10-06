@@ -29,7 +29,7 @@ class An_Eccube_Transaction {
     }
     
     protected function begin() {
-        $mdb2 = An_Eccube_Utils::getMDB2($this->query);
+        $mdb2 = An_Eccube_DbUtils::getMDB2($this->query);
         $result = $mdb2->beginNestedTransaction();
         if (PEAR::isError($result)) {
             throw new RuntimeException($result->toString());
@@ -43,7 +43,7 @@ class An_Eccube_Transaction {
             throw new RuntimeException('Failed to rollback. transaction was already closed.');
         }
         
-        $mdb2 = An_Eccube_Utils::getMDB2($this->query);
+        $mdb2 = An_Eccube_DbUtils::getMDB2($this->query);
         $result = $mdb2->completeNestedTransaction();
         if (PEAR::isError($result)) {
             throw new RuntimeException($result->toString());
@@ -57,7 +57,7 @@ class An_Eccube_Transaction {
             throw new RuntimeException('Failed to rollback. transaction was already closed.');
         }
  
-        $mdb2 = An_Eccube_Utils::getMDB2($this->query);
+        $mdb2 = An_Eccube_DbUtils::getMDB2($this->query);
         $result = $mdb2->failNestedTransaction();
         if (PEAR::isError($result)) {
             throw new RuntimeException($result->toString());

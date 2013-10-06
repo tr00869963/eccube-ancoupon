@@ -83,8 +83,21 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
             $coupon = An_Eccube_Coupon::load($coupon_id);
         } else {
             $coupon = new An_Eccube_Coupon();
+            
             $discount_rule_ids = (array)@$_GET['discount_rule_id'];
-            $coupon->discount_rules = $discount_rule_ids;
+            if ($discount_rule_ids) {
+                $discount_rule_id = array_pop($discount_rule_ids);
+                try {
+                    $discount_rule = An_Eccube_DiscountRule::load($discount_rule_id);
+                    $coupon->effective_from = $discount_rule->effective_from;
+                    $coupon->effective_to = $discount_rule->effective_to;
+                    $coupon->allow_guest = $discount_rule->allow_guest;
+                    $coupon->allow_member = $discount_rule->allow_member;
+                    $coupon->discount_rules = array($discount_rule->discount_rule_id);
+                } catch (Exception $e) {
+                    trigger_error($e->getMessage(), E_USER_WARNING);
+                }
+            }
         }
         $context->session['coupon'] = $coupon;
     }
@@ -110,7 +123,11 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
             }
             
             $params = $this->buildFormParam($this->context);
-            $params->setParam($_POST);
+            $values = $_POST + array(
+                'allow_guest' => 0,
+                'allow_member' => 0,
+            );
+            $params->setParam($values);
             
             $errors = $this->validateFormParam($params, $this->context);
             if ($errors) {
@@ -208,6 +225,9 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         $params->addParam('使用回数制限', 'limit_uses', INT_LEN, 'n', array('EXIST_CHECK', 'SELECT_CHECK'), (int)$coupon->limit_uses);
         $params->addParam('使用回数上限', 'max_uses', INT_LEN, 'n', array('EXIST_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $coupon->max_uses);
         
+        $params->addParam('ゲスト', 'allow_guest', 1, 'n', array('MAX_LENGTH_CHECK'), (int)$coupon->allow_guest);
+        $params->addParam('会員', 'allow_member', 1, 'n', array('MAX_LENGTH_CHECK'), (int)$coupon->allow_member);
+
         list($year, $month, $day) = explode('-', date('Y-n-j', strtotime($coupon->effective_from)));
         $params->addParam('有効期間開始年', 'effective_from_year', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), $year);
         $params->addParam('有効期間開始月', 'effective_from_month', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), $month);
@@ -329,6 +349,9 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         
         $discount_rules = (array)$params->getValue('discount_rule');
         $coupon->discount_rules = $discount_rules;
+
+        $coupon->allow_guest = (bool)$params->getValue('allow_guest');
+        $coupon->allow_member = (bool)$params->getValue('allow_member');
         
         $year = $params->getValue('effective_from_year');
         $month = $params->getValue('effective_from_month');

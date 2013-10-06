@@ -31,5 +31,5 @@ $sequences = array(
     'plg_AnCoupon_discount_rule_id' => 1,
 );
 
-$schema = AN_Eccube_Utils::buildDatabaseSchema($query, $tables, $sequences);
+$schema = AN_Eccube_DbUtils::buildDatabaseSchema($query, $tables, $sequences);
 echo AN_Eccube_Utils::encodeJson($schema);

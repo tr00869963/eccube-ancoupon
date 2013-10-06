@@ -176,6 +176,12 @@ class plugin_update {
         $dest_dir = SMARTY_TEMPLATES_REALDIR;
         SC_Utils::copyDirectory($src_dir, $dest_dir);
         
+        // データベースを更新
+        $query = SC_Query_Ex::getSingletonInstance();
+        $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/migration-1.1.0.json";
+        $schema = An_Eccube_Utils::decodeJson(file_get_contents($path), true);
+        $schema = An_Eccube_DbUtils::alterTable($query, $schema);
+        
         return $info;
     }
 }

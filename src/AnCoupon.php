@@ -107,7 +107,7 @@ class AnCoupon extends SC_Plugin_Base {
         $json = file_get_contents(PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/schema.json");
         $schema = An_Eccube_Utils::decodeJson($json, true);
         $query = SC_Query_Ex::getSingletonInstance();
-        An_Eccube_Utils::createDatabase($query, $schema);
+        An_Eccube_DbUtils::createDatabase($query, $schema);
         
         // データベースに初期データを投入。
         $json = file_get_contents(PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/initial_data.json");
@@ -162,7 +162,7 @@ class AnCoupon extends SC_Plugin_Base {
             $json = file_get_contents(PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/schema.json");
             $schema = An_Eccube_Utils::decodeJson($json, true);
             $query = SC_Query_Ex::getSingletonInstance();
-            An_Eccube_Utils::deleteDatabase($query, $schema);
+            An_Eccube_DbUtils::deleteDatabase($query, $schema);
             
             // データベースから初期データを削除。
             self::deleteInitialData($query);
@@ -847,9 +847,10 @@ __SQL__;
             case 'confirm':
                 $coupon_codes = $this->getUsingCouponCodes();
                 $used_time = $this->getCouponUsedTime();
+                $customer = new SC_Customer_Ex();
                 foreach ($coupon_codes as $coupon_code) {
                     $coupon = An_Eccube_Coupon::findByCode($coupon_code);
-                    if (!$coupon || !$coupon->isAvailable($used_time)) {
+                    if (!$coupon || !$coupon->isAvailable($used_time, $customer)) {
                         $this->clearUsingCouponCode();
                         $destination = CART_URLPATH;
                         $path = ROOT_URLPATH . 'cart/plg_AnCoupon_coupon_use.php?coupon_expired_error=1&destination=' . rawurldecode($destination);

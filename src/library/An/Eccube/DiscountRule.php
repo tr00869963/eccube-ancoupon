@@ -33,6 +33,8 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
     public $effective_to;
     public $create_date;
     public $update_date;
+    public $allow_member = true;
+    public $allow_guest = true;
 
     public $products;
     public $product_classes;
@@ -72,10 +74,20 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
         return $properties;
     }
     
+    protected function toStorableValues() {
+        $values = parent::toStorableValues();
+
+        $values['enabled'] = (int)$values['enabled'];
+        $values['allow_guest'] = (int)$values['allow_guest'];
+        $values['allow_member'] = (int)$values['allow_member'];
+        
+        return $values;
+    }
+    
     /**
      * 
      * @param string $coupon_id
-     * @return An_Eccube_Coupon
+     * @return An_Eccube_DiscountRule
      */
     public static function load($discount_rule_id, array $options = array()) {
         $where = 'discount_rule_id = ?';
