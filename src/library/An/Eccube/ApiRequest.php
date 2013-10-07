@@ -42,11 +42,15 @@ class An_Eccube_ApiRequest {
     }
     
     public static function createFromCurrentRequest() {
-        $resource = is_string(@$_REQUEST['resource']) ? $_REQUEST['resource'] : '';
+        $resource = is_string(@$_GET['resource']) ? $_GET['resource'] : '';
         
-        $method = is_string(@$_REQUEST['method']) ? $_REQUEST['method'] : $_SERVER['REQUEST_METHOD'];
+        if (is_string(@$_GET['method'])) {
+            $method = $_GET['method'];
+        } else {
+            $method = $_SERVER['REQUEST_METHOD'];
+        }
         $method = strtolower($method);
-
+        
         if (function_exists('getallheaders')) {
             $headers = getallheaders();
         } else {
@@ -57,12 +61,19 @@ class An_Eccube_ApiRequest {
         $body = stream_get_contents($stdin);
         switch (@$headers['Content-Type']) {
             case 'application/json':
-                $body = An_Eccube_Utils::decodeJson($body, true);
+                $body = json_decode($body, true);
                 break;
         
             case 'application/x-www-form-urlencoded';
+            $body = $_POST;
+            break;
+        
             default:
-                $body = $_POST;
+                $body = json_decode($body, true);
+                $user = $body;
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    $body = $_POST;
+                }
                 break;
         }
 
@@ -81,5 +92,19 @@ class An_Eccube_ApiRequest {
         $request->api_key = $api_key;
 
         return $request;
+    }
+    
+    public static function getRawHeaders(array $server) {
+        $headers = array();
+        
+        foreach ($server as $name => $value) {
+            $tokens = (array)explode('_', strtolower($name));
+            if (array_shift($tokens) == 'http') {
+                $name = implode('-', array_map('ucfirst', $tokens));
+                $headers[$name] = $value;;
+            }
+        }
+        
+        return $headers;
     }
 }

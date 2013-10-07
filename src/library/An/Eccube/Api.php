@@ -73,7 +73,8 @@ abstract class An_Eccube_Api {
     }
     
     public static function getApiClass($resource) {
-        $path = preg_replace('#[^A-Za-z0-9/]#u', '', $resource);
+        $path = preg_replace('#[^A-Za-z0-9/_]#u', '', $resource);
+        $path = implode('', array_map('ucfirst', (array)explode('_', $path)));
         $path = implode('_', array_map('ucfirst', (array)explode('/', $path)));
         $class = "An_Eccube_Api_{$path}Api";
         return $class;
