@@ -362,7 +362,7 @@ __SQL__;
                 if (An_Eccube_Utils::isStringEndWith($filename, 'shopping/confirm.tpl')) {
                     $template_path = "shopping/plg_AnCoupon_confirm_discount_row.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
-                    $transformer->select('tr', 3)->insertBefore($template);
+                    $transformer->select('tr', 2)->insertAfter($template);
                     break;
                 }
                 
