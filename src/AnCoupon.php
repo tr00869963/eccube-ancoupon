@@ -663,6 +663,11 @@ __SQL__;
                 'rate'      => 0,
                 'classes'   => $classes[$product_id],
             );
+            
+            if (!$page->tpl_stock_find[$product_id]) {
+                continue;
+            }
+            
             foreach ($discount_rules as $discount_rule) {
                 if ($discount_rule->canDiscountProduct($product_id, $used_time)) {
                     $discount['available'] = true;
@@ -703,6 +708,7 @@ __SQL__;
             }
         }
         
+        $discount['available'] = (bool)$page->tpl_stock_find;
         $discount['rate'] = $discount['rate'] * 100;
 
         
