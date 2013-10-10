@@ -708,7 +708,7 @@ __SQL__;
             }
         }
         
-        $discount['available'] = (bool)$page->tpl_stock_find;
+        $discount['available'] = $discount['available'] && (bool)$page->tpl_stock_find;
         $discount['rate'] = $discount['rate'] * 100;
 
         
