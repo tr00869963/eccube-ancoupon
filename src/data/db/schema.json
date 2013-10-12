@@ -36,18 +36,6 @@
                     "length": 1,
                     "default": "0"
                 },
-                "allow_guest": {
-                    "type": "integer",
-                    "notnull": true,
-                    "length": 1,
-                    "default": "1"
-                },
-                "allow_member": {
-                    "type": "integer",
-                    "notnull": true,
-                    "length": 1,
-                    "default": "1"
-                },
                 "memo": {
                     "type": "clob",
                     "notnull": false

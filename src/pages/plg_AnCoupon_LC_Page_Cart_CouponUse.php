@@ -190,7 +190,7 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
             } elseif ($coupon->isUsesLimitReached()) {
                 $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。使用回数を超えています。<br />";
             } elseif (!$coupon->isUserTargeted($customer)) {
-                $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。使用できるユーザーをご確認下さい。<br />";
+                $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。現在のログイン状態ではご利用いただけません。<br />";
             } elseif (!$coupon->isInPeriod(time())) {
                 $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。有効期間を過ぎています。<br />";
             } elseif (!$coupon->isAvailable($used_time, $customer)) {

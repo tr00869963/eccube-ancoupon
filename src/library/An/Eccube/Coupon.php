@@ -28,8 +28,6 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     public $max_uses = 1;
     public $effective_from;
     public $effective_to;
-    public $allow_guest = true;
-    public $allow_member = true;
     public $memo;
     public $create_date;
     public $update_date;
@@ -71,8 +69,6 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         $values = parent::toStorableValues();
 
         $values['enabled'] = (int)$values['enabled'];
-        $values['allow_guest'] = (int)$values['allow_guest'];
-        $values['allow_member'] = (int)$values['allow_member'];
         
         return $values;
     }
@@ -268,7 +264,13 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     
     public function isUserTargeted(SC_Customer_Ex $customer) {
         $loggedin = $customer->isLoginSuccess(true);
-        $targeted = ($this->allow_guest && !$loggedin) || ($this->allow_member && $loggedin);
+        
+        $targeted = false;
+        $discount_rules = $this->getDiscountRules();
+        foreach ($discount_rules as $discount_rule) {
+            $targeted = $targeted || (($discount_rule->allow_guest && !$loggedin) || ($discount_rule->allow_member && $loggedin));
+        }
+        
         return $targeted;
     }
     
@@ -290,7 +292,19 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @return array <An_Eccube_DiscountRule>
      */
     public function getDiscountRules() {
-        return self::getDiscountRulesByCouponCode($this->code);
+        $where = <<<__SQL__
+discount_rule_id IN (
+    SELECT
+        discount_rule_id
+    FROM
+        plg_AnCoupon_coupon_discount_rule AS coupon_discount_rule
+    WHERE
+        coupon_discount_rule.coupon_id = ?
+)
+__SQL__;
+        $where_params = array($this->coupon_id);
+        $discount_rules = An_Eccube_DiscountRule::findByWhere('*', $where, $where_params);
+        return $discount_rules;
     }
     
     /**

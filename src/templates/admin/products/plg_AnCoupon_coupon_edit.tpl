@@ -107,15 +107,6 @@
                     <span class="attention">※割引条件の適用期間とは別にチェックされます。</span>
                 </td>
             </tr>
-            <tr>
-                <th>対象ユーザー</th>
-                <td>
-                    <!--{if $form.allow_guest.error}--><span class="attention"><!--{$form.allow_guest.error}--></span><!--{/if}-->
-                    <label><input type="checkbox" name="allow_guest" value="1" <!--{if $form.allow_guest.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_guest.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_guest.title|h}--></label><br /> 
-                    <!--{if $form.allow_member.error}--><span class="attention"><!--{$form.allow_member.error}--></span><!--{/if}-->
-                    <label><input type="checkbox" name="allow_member" value="1" <!--{if $form.allow_member.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_member.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_member.title|h}--></label><br /> 
-                </td>
-            </tr>
         </table>
 
         <div class="btn-area">
