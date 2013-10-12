@@ -29,7 +29,8 @@
     <div class="btn-area">
         <ul>
             <li><a class="btn-action" href="plg_AnCoupon_discount_rule_list.php"><span class="btn-next">一覧に移動する</span></a></li>
-            <li><a class="btn-action" href="plg_AnCoupon_discount_rule_edit.php"><span class="btn-next">新しい割引条件を追加する</span></a></li>
+            <li><a class="btn-action" href="plg_AnCoupon_coupon_edit.php?discount_rule_id[]=<!--{$discount_rule->discount_rule_id|h}-->"><span class="btn-next">クーポンを発行する</span></a></li>
+            <li><a class="btn-action" href="plg_AnCoupon_discount_rule_edit.php"><span class="btn-next">別の割引条件を追加する</span></a></li>
         </ul>
     </div>
     <div class="btn-area-bottom"></div>
