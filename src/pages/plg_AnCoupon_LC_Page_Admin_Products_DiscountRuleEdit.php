@@ -429,31 +429,31 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
             $errors[$name] = "※ {$title}を 100 以上にする事は出来ません。<br />";
         }
         
-        // 割引割引適用期間開始
+        // 割引適用期間開始
         $year = $params->getValue('effective_from_year');
         $month = $params->getValue('effective_from_month');
         $day = $params->getValue('effective_from_day');
         if (!checkdate((int)$month, (int)$day, (int)$year)) {
-            $errors['effective_from'] = "※ 割引割引適用期間の開始日が不正です。<br />";
+            $errors['effective_from'] = "※ 割引適用期間の開始日が不正です。<br />";
         } else {
             $effective_from = mktime(0, 0, 0, $month, $day, $year);
             if ($effective_from <= 0) {
-                $errors['effective_from'] = "※ 割引割引適用期間の開始日が指定できる範囲を超えています。<br />";
+                $errors['effective_from'] = "※ 割引適用期間の開始日が指定できる範囲を超えています。<br />";
             }
         }
         
-        // 割引割引適用期間終了
+        // 割引適用期間終了
         $year = $params->getValue('effective_to_year');
         $month = $params->getValue('effective_to_month');
         $day = $params->getValue('effective_to_day');
         if (!checkdate((int)$month, (int)$day, (int)$year)) {
-            $errors['effective_to'] = "※ 割引割引適用期間の終了日が不正です。<br />";
+            $errors['effective_to'] = "※ 割引適用期間の終了日が不正です。<br />";
         } elseif (empty($errors['effective_from'])) {
             $effective_to = mktime(0, 0, 0, $month, $day + 1, $year) - 1;
             if ($effective_to <= 0) {
-                $errors['effective_to'] = "※ 割引割引適用期間の終了日が指定できる範囲を超えています。<br />";
+                $errors['effective_to'] = "※ 割引適用期間の終了日が指定できる範囲を超えています。<br />";
             } elseif ($effective_to < $effective_from) {
-                $errors['effective_to'] = "※ 割引割引適用期間の開始日以前にはできません。<br />";
+                $errors['effective_to'] = "※ 割引適用期間の開始日以前にはできません。<br />";
             }
         }
         
