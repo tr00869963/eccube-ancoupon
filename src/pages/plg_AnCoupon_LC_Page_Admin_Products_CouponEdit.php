@@ -254,9 +254,16 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         if ($value == '') {
         } elseif (preg_match($pattern, $value)) {
             $errors[$name] = "※ {$title}に使用できない文字が含まれています。<br />";
-        } elseif (An_Eccube_Coupon::exists('code = ? AND (? IS NULL OR coupon_id <> ?)', array($value, $coupon->coupon_id, $coupon->coupon_id))) {
-            $code = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-            $errors[$name] = "※ {$title}の <code>{$code}</code> は既に使用されています。<br />";
+        } else {
+            if ($coupon->isStored()) {
+                $exists = An_Eccube_Coupon::exists('code = ? AND coupon_id <> ?', array($value, $coupon->coupon_id));
+            } else {
+                $exists = An_Eccube_Coupon::exists('code = ?', array($value));
+            }
+            if ($exists) {
+                $code = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                $errors[$name] = "※ {$title}の <code>{$code}</code> は既に使用されています。<br />";
+            }
         }
         
         // 状態
