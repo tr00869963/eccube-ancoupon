@@ -163,7 +163,7 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
     protected function buildFormParam(An_Eccube_PageContext $context) {
         $params = new SC_FormParam_Ex();
         
-        $params->addParam('クーコンコード', 'coupon_code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $context->session['coupon_code']);
+        $params->addParam('クーポンコード', 'coupon_code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $context->session['coupon_code']);
         
         return $params;
     }

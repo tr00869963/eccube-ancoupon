@@ -214,7 +214,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         
         $params = new SC_FormParam_Ex();
         
-        $params->addParam('クーコンコード', 'code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $coupon->code);
+        $params->addParam('クーポンコード', 'code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $coupon->code);
         $params->addParam('状態', 'enabled', 1, 'n', array('MAX_LENGTH_CHECK', 'SELECT_CHECK'), (int)$coupon->enabled);
         $params->addParam('管理者メモ', 'memo', 1000, 'n', array('MAX_LENGTH_CHECK'), $coupon->memo);
 
