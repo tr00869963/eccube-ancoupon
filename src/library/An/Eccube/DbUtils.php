@@ -10,7 +10,6 @@ class An_Eccube_DbUtils {
     }
     
     public static function buildDatabaseSchema(SC_Query_Ex $query, array $tables = array(), $sequences = array()) {
-        $query = SC_Query_Ex::getSingletonInstance();
         $mdb2 = $query->conn;
         $mdb2->loadModule('Manager');
         $mdb2->loadModule('Reverse');
@@ -49,7 +48,6 @@ class An_Eccube_DbUtils {
     }
     
     public static function buildTableSchema(SC_Query_Ex $query, $table_name, array $field_names = array(), array $const_names = array(), array $indexes_names = array()) {
-        $query = SC_Query_Ex::getSingletonInstance();
         $mdb2 = $query->conn;
         $mdb2->loadModule('Manager');
         $mdb2->loadModule('Reverse');
