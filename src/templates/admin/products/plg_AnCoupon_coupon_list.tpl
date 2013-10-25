@@ -1,5 +1,6 @@
 <div class="btn">
     <a class="btn-action" href="plg_AnCoupon_coupon_edit.php"><span class="btn-next">クーポンを新規発行</span></a>
+    <a class="btn-action" href="plg_AnCoupon_discount_rule_list.php"><span class="btn-next">割引条件の一覧</span></a>
     <a class="btn-action" href="plg_AnCoupon_discount_rule_edit.php"><span class="btn-next">割引条件を追加</span></a>
 </div>
 
