@@ -1,6 +1,6 @@
 {
     "tables": {
-        "plg_AnCoupon_coupon": {
+        "plg_ancoupon_coupon": {
             "fields": {
                 "coupon_id": {
                     "type": "integer",
@@ -59,7 +59,7 @@
                 }
             },
             "constraints": {
-                "plg_AnCoupon_coupon_primary": {
+                "plg_ancoupon_coupon_primary": {
                     "primary": true,
                     "unique": false,
                     "foreign": false,
@@ -80,7 +80,7 @@
                     "deferrable": false,
                     "initiallydeferred": false
                 },
-                "plg_AnCoupon_coupon_code_unique": {
+                "plg_ancoupon_coupon_code_unique": {
                     "primary": false,
                     "unique": true,
                     "foreign": false,
@@ -103,7 +103,7 @@
                 }
             }
         },
-        "plg_AnCoupon_coupon_discount_rule": {
+        "plg_ancoupon_coupon_discount_rule": {
             "fields": {
                 "coupon_id": {
                     "type": "integer",
@@ -117,7 +117,7 @@
                 }
             },
             "constraints": {
-                "plg_AnCoupon_coupon_discount_rule_primary": {
+                "plg_ancoupon_coupon_discount_rule_primary": {
                     "primary": true,
                     "unique": false,
                     "foreign": false,
@@ -144,7 +144,7 @@
                 }
             }
         },
-        "plg_AnCoupon_discount_rule": {
+        "plg_ancoupon_discount_rule": {
             "fields": {
                 "discount_rule_id": {
                     "type": "integer",
@@ -230,7 +230,7 @@
                 }
             },
             "constraints": {
-                "plg_AnCoupon_discount_rule_primary": {
+                "plg_ancoupon_discount_rule_primary": {
                     "primary": true,
                     "unique": false,
                     "foreign": false,
@@ -251,7 +251,7 @@
                     "deferrable": false,
                     "initiallydeferred": false
                 },
-                "plg_AnCoupon_discount_rule_code_unique": {
+                "plg_ancoupon_discount_rule_code_unique": {
                     "primary": false,
                     "unique": true,
                     "foreign": false,
@@ -274,7 +274,7 @@
                 }
             }
         },
-        "plg_AnCoupon_discount_rule_category": {
+        "plg_ancoupon_discount_rule_category": {
             "fields": {
                 "discount_rule_id": {
                     "type": "integer",
@@ -288,7 +288,7 @@
                 }
             },
             "constraints": {
-                "plg_AnCoupon_discount_rule_category_primary": {
+                "plg_ancoupon_discount_rule_category_primary": {
                     "primary": true,
                     "unique": false,
                     "foreign": false,
@@ -315,7 +315,7 @@
                 }
             }
         },
-        "plg_AnCoupon_discount_rule_product": {
+        "plg_ancoupon_discount_rule_product": {
             "fields": {
                 "discount_rule_id": {
                     "type": "integer",
@@ -329,7 +329,7 @@
                 }
             },
             "constraints": {
-                "plg_AnCoupon_discount_rule_product_primary": {
+                "plg_ancoupon_discount_rule_product_primary": {
                     "primary": true,
                     "unique": false,
                     "foreign": false,
@@ -356,7 +356,7 @@
                 }
             }
         },
-        "plg_AnCoupon_discount_rule_product_class": {
+        "plg_ancoupon_discount_rule_product_class": {
             "fields": {
                 "discount_rule_id": {
                     "type": "integer",
@@ -370,7 +370,7 @@
                 }
             },
             "constraints": {
-                "plg_AnCoupon_discount_rule_product_class_primary": {
+                "plg_ancoupon_discount_rule_product_class_primary": {
                     "primary": true,
                     "unique": false,
                     "foreign": false,
@@ -397,7 +397,7 @@
                 }
             }
         },
-        "plg_AnCoupon_order_coupon": {
+        "plg_ancoupon_order_coupon": {
             "fields": {
                 "order_id": {
                     "type": "integer",
@@ -422,7 +422,7 @@
                 }
             },
             "indexes": {
-                "plg_AnCoupon_order_coupon_order": {
+                "plg_ancoupon_order_coupon_order": {
                     "fields": {
                         "order_id": {
                             "position": 1,
@@ -434,7 +434,7 @@
                         }
                     }
                 },
-                "plg_AnCoupon_order_coupon_coupon": {
+                "plg_ancoupon_order_coupon_coupon": {
                     "fields": {
                         "coupon_id": {
                             "position": 1,
@@ -450,8 +450,8 @@
         }
     },
     "sequences": {
-        "plg_AnCoupon_coupon_coupon_id": 1,
-        "plg_AnCoupon_discount_code": 1,
-        "plg_AnCoupon_discount_rule_id": 1
+        "plg_ancoupon_coupon_coupon_id": 1,
+        "plg_ancoupon_discount_code": 1,
+        "plg_ancoupon_discount_rule_id": 1
     }
 }

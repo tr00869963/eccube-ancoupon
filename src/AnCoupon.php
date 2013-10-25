@@ -834,8 +834,8 @@ __SQL__;
         $query = SC_Query_Ex::getSingletonInstance();
         $columns = "coupon.coupon_id, coupon.code AS coupon_code, order_coupon.discount";
         $from = <<<__SQL__
-plg_AnCoupon_order_coupon AS order_coupon
-LEFT JOIN plg_AnCoupon_coupon AS coupon ON coupon.coupon_id = order_coupon.coupon_id
+plg_ancoupon_order_coupon AS order_coupon
+LEFT JOIN plg_ancoupon_coupon AS coupon ON coupon.coupon_id = order_coupon.coupon_id
 __SQL__;
         $where = <<<__SQL__
 order_coupon.order_id = ?

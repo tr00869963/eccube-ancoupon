@@ -3,7 +3,7 @@
 class An_Eccube_DbUtils {
     /**
      * @param SC_Query_Ex $query
-     * @return MDB2
+     * @return MDB2_Driver_Common
      */
     public static function getMDB2(SC_Query_Ex $query) {
         return $query->conn;
@@ -250,10 +250,15 @@ class An_Eccube_DbUtils {
             }
         }
 
-        if (isset($table_def['alter_fields'])) {
-            $result = $mdb2->alterTable($table_name, $table_def['alter_fields']);
+        if (isset($table_def['alter']) || isset($table_def['alter_fields'])) {
+            $alter = isset($table_def['alter']) ? $table_def['alter'] : $table_def['alter_fields'];
+            $result = $mdb2->alterTable($table_name, $alter, false);
             if (PEAR::isError($result)) {
                 throw new RuntimeException($result->toString());
+            }
+            
+            if (isset($alter['name'])) {
+                $table_name = $alter['name'];
             }
         }
 
@@ -338,6 +343,13 @@ class An_Eccube_DbUtils {
         $mdb2->loadModule('Manager');
 
         $org_options = self::overrideMDB2options($mdb2);
+        
+        if (isset($schema['pre_process'])) {
+            $stmts = array_merge((array)@$schema['pre_process']['common'], (array)@$schema['pre_process'][DB_TYPE]);
+            foreach ($stmts as $stmt) {
+                $query->query($stmt);
+            }
+        }
 
         if (isset($schema['drop_sequences'])) {
             foreach ($schema['drop_sequences'] as $seq_name) {
@@ -369,6 +381,13 @@ class An_Eccube_DbUtils {
                 if (PEAR::isError($result)) {
                     throw new RuntimeException($result->toString());
                 }
+            }
+        }
+
+        if (isset($schema['post_process'])) {
+            $stmts = array_merge((array)@$schema['post_process']['common'], (array)@$schema['post_process'][DB_TYPE]);
+            foreach ($stmts as $stmt) {
+                $query->query($stmt);
             }
         }
         

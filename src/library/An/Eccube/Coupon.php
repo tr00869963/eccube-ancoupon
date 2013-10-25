@@ -124,7 +124,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
             $query->setOption($additional);
         }
 
-        $rows = $query->select($columns, 'plg_AnCoupon_coupon', $where, $params);
+        $rows = $query->select($columns, 'plg_ancoupon_coupon', $where, $params);
         foreach ($rows as $row) {
             $coupon = new self($row);
         
@@ -139,7 +139,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
             $coupon_ids_holder = implode(',', array_pad(array(), count($coupon_ids), '?'));
             $discount_rule_where = "coupon_id IN ({$coupon_ids_holder})";
             $discount_rule_where_params = $coupon_ids;
-            $rows = $query->select('*', 'plg_AnCoupon_coupon_discount_rule', $discount_rule_where, $discount_rule_where_params);
+            $rows = $query->select('*', 'plg_ancoupon_coupon_discount_rule', $discount_rule_where, $discount_rule_where_params);
             foreach ($rows as $row) {
                 $coupons[$row['coupon_id']]->discount_rules[] = $row['discount_rule_id'];
             }
@@ -166,7 +166,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      */
     public static function exists($where = '', array $params = array()) {
         $query = self::getQuery();
-        return $query->exists('plg_AnCoupon_coupon', $where, $params);
+        return $query->exists('plg_ancoupon_coupon', $where, $params);
     }
     
     /**
@@ -176,7 +176,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      */
     public static function count($where = '', array $params = array()) {
         $query = self::getQuery();
-        return $query->count('plg_AnCoupon_coupon', $where, $params);
+        return $query->count('plg_ancoupon_coupon', $where, $params);
     }
     
     /**
@@ -188,7 +188,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         if ($this->isStored()) {
             $this->update_date = date('Y-m-d H:i:s');
         } else {
-            $this->coupon_id = $query->nextVal('plg_AnCoupon_coupon_coupon_id');
+            $this->coupon_id = $query->nextVal('plg_ancoupon_coupon_coupon_id');
             $this->create_date = date('Y-m-d H:i:s');
             $this->update_date = $this->create_date;
         }
@@ -196,19 +196,19 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         $values = $this->toStorableValues();
         
         if ($this->isStored()) {
-            $query->update('plg_AnCoupon_coupon', $values, 'coupon_id = ?', array($this->coupon_id));
+            $query->update('plg_ancoupon_coupon', $values, 'coupon_id = ?', array($this->coupon_id));
         } else {
-            $query->insert('plg_AnCoupon_coupon', $values);
+            $query->insert('plg_ancoupon_coupon', $values);
             $this->ensureStored();
         }
 
-        $query->delete('plg_AnCoupon_coupon_discount_rule', 'coupon_id = ?', array($this->coupon_id));
+        $query->delete('plg_ancoupon_coupon_discount_rule', 'coupon_id = ?', array($this->coupon_id));
         foreach ($this->discount_rules as $discount_rule_id) {
             $values = array(
                 'coupon_id' => $this->coupon_id,
                 'discount_rule_id' => $discount_rule_id,
             );
-            $query->insert('plg_AnCoupon_coupon_discount_rule', $values);
+            $query->insert('plg_ancoupon_coupon_discount_rule', $values);
         }
     }
     
@@ -230,11 +230,11 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     public static function deleteByWhere($where, array $params = array()) {
         $query = self::getQuery();
 
-        $coupon_ids = $query->getSql('coupon_id', 'plg_AnCoupon_coupon', $where);
+        $coupon_ids = $query->getSql('coupon_id', 'plg_ancoupon_coupon', $where);
         $discount_rule_where = "coupon_id IN ($coupon_ids)";
-        $query->delete('plg_AnCoupon_coupon_discount_rule', $discount_rule_where, $params);
+        $query->delete('plg_ancoupon_coupon_discount_rule', $discount_rule_where, $params);
         
-        return $query->delete('plg_AnCoupon_coupon', $where, $params);
+        return $query->delete('plg_ancoupon_coupon', $where, $params);
     }
     
     /**
@@ -297,7 +297,7 @@ discount_rule_id IN (
     SELECT
         discount_rule_id
     FROM
-        plg_AnCoupon_coupon_discount_rule AS coupon_discount_rule
+        plg_ancoupon_coupon_discount_rule AS coupon_discount_rule
     WHERE
         coupon_discount_rule.coupon_id = ?
 )
@@ -322,8 +322,8 @@ discount_rule_id IN (
     SELECT
         discount_rule_id
     FROM
-        plg_AnCoupon_coupon_discount_rule as coupon_discount_rule
-        JOIN plg_AnCoupon_coupon as coupon ON coupon.coupon_id = coupon_discount_rule.coupon_id
+        plg_ancoupon_coupon_discount_rule as coupon_discount_rule
+        JOIN plg_ancoupon_coupon as coupon ON coupon.coupon_id = coupon_discount_rule.coupon_id
     WHERE
         coupon.code IN ($coupon_codes_placeholder)
 )
@@ -352,13 +352,13 @@ __SQL__;
         $query = self::getQuery();
         
         $this->uses++;
-        $query->query('UPDATE plg_AnCoupon_coupon SET uses = uses + 1 WHERE coupon_id = ?', array($this->coupon_id));
+        $query->query('UPDATE plg_ancoupon_coupon SET uses = uses + 1 WHERE coupon_id = ?', array($this->coupon_id));
         
         $values = array(
             'coupon_id' => $this->coupon_id,
             'order_id' => $order_id,
             'discount' => $discount,
         );
-        $query->insert('plg_AnCoupon_order_coupon', $values);
+        $query->insert('plg_ancoupon_order_coupon', $values);
     }
 }

@@ -184,4 +184,47 @@ class plugin_update {
         
         return $info;
     }
+
+    /**
+     * @param array $info
+     * @return array
+     */
+    protected static function upTo_1_2_0($info) {
+        $info['plugin_version'] = '1.2.0';
+        $plugin_code = $info['plugin_code'];
+    
+        // プラグイン関連のファイルを全て更新
+        $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
+        $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+        
+        // 管理用のページを更新。
+        $plugin_code = $info['plugin_code'];
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/admin/";
+        $dest_dir = HTML_REALDIR . ADMIN_DIR;
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+    
+        // 顧客用のページを更新。
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/customer/";
+        $dest_dir = HTML_REALDIR;
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+    
+        // 公開ファイルを更新。
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/assets/";
+        $dest_dir = PLUGIN_HTML_REALDIR . "{$plugin_code}/";
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+    
+        // テンプレートを更新。
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/templates/";
+        $dest_dir = SMARTY_TEMPLATES_REALDIR;
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+    
+        // データベースを更新
+        $query = SC_Query_Ex::getSingletonInstance();
+        $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/migration-1.2.0.json";
+        $schema = An_Eccube_Utils::decodeJson(file_get_contents($path), true);
+        An_Eccube_DbUtils::alterTable($query, $schema);
+    
+        return $info;
+    }
 }

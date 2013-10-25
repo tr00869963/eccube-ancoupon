@@ -136,8 +136,8 @@ AND category.category_id IN (
     SELECT
         discount_rule_category.category_id
     FROM
-        plg_AnCoupon_discount_rule AS discount_rule
-        JOIN plg_AnCoupon_discount_rule_category AS discount_rule_category ON discount_rule.discount_rule_id = discount_rule_category.discount_rule_id
+        plg_ancoupon_discount_rule AS discount_rule
+        JOIN plg_ancoupon_discount_rule_category AS discount_rule_category ON discount_rule.discount_rule_id = discount_rule_category.discount_rule_id
     WHERE
         discount_rule.discount_rule_id IN ($ph_discount_rule_ids)
         AND discount_rule.enabled = 1
@@ -178,8 +178,8 @@ AND (
         	SELECT
         		discount_rule_product.product_id
         	FROM
-         		plg_AnCoupon_discount_rule AS discount_rule
-        		JOIN plg_AnCoupon_discount_rule_product AS discount_rule_product ON discount_rule_product.discount_rule_id = discount_rule.discount_rule_id
+         		plg_ancoupon_discount_rule AS discount_rule
+        		JOIN plg_ancoupon_discount_rule_product AS discount_rule_product ON discount_rule_product.discount_rule_id = discount_rule.discount_rule_id
         	WHERE
                 discount_rule.discount_rule_id IN ($ph_discount_rule_ids)
                 AND discount_rule.enabled = 1
@@ -191,8 +191,8 @@ AND (
         	SELECT
         		product_class.product_id
         	FROM
-         		plg_AnCoupon_discount_rule AS discount_rule
-        		JOIN plg_AnCoupon_discount_rule_product_class AS discount_rule_product_class ON discount_rule_product_class.discount_rule_id = discount_rule.discount_rule_id
+         		plg_ancoupon_discount_rule AS discount_rule
+        		JOIN plg_ancoupon_discount_rule_product_class AS discount_rule_product_class ON discount_rule_product_class.discount_rule_id = discount_rule.discount_rule_id
         		JOIN dtb_products_class AS product_class ON product_class.product_class_id = discount_rule_product_class.product_class_id
         	WHERE
                 discount_rule.discount_rule_id IN ($ph_discount_rule_ids)

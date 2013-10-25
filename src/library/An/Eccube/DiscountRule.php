@@ -132,7 +132,7 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
         }
 
         $discount_rules = array();
-        $rows = $query->select($columns, 'plg_AnCoupon_discount_rule', $where, $params);
+        $rows = $query->select($columns, 'plg_ancoupon_discount_rule', $where, $params);
         foreach ($rows as $row) {
             $discount_rule = new self($row);
         
@@ -147,7 +147,7 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
             $discount_rule_ids_holder = implode(',', array_pad(array(), count($discount_rule_ids), '?'));
             $product_where = "discount_rule_id IN ({$discount_rule_ids_holder})";
             $product_where_params = $discount_rule_ids;
-            $rows = $query->select('*', 'plg_AnCoupon_discount_rule_product', $product_where, $product_where_params);
+            $rows = $query->select('*', 'plg_ancoupon_discount_rule_product', $product_where, $product_where_params);
             foreach ($rows as $row) {
                 $discount_rules[$row['discount_rule_id']]->products[] = $row['product_id'];
             }
@@ -155,7 +155,7 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
             $query = self::getQuery();
             $product_class_where = "discount_rule_id IN ({$discount_rule_ids_holder})";
             $product_class_where_params = $discount_rule_ids;
-            $rows = $query->select('*', 'plg_AnCoupon_discount_rule_product_class', $product_class_where, $product_class_where_params);
+            $rows = $query->select('*', 'plg_ancoupon_discount_rule_product_class', $product_class_where, $product_class_where_params);
             foreach ($rows as $row) {
                 $discount_rules[$row['discount_rule_id']]->product_classes[] = $row['product_class_id'];
             }
@@ -163,7 +163,7 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
             $query = self::getQuery();
             $category_where = "discount_rule_id IN ({$discount_rule_ids_holder})";
             $category_where_params = $discount_rule_ids;
-            $rows = $query->select('*', 'plg_AnCoupon_discount_rule_category', $category_where, $category_where_params);
+            $rows = $query->select('*', 'plg_ancoupon_discount_rule_category', $category_where, $category_where_params);
             foreach ($rows as $row) {
                 $discount_rules[$row['discount_rule_id']]->categories[] = $row['category_id'];
             }
@@ -180,7 +180,7 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
      */
     public static function count($where = '', array $params = array()) {
         $query = self::getQuery();
-        return $query->count('plg_AnCoupon_discount_rule', $where, $params);
+        return $query->count('plg_ancoupon_discount_rule', $where, $params);
     }
     
     /**
@@ -192,45 +192,45 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
         if ($this->isStored()) {
             $this->update_date = date('Y-m-d H:i:s');
         } else {
-            $this->discount_rule_id = $query->nextVal('plg_AnCoupon_discount_rule_id');
-            $this->code = $query->nextVal('plg_AnCoupon_discount_code');
+            $this->discount_rule_id = $query->nextVal('plg_ancoupon_discount_rule_id');
+            $this->code = $query->nextVal('plg_ancoupon_discount_code');
             $this->create_date = date('Y-m-d H:i:s');
             $this->update_date = $this->create_date;
         }
 
         $values = $this->toStorableValues();
         if ($this->isStored()) {
-            $query->update('plg_AnCoupon_discount_rule', $values, 'discount_rule_id = ?', array($this->discount_rule_id));
+            $query->update('plg_ancoupon_discount_rule', $values, 'discount_rule_id = ?', array($this->discount_rule_id));
         } else {
-            $query->insert('plg_AnCoupon_discount_rule', $values);
+            $query->insert('plg_ancoupon_discount_rule', $values);
             $this->ensureStored();
         }
         
-        $query->delete('plg_AnCoupon_discount_rule_product', 'discount_rule_id = ?', array($this->discount_rule_id));
+        $query->delete('plg_ancoupon_discount_rule_product', 'discount_rule_id = ?', array($this->discount_rule_id));
         foreach ($this->products as $product_id) {
             $values = array(
                 'discount_rule_id' => $this->discount_rule_id,
                 'product_id' => $product_id,
             );
-            $query->insert('plg_AnCoupon_discount_rule_product', $values);
+            $query->insert('plg_ancoupon_discount_rule_product', $values);
         }
         
-        $query->delete('plg_AnCoupon_discount_rule_product_class', 'discount_rule_id = ?', array($this->discount_rule_id));
+        $query->delete('plg_ancoupon_discount_rule_product_class', 'discount_rule_id = ?', array($this->discount_rule_id));
         foreach ($this->product_classes as $product_class_id) {
             $values = array(
                 'discount_rule_id' => $this->discount_rule_id,
                 'product_class_id' => $product_class_id,
             );
-            $query->insert('plg_AnCoupon_discount_rule_product_class', $values);
+            $query->insert('plg_ancoupon_discount_rule_product_class', $values);
         }
         
-        $query->delete('plg_AnCoupon_discount_rule_category', 'discount_rule_id = ?', array($this->discount_rule_id));
+        $query->delete('plg_ancoupon_discount_rule_category', 'discount_rule_id = ?', array($this->discount_rule_id));
         foreach ($this->categories as $category_id) {
             $values = array(
                 'discount_rule_id' => $this->discount_rule_id,
                 'category_id' => $category_id,
             );
-            $query->insert('plg_AnCoupon_discount_rule_category', $values);
+            $query->insert('plg_ancoupon_discount_rule_category', $values);
         }
         
         return $result;
@@ -252,19 +252,19 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
     public static function deleteByWhere($where, array $params = array()) {
         $query = self::getQuery();
 
-        $discount_rule_ids = $query->getSql('discount_rule_id', 'plg_AnCoupon_discount_rule', $where);
+        $discount_rule_ids = $query->getSql('discount_rule_id', 'plg_ancoupon_discount_rule', $where);
         $product_where = "discount_rule_id IN ($discount_rule_ids)";
-        $query->delete('plg_AnCoupon_discount_rule_product', $product_where, $params);
+        $query->delete('plg_ancoupon_discount_rule_product', $product_where, $params);
         
         $category_where = "discount_rule_id IN ($discount_rule_ids)";
-        $query->delete('plg_AnCoupon_discount_rule_category', $category_where, $params);
+        $query->delete('plg_ancoupon_discount_rule_category', $category_where, $params);
         
-        return $query->delete('plg_AnCoupon_discount_rule', $where, $params);
+        return $query->delete('plg_ancoupon_discount_rule', $where, $params);
     }
     
     public static function getDefaultUniqueName() {
         $query = self::getQuery();
-        $no = $query->currVal('plg_AnCoupon_discount_rule_id');
+        $no = $query->currVal('plg_ancoupon_discount_rule_id');
         $no = $no ? $no : 1;
         return sprintf('割引条件#%s', $no);
     }
@@ -301,9 +301,9 @@ FROM
 WHERE
     product_class_id = ?
 	AND (
-        product_id IN (SELECT product_id FROM plg_AnCoupon_discount_rule_product AS rule_product WHERE discount_rule_id = ?)
-        OR product_class_id IN (SELECT product_class_id FROM plg_AnCoupon_discount_rule_product_class WHERE discount_rule_id = ?)
-	    OR product_id IN (SELECT dtb_product_categories.product_id FROM dtb_product_categories JOIN plg_AnCoupon_discount_rule_category AS rule_cat ON rule_cat.category_id = dtb_product_categories.category_id WHERE rule_cat.discount_rule_id = ?)
+        product_id IN (SELECT product_id FROM plg_ancoupon_discount_rule_product AS rule_product WHERE discount_rule_id = ?)
+        OR product_class_id IN (SELECT product_class_id FROM plg_ancoupon_discount_rule_product_class WHERE discount_rule_id = ?)
+	    OR product_id IN (SELECT dtb_product_categories.product_id FROM dtb_product_categories JOIN plg_ancoupon_discount_rule_category AS rule_cat ON rule_cat.category_id = dtb_product_categories.category_id WHERE rule_cat.discount_rule_id = ?)
     )
 __SQL__;
 
@@ -328,9 +328,9 @@ FROM
 WHERE
     product_id = ?
 	AND (
-        product_id IN (SELECT product_id FROM plg_AnCoupon_discount_rule_product AS rule_product WHERE discount_rule_id = ?)
-        OR product_id IN (SELECT product_id FROM dtb_products_class JOIN plg_AnCoupon_discount_rule_product_class AS rule_class ON rule_class.product_class_id = dtb_products_class.product_class_id WHERE discount_rule_id = ?)
-	    OR product_id IN (SELECT product_id FROM dtb_product_categories JOIN plg_AnCoupon_discount_rule_category AS rule_cat ON rule_cat.category_id = dtb_product_categories.category_id WHERE rule_cat.discount_rule_id = ?)
+        product_id IN (SELECT product_id FROM plg_ancoupon_discount_rule_product AS rule_product WHERE discount_rule_id = ?)
+        OR product_id IN (SELECT product_id FROM dtb_products_class JOIN plg_ancoupon_discount_rule_product_class AS rule_class ON rule_class.product_class_id = dtb_products_class.product_class_id WHERE discount_rule_id = ?)
+	    OR product_id IN (SELECT product_id FROM dtb_product_categories JOIN plg_ancoupon_discount_rule_category AS rule_cat ON rule_cat.category_id = dtb_product_categories.category_id WHERE rule_cat.discount_rule_id = ?)
     )
 __SQL__;
 
@@ -410,8 +410,8 @@ JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id = pr
         SELECT
             discount_rule_product_class.product_class_id
         FROM
-            plg_AnCoupon_discount_rule AS discount_rule
-            JOIN plg_AnCoupon_discount_rule_product_class AS discount_rule_product_class ON discount_rule_product_class.discount_rule_id = discount_rule.discount_rule_id
+            plg_ancoupon_discount_rule AS discount_rule
+            JOIN plg_ancoupon_discount_rule_product_class AS discount_rule_product_class ON discount_rule_product_class.discount_rule_id = discount_rule.discount_rule_id
         WHERE
             discount_rule.discount_rule_id IN ($ph_discount_rule_ids)
             AND discount_rule.enabled = 1
@@ -422,8 +422,8 @@ JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id = pr
         SELECT
             discount_rule_product.product_id
         FROM
-            plg_AnCoupon_discount_rule AS discount_rule
-            JOIN plg_AnCoupon_discount_rule_product AS discount_rule_product ON discount_rule_product.discount_rule_id = discount_rule.discount_rule_id
+            plg_ancoupon_discount_rule AS discount_rule
+            JOIN plg_ancoupon_discount_rule_product AS discount_rule_product ON discount_rule_product.discount_rule_id = discount_rule.discount_rule_id
         WHERE
             discount_rule.discount_rule_id IN ($ph_discount_rule_ids)
             AND discount_rule.enabled = 1
@@ -434,8 +434,8 @@ JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id = pr
         SELECT
             product_category.product_id
         FROM
-            plg_AnCoupon_discount_rule AS discount_rule
-            JOIN plg_AnCoupon_discount_rule_category AS discount_rule_category ON discount_rule_category.discount_rule_id = discount_rule.discount_rule_id
+            plg_ancoupon_discount_rule AS discount_rule
+            JOIN plg_ancoupon_discount_rule_category AS discount_rule_category ON discount_rule_category.discount_rule_id = discount_rule.discount_rule_id
             JOIN dtb_product_categories AS product_category ON product_category.category_id = discount_rule_category.category_id
         WHERE
             discount_rule.discount_rule_id IN ($ph_discount_rule_ids)

@@ -1,0 +1,43 @@
+{
+    "pre_process": {
+        "mysql": [
+            "ALTER TABLE plg_AnCoupon_coupon RENAME TO plg_AnCoupon_coupon_temp",
+            "ALTER TABLE plg_AnCoupon_coupon_temp RENAME TO plg_ancoupon_coupon",
+            "ALTER TABLE plg_ancoupon_coupon DROP INDEX plg_AnCoupon_coupon_code_unique",
+            "ALTER TABLE plg_ancoupon_coupon ADD UNIQUE INDEX plg_ancoupon_coupon_code_unique (code ASC)",
+            
+            "ALTER TABLE plg_AnCoupon_discount_rule RENAME TO plg_AnCoupon_discount_rule_temp",
+            "ALTER TABLE plg_AnCoupon_discount_rule_temp RENAME TO plg_ancoupon_discount_rule",
+            "ALTER TABLE plg_ancoupon_discount_rule DROP INDEX plg_AnCoupon_discount_rule_code_unique",
+            "ALTER TABLE plg_ancoupon_discount_rule ADD UNIQUE INDEX plg_ancoupon_discount_rule_code_unique (code ASC)",
+            
+            "ALTER TABLE plg_AnCoupon_coupon_discount_rule RENAME TO plg_AnCoupon_coupon_discount_rule_temp",
+            "ALTER TABLE plg_AnCoupon_coupon_discount_rule_temp RENAME TO plg_ancoupon_coupon_discount_rule",
+            
+            "ALTER TABLE plg_AnCoupon_discount_rule_category RENAME TO plg_AnCoupon_discount_rule_category_temp",
+            "ALTER TABLE plg_AnCoupon_discount_rule_category_temp RENAME TO plg_ancoupon_discount_rule_category",
+            
+            "ALTER TABLE plg_AnCoupon_discount_rule_product RENAME TO plg_AnCoupon_discount_rule_product_temp",
+            "ALTER TABLE plg_AnCoupon_discount_rule_product_temp RENAME TO plg_ancoupon_discount_rule_product",
+            
+            "ALTER TABLE plg_AnCoupon_discount_rule_product_class RENAME TO plg_AnCoupon_discount_rule_product_class_temp",
+            "ALTER TABLE plg_AnCoupon_discount_rule_product_class_temp RENAME TO plg_ancoupon_discount_rule_product_class",
+            
+            "ALTER TABLE plg_AnCoupon_order_coupon RENAME TO plg_AnCoupon_order_coupon_temp",
+            "ALTER TABLE plg_AnCoupon_order_coupon_temp RENAME TO plg_ancoupon_order_coupon",
+            "ALTER TABLE plg_ancoupon_order_coupon DROP INDEX plg_AnCoupon_order_coupon_order",
+            "ALTER TABLE plg_ancoupon_order_coupon DROP INDEX plg_AnCoupon_order_coupon_coupon",
+            "ALTER TABLE plg_ancoupon_order_coupon ADD INDEX plg_ancoupon_order_coupon_order (order_id ASC, coupon_id ASC)",
+            "ALTER TABLE plg_ancoupon_order_coupon ADD INDEX plg_ancoupon_order_coupon_coupon (coupon_id ASC, order_id ASC)",
+            
+            "ALTER TABLE plg_AnCoupon_coupon_coupon_id_seq RENAME TO plg_AnCoupon_coupon_coupon_id_seq_temp",
+            "ALTER TABLE plg_AnCoupon_coupon_coupon_id_seq_temp RENAME TO plg_ancoupon_coupon_coupon_id_seq",
+            
+            "ALTER TABLE plg_AnCoupon_discount_code_seq RENAME TO plg_AnCoupon_discount_code_seq_temp",
+            "ALTER TABLE plg_AnCoupon_discount_code_seq_temp RENAME TO plg_ancoupon_discount_code_seq",
+            
+            "ALTER TABLE plg_AnCoupon_discount_rule_id_seq RENAME TO plg_AnCoupon_discount_rule_id_seq_temp",
+            "ALTER TABLE plg_AnCoupon_discount_rule_id_seq_temp RENAME TO plg_ancoupon_discount_rule_id_seq"
+        ]
+    }
+}
