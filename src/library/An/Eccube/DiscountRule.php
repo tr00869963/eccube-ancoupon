@@ -35,6 +35,7 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
     public $update_date;
     public $allow_member = true;
     public $allow_guest = true;
+    public $minimum_subtotal = 0;
 
     public $products;
     public $product_classes;
@@ -357,9 +358,27 @@ __SQL__;
         return $discount;
     }
     
-    public function calculateCartDiscount(array $cart, $used_time) {
+    public function calculateCartDiscount(array $cart, $used_time, $apply_restricts = false) {
         $total_discount = 0;
         $total_inctax = 0;
+        
+        if ($apply_restricts) {
+            $subtotal = 0;
+            foreach (array_filter(array_keys($cart), 'is_numeric') as $index) {
+                $cart_item = $cart[$index];
+                
+                $valid = isset($cart_item['id']) && !is_array($cart_item['id']);
+                if (!$valid) {
+                    continue;
+                }
+                
+                $subtotal += $cart_item['total_inctax'];
+            }
+            
+            if ($subtotal < $this->minimum_subtotal) {
+                return 0;
+            }
+        }
         
         foreach (array_filter(array_keys($cart), 'is_numeric') as $index) {
             $cart_item = $cart[$index];

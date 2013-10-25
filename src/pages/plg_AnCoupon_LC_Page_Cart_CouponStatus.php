@@ -85,14 +85,17 @@ class plg_AnCoupon_LC_Page_Cart_CouponStatus extends LC_Page_Ex {
             'total' => false,
             'total_amount' => 0,
             'total_rate' => 0,
+            'minimum_subtotal' => 0,
         );
         
         $amount = 0;
         $rate = 0;
+        $minimum_subtotal = 0;
         foreach ($discount_rules as $discount_rule) {
             if ($discount_rule->isAvailable($used_time)) {
                 $amount += $discount_rule->total_discount_amount;
                 $rate += $discount_rule->total_discount_rate;
+                $minimum_subtotal = max($discount_rule->minimum_subtotal, $minimum_subtotal);
             }
         }
         
@@ -112,6 +115,13 @@ class plg_AnCoupon_LC_Page_Cart_CouponStatus extends LC_Page_Ex {
         
         $info['target_categories'] = $categories;
         $info['target_products'] = $products;
+        
+        
+        $info['restrict_exists'] = (bool)$minimum_subtotal;
+        
+        $info['restricts'] = array(
+            'minimum_subtotal' => $minimum_subtotal,
+        );
         
         return $info;
     }

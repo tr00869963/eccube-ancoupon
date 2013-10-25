@@ -22,6 +22,18 @@
     <h2 class="title"><!--{$tpl_title|h}--></h2>
     
     <div class="coupon-discount-status">
+        <!--{if $discount_info.restrict_exists}-->
+            <h2 class="title_block">割引条件</h2>
+            <ul>
+                <!--{if $discount_info.restricts.minimum_subtotal}-->
+                    <li>
+                        <!--{$discount_info.restricts.minimum_subtotal|number_format}-->円以上ご購入時にのみ割引を受けられます。<br />
+                        ※各種値引きを適用する前の商品金額で計算します。
+                    </tr>
+                <!--{/if}-->
+            </ul>
+        <!--{/if}-->
+        
         <!--{if $discount_info.total}-->
             <h2 class="title_block">全体割引</h2>
             

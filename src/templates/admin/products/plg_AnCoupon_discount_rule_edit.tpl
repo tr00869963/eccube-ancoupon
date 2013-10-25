@@ -101,6 +101,13 @@
                     <label><input type="checkbox" name="allow_member" value="1" <!--{if $form.allow_member.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_member.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_member.title|h}--></label><br /> 
                 </td>
             </tr>
+            <tr>
+                <th><!--{$form.minimum_subtotal.title|h}--><span class="attention"> *</span></th>
+                <td>
+                    <!--{if $form.minimum_subtotal.error}--><span class="attention"><!--{$form.minimum_subtotal.error}--></span><!--{/if}-->
+                    購入する商品の小計が <input type="text" name="minimum_subtotal" value="<!--{$form.minimum_subtotal.value|h}-->" maxlength="<!--{$form.minimum_subtotal.maxlength|h}-->" size="6" class="box6" <!--{if $form.minimum_subtotal.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> 円以上
+                </td>
+            </tr>
         </table>
 
         <h2>全体割引</h2>

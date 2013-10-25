@@ -22,7 +22,14 @@
 
 <p class="postage">
     <!--{if $tpl_coupon_using}-->
-        <span class="point_announce">クーポンで商品金額から</span><span class="price"><!--{$tpl_coupon_total_discount}-->円</span>割引されます！
+        <!--{strip}-->
+            <span class="point_announce">クーポンで
+            <!--{if $tpl_coupon_minimum_subtotal}-->
+                <!--{$tpl_coupon_minimum_subtotal|number_format}-->円以上お買い上げ時に
+            <!--{/if}-->
+            </span>
+            <span class="price"><!--{$tpl_coupon_total_discount|number_format}-->円</span>割引されます！
+        <!--{/strip}-->
         <ul>
             <li><a href="<!--{$smarty.const.ROOT_URLPATH}-->cart/plg_AnCoupon_coupon_status.php" class="coupon_status_link">クーポンを確認する</a></li>
             <li><a href="<!--{$smarty.const.ROOT_URLPATH}-->cart/plg_AnCoupon_coupon_cancel.php" class="coupon_cancel_link">クーポンを使わない</a></li>

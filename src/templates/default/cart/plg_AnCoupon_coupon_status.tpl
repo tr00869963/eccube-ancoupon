@@ -22,6 +22,23 @@
     <h2 class="title"><!--{$tpl_title|h}--></h2>
     
     <div id="undercolumn_coupon">
+        <!--{if $discount_info.restrict_exists}-->
+            <h3>割引条件</h3>
+            <table summary="割引条件">
+                <tbody>
+                    <!--{if $discount_info.restricts.minimum_subtotal}-->
+                        <tr>
+                            <th>最低購入金額</th>
+                            <td>
+                                <!--{$discount_info.restricts.minimum_subtotal|number_format}-->円以上ご購入時にのみ割引を受けられます。<br />
+                                ※各種値引きを適用する前の商品金額で計算します。
+                            </td>
+                        </tr>
+                    <!--{/if}-->
+                </tbody>
+            </table>
+        <!--{/if}-->
+        
         <!--{if $discount_info.total}-->
             <h3>全体割引</h3>
             

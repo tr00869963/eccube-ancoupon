@@ -1,4 +1,20 @@
 {
+    "tables": {
+        "plg_ancoupon_discount_rule": {
+            "partial": true,
+            "alter": {
+                "add": {
+                    "minimum_subtotal": {
+                        "type": "decimal",
+                        "notnull": true,
+                        "length": "10",
+                        "default": "0",
+                        "scale": "0"
+                    }
+                }
+            }
+        }
+    },
     "pre_process": {
         "mysql": [
             "ALTER TABLE plg_AnCoupon_coupon RENAME TO plg_AnCoupon_coupon_temp",

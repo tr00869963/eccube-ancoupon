@@ -335,7 +335,8 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
 
         $params->addParam('ゲスト', 'allow_guest', 1, 'n', array('MAX_LENGTH_CHECK'), (int)$discount_rule->allow_guest);
         $params->addParam('会員', 'allow_member', 1, 'n', array('MAX_LENGTH_CHECK'), (int)$discount_rule->allow_member);
-
+        $params->addParam('最低購入金額', 'minimum_subtotal', PRICE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->minimum_subtotal);
+        
         $params->addParam('定額小計割引', 'total_discount_amount', PRICE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->total_discount_amount);
         $params->addParam('比例小計割引', 'total_discount_rate', PERCENTAGE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->total_discount_rate * 100);
         $params->addParam('定額商品割引', 'item_discount_amount', PRICE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->item_discount_amount);
@@ -456,6 +457,15 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
                 $errors['effective_to'] = "※ 割引適用期間の開始日以前にはできません。<br />";
             }
         }
+
+        // 最低購入金額
+        $name = 'minimum_subtotal';
+        $value = $params->getValue($name);
+        $title = $params->disp_name[array_search($name, $params->keyname)];
+        if ($value == '') {
+        } elseif ($value < 0) {
+            $errors[$name] = "※ {$title}を 0 未満にする事は出来ません。<br />";
+        }
         
         return $errors;
     }
@@ -472,6 +482,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         
         $discount_rule->allow_guest = (bool)$params->getValue('allow_guest');
         $discount_rule->allow_member = (bool)$params->getValue('allow_member');
+        $discount_rule->minimum_subtotal = $params->getValue('minimum_subtotal');
         
         $year = $params->getValue('effective_from_year');
         $month = $params->getValue('effective_from_month');

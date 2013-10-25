@@ -583,11 +583,11 @@ __SQL__;
         return $used_time;
     }
     
-    public function calculateDiscountOfCart(array $cart, array $discount_rules, $used_time) {
+    public function calculateDiscountOfCart(array $cart, array $discount_rules, $used_time, $apply_restricts = false) {
         $discount = 0;
         
         foreach ($discount_rules as $discount_rule) {
-            $discount += $discount_rule->calculateCartDiscount($cart, $used_time);
+            $discount += $discount_rule->calculateCartDiscount($cart, $used_time, $apply_restricts);
         }
 
         return floor($discount);
@@ -732,6 +732,15 @@ __SQL__;
             
             $page->tpl_coupon_discount[$cart_key] = -$discount;
             $page->arrData[$cart_key]['total'] -= $discount;
+            
+            $minimum_subtotal = 0;
+            foreach ($discount_rules as $discount_rule) {
+                $minimum_subtotal = max($discount_rule->minimum_subtotal, $minimum_subtotal);
+            }
+            
+            $page->tpl_coupon_restricts = array(
+                'minimum_subtotal' => $minimum_subtotal,
+            );
         }
     }
     
@@ -749,6 +758,13 @@ __SQL__;
         $discount = floor($discount);
         
         $page->tpl_coupon_total_discount = $discount;
+
+
+        $minimum_subtotal = 0;
+        foreach ($discount_rules as $discount_rule) {
+            $minimum_subtotal = max($discount_rule->minimum_subtotal, $minimum_subtotal);
+        }
+        $page->tpl_coupon_minimum_subtotal = $minimum_subtotal;
     }
     
     /**
@@ -771,8 +787,8 @@ __SQL__;
                 $cart = $carts->cartSession[$page->cartKey];
                 $discount_rules = $this->getCurrentDiscountRules();
                 $used_time = $this->getCouponUsedTime();
-                $discount = $this->calculateDiscountOfCart($cart, $discount_rules, $used_time);
-
+                $discount = $this->calculateDiscountOfCart($cart, $discount_rules, $used_time, true);
+                
                 $purchase = new SC_Helper_Purchase_Ex();
                 $params = array(
                     'discount' => $discount,
@@ -786,7 +802,7 @@ __SQL__;
         $used_time = $this->getCouponUsedTime();
         $cart_key = $page->cartKey;
         $cart = $carts->cartSession[$cart_key];
-        $discount = $this->calculateDiscountOfCart($cart, $discount_rules, $used_time);
+        $discount = $this->calculateDiscountOfCart($cart, $discount_rules, $used_time, true);
         $discount = floor($discount);
         $discount = min($discount, $page->arrPrices['subtotal']);
         $_SESSION['plg_AnCoupon']['cart'][$cart_key]['discount'] = $discount;

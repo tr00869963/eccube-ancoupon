@@ -211,6 +211,13 @@
                     "length": 1,
                     "default": "1"
                 },
+                "minimum_subtotal": {
+                    "type": "decimal",
+                    "notnull": true,
+                    "length": "10",
+                    "default": "0",
+                    "scale": "0"
+                },
                 "create_date": {
                     "type": "timestamp",
                     "notnull": true,
