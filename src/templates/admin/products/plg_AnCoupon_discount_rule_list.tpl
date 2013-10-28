@@ -67,7 +67,7 @@
                 </td>
             </tr>
             <tr>
-                <th rowspan="2">割引割引適用期間</span></th>
+                <th rowspan="2">割引適用期間</span></th>
                 <td>
                     <!--{if $form.effective_from.error}--><span class="attention"><!--{$form.effective_from.error}--></span><!--{/if}-->
                     <select name="effective_from_year" <!--{if $form.effective_from_year.error || $form.effective_from.error}--><!--{sfSetErrorStyle}--><!--{/if}--> >
