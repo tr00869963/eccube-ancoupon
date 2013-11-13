@@ -2,7 +2,7 @@
 
 class An_Eccube_Utils {
     public static function encodeJson($data) {
-        if (function_exists('json_decode')) {
+        if (function_exists('json_decode') && function_exists('json_last_error')) {
             $json = json_encode($data);
             $error = json_last_error();
             if ($error !== JSON_ERROR_NONE) {
@@ -22,7 +22,7 @@ class An_Eccube_Utils {
     }
     
     public static function decodeJson($json, $return_assoc = false) {
-        if (false && function_exists('json_decode')) {
+        if (function_exists('json_decode') && function_exists('json_last_error')) {
             $data = json_decode($json, $return_assoc);
             $error = json_last_error();
             if ($error !== JSON_ERROR_NONE) {
