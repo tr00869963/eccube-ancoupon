@@ -227,4 +227,20 @@ class plugin_update {
     
         return $info;
     }
+
+    /**
+     * @param array $info
+     * @return array
+     */
+    protected static function upTo_1_2_1($info) {
+        $info['plugin_version'] = '1.2.1';
+        $plugin_code = $info['plugin_code'];
+    
+        // プラグイン関連のファイルを全て更新
+        $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
+        $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+    
+        return $info;
+    }
 }
