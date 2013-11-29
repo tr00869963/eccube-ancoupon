@@ -19,7 +19,7 @@
         <!--{if count($coupon_discount.classes) > 1}-->
             <div class="coupon-discount-target">
                 <b class="label">割引対象になる組み合わせ</b>
-                <ul class="coupon-product-class-list>
+                <ul class="coupon-product-class-list">
                     <!--{foreach from=$coupon_discount.classes item=class}-->
                         <li style="display: block; float: none;">
                             <!--{strip}-->
