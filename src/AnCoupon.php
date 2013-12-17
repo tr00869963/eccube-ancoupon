@@ -218,6 +218,9 @@ class AnCoupon extends SC_Plugin_Base {
 
         $plugin_helper->addAction('LC_Page_FrontParts_Bloc_Cart_action_after', array($this, 'hook_LC_Page_FrontParts_Bloc_Cart_action_after'));
         $plugin_helper->addAction('LC_Page_FrontParts_Bloc_NaviHeader_action_after', array($this, 'hook_LC_Page_FrontParts_Bloc_Cart_action_after'));
+        
+        // ペイジェント決済モジュールのクイック決済用
+        $plugin_helper->addAction('LC_Page_Shopping_Confirm_action_quick', array($this, 'hook_LC_Page_Shopping_Confirm_action_confirm'));
     }
     
     /**
@@ -360,6 +363,25 @@ __SQL__;
                 }
 
                 if (An_Eccube_Utils::isStringEndWith($filename, 'shopping/confirm.tpl')) {
+                    $template_path = "shopping/plg_AnCoupon_confirm_discount_row.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('tr', 2)->insertAfter($template);
+                    break;
+                }
+                
+                // ペイジェント決済モジュールへの対応
+                if (An_Eccube_Utils::isStringEndWith($filename, 'quick_cart_index.tpl')) {
+                    $template_path = "cart/plg_AnCoupon_index_discount_row.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('tr', 3)->insertBefore($template);
+                    
+                    $template_path = "cart/plg_AnCoupon_index_coupon_row.tpl";
+                    $template = "<!--{include file='{$template_path}'}-->";
+                    $transformer->select('.form_area table')->appendChild($template);
+                    break;
+                }
+
+                if (An_Eccube_Utils::isStringEndWith($filename, 'quick_shopping_confirm.tpl')) {
                     $template_path = "shopping/plg_AnCoupon_confirm_discount_row.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
                     $transformer->select('tr', 2)->insertAfter($template);
