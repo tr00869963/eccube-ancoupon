@@ -493,7 +493,8 @@ __SQL__;
                 if (An_Eccube_Utils::isStringEndWith($filename, 'order/edit.tpl')) {
                     $template_path = "order/plg_AnCoupon_edit_coupon.tpl";
                     $template = "<!--{include file='{$template_path}'}-->";
-                    $transformer->select('#order-edit-products')->insertAfter($template);
+                    $path = version_compare(ECCUBE_VERSION, '2.13') >= 0 ? '.order-edit-products' : '#order-edit-products';
+                    $transformer->select($path)->insertAfter($template);
                     break;
                 }
                 
