@@ -34,7 +34,7 @@ class plugin_info {
     static $PLUGIN_NAME = "クーポンプラグイン";
     
     /** プラグインバージョン(必須)：プラグインのバージョン. */
-    static $PLUGIN_VERSION = "1.3.0";
+    static $PLUGIN_VERSION = "1.3.1";
     
     /** 対応バージョン(必須)：対応するEC-CUBEバージョン. */
     static $COMPLIANT_VERSION = "2.12.0";
