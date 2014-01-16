@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="AnCoupon" default="build">
-    <property name="archive_prefix" value="AnCoupon" />
-    <property name="src_dir" value="src" />
-    <property name="build_dir" value="build" />
-    <property name="eccube_html_dir" value="E:/Www/dev/eccube-2.12/html" />
+    <property file="build.properties" />
     
     <target name="prepare">
-        <mkdir dir="${build_dir}" />
+        <mkdir dir="${dist_dir}" />
     </target>
     
     <target name="build" depends="prepare">
-        <property name="archive" value="${build_dir}/${archive_prefix}.tar.gz" />
-        <delete file="${archive}" quiet="true" />
-        <tar basedir="${src_dir}" destfile="${archive}" compression="gzip" />
+        <get-plugin-info property="PLUGIN_VERSION" outputProperty="plugin_version" file="${src_dir}/plugin_info.php" />
+        <property name="package" value="${dist_dir}/${package_prefix}${plugin_version}${package_suffix}.tar.gz" />
+        <delete file="${package}" quiet="true" />
+        <tar basedir="${src_dir}" destfile="${package}" compression="gzip" />
     </target>
     
     <target name="build-schema">
@@ -26,4 +24,35 @@
         <property name="schema" value="${src_dir}/data/db/migration-${version}.json" />
         <exec command="php tools/schema.php ${eccube_html_dir} | node tools/jsonbeautifier.js > ${schema}" escape="false" />
     </target>
+    
+    <adhoc-task name="get-plugin-info"><![CDATA[
+        class GetPluginVersion extends Task {
+            protected $file;
+            protected $property;
+            protected $outputProperty;
+            
+            public function main() {
+                $info_file = $this->infoFile->getPath();
+                require_once $info_file;
+                
+                if ($this->outputProperty != '') {
+                    $this->project->setProperty($this->outputProperty, plugin_info::$PLUGIN_VERSION);
+                }
+            }
+            
+            public function setFile(PhingFile $file) {
+                $this->infoFile = $file;
+            }
+
+            public function setProperty($property)
+            {
+                $this->property = $property;
+            }
+
+            public function setOutputProperty($outputProperty)
+            {
+                $this->outputProperty = $outputProperty;
+            }
+        }
+    ]]></adhoc-task>
 </project>

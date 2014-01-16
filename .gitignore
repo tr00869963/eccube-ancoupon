@@ -1,8 +1,7 @@
-# for eclipse
-
+# Eclipse
 /.settings
 /.project
 /.buildpath
 
-# for Phing
-build
+# Build tool
+/dist
