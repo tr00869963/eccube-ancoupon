@@ -23,6 +23,5 @@ require_once '../require.php';
 require_once PLUGIN_UPLOAD_REALDIR .  'AnCoupon/pages/plg_AnCoupon_LC_Page_Admin_Products_CouponDelete.php';
 
 $page = new plg_AnCoupon_LC_Page_Admin_Products_CouponDelete();
-register_shutdown_function(array($page, 'destroy'));
 $page->init();
 $page->process();
