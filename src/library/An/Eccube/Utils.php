@@ -6,8 +6,8 @@ class An_Eccube_Utils {
             $json = json_encode($data);
             $error = json_last_error();
             if ($error !== JSON_ERROR_NONE) {
-                $message = json_last_error_msg();
-                throw new RuntimeException($message, $code);
+                $message = function_exists('json_last_error_msg') ? json_last_error_msg() : 'error code: ' . $error;
+                throw new RuntimeException($message, $error);
             }
             return $json;
         }
@@ -26,7 +26,7 @@ class An_Eccube_Utils {
             $data = json_decode($json, $return_assoc);
             $error = json_last_error();
             if ($error !== JSON_ERROR_NONE) {
-                $message = json_last_error_msg();
+                $message = function_exists('json_last_error_msg') ? json_last_error_msg() : 'error code: ' . $error;
                 throw new RuntimeException($message, $error);
             }
             
