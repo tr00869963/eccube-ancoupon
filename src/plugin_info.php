@@ -37,7 +37,7 @@ class plugin_info {
     static $PLUGIN_VERSION = "1.3.1";
     
     /** 対応バージョン(必須)：対応するEC-CUBEバージョン. */
-    static $COMPLIANT_VERSION = "2.12.0, 2.12.1, 2.12.2, 2.12.3, 2.12.4, 2.12.5, 2.12.6, 2.13.0, 2.13.1";
+    static $COMPLIANT_VERSION = "2.12.0";
     
     /** 作者(必須)：プラグイン作者. */
     static $AUTHOR = "M-soft";
