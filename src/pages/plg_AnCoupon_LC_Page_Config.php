@@ -213,7 +213,7 @@ class plg_AnCoupon_LC_Page_Config extends LC_Page_Admin_Ex {
         $value = $params->getValue($name);
         $title = htmlspecialchars($params->disp_name[array_search($name, $params->keyname)], ENT_QUOTES, 'UTF-8');
         if ($value == '') {
-        } elseif (preg_match('/[^0-9A-Za-z]/')) {
+        } elseif (preg_match('/[^0-9A-Za-z]/', $value)) {
             $errors[$name] = "※ {$title}に半角英数字以外の文字は指定できません。";
         }
 
