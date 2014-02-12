@@ -3,17 +3,17 @@
  * アフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -37,10 +37,10 @@ class plugin_update {
         $new_info = self::invokeUpTo($info);
         self::savePluginInfo($new_info, $info);
     }
-    
+
     /**
      * プラグインの現在のバージョンに合わせて必要なアップデートを実行します。
-     * 
+     *
      * @param array $info プラグイン情報の連想配列(dtb_plugin)
      * @return array アップデート後のプラグイン情報の連想配列(dtb_plugin)
      */
@@ -53,10 +53,10 @@ class plugin_update {
                 $info = call_user_func($point['up_to'], $info);
             }
         }
-        
+
         return $info;
     }
-    
+
     private static function getMigrationPoints() {
         $points = array();
         $sortkey = array();
@@ -74,7 +74,7 @@ class plugin_update {
                 $sortkey[] = $version;
             }
         }
-        
+
         natsort($sortkey);
         $sorted = array();
         foreach ($sortkey as $key) {
@@ -82,10 +82,10 @@ class plugin_update {
         }
         return $sorted;
     }
-    
+
     /**
      * プラグイン情報を保存します。
-     * 
+     *
      * @param array $new_info 新しいプラグイン情報の連想配列(dtb_plugin)
      * @param array $old_info 以前のプラグイン情報の連想配列(dtb_plugin)
      */
@@ -119,7 +119,7 @@ class plugin_update {
      */
     protected static function upTo_1_1_0($info) {
         $info['plugin_version'] = '1.1.0';
-        
+
         // 不要になった管理者用ページを削除
         $plugin_code = $info['plugin_code'];
         $files = array(
@@ -128,14 +128,14 @@ class plugin_update {
         foreach ($files as $file => $page) {
             $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/pages/$page";
             SC_Helper_FileManager_Ex::deleteFile($path, false);
-            
+
             $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/admin/$file";
             SC_Helper_FileManager_Ex::deleteFile($path, false);
-        
+
             $path = HTML_REALDIR . ADMIN_DIR . $file;
             SC_Helper_FileManager_Ex::deleteFile($path, false);
         }
-        
+
         // 不要になったテンプレートを削除
         $plugin_code = $info['plugin_code'];
         $files = array(
@@ -145,43 +145,43 @@ class plugin_update {
         foreach ($files as $file) {
             $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/templates/$file";
             SC_Helper_FileManager_Ex::deleteFile($path, false);
-        
+
             $path = SMARTY_TEMPLATES_REALDIR . $file;
             SC_Helper_FileManager_Ex::deleteFile($path, false);
         }
-        
+
         // プラグイン関連のファイルを全て更新
         $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
         $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-        
+
         // 管理用のページを更新。
         $plugin_code = $info['plugin_code'];
         $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/admin/";
         $dest_dir = HTML_REALDIR . ADMIN_DIR;
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-        
+
         // 顧客用のページを更新。
         $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/customer/";
         $dest_dir = HTML_REALDIR;
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-        
+
         // 公開ファイルを更新。
         $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/assets/";
         $dest_dir = PLUGIN_HTML_REALDIR . "{$plugin_code}/";
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-        
+
         // テンプレートを更新。
         $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/templates/";
         $dest_dir = SMARTY_TEMPLATES_REALDIR;
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-        
+
         // データベースを更新
         $query = SC_Query_Ex::getSingletonInstance();
         $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/migration-1.1.0.json";
         $schema = An_Eccube_Utils::decodeJson(file_get_contents($path), true);
         $schema = An_Eccube_DbUtils::alterTable($query, $schema);
-        
+
         return $info;
     }
 
@@ -192,39 +192,39 @@ class plugin_update {
     protected static function upTo_1_2_0($info) {
         $info['plugin_version'] = '1.2.0';
         $plugin_code = $info['plugin_code'];
-    
+
         // プラグイン関連のファイルを全て更新
         $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
         $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-        
+
         // 管理用のページを更新。
         $plugin_code = $info['plugin_code'];
         $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/admin/";
         $dest_dir = HTML_REALDIR . ADMIN_DIR;
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-    
+
         // 顧客用のページを更新。
         $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/customer/";
         $dest_dir = HTML_REALDIR;
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-    
+
         // 公開ファイルを更新。
         $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/html/assets/";
         $dest_dir = PLUGIN_HTML_REALDIR . "{$plugin_code}/";
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-    
+
         // テンプレートを更新。
         $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/templates/";
         $dest_dir = SMARTY_TEMPLATES_REALDIR;
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-    
+
         // データベースを更新
         $query = SC_Query_Ex::getSingletonInstance();
         $path = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/data/db/migration-1.2.0.json";
         $schema = An_Eccube_Utils::decodeJson(file_get_contents($path), true);
         An_Eccube_DbUtils::alterTable($query, $schema);
-    
+
         return $info;
     }
 
@@ -235,12 +235,12 @@ class plugin_update {
     protected static function upTo_1_2_1($info) {
         $info['plugin_version'] = '1.2.1';
         $plugin_code = $info['plugin_code'];
-    
+
         // プラグイン関連のファイルを全て更新
         $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
         $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-    
+
         return $info;
     }
 
@@ -251,12 +251,12 @@ class plugin_update {
     protected static function upTo_1_3_0($info) {
         $info['plugin_version'] = '1.3.0';
         $plugin_code = $info['plugin_code'];
-    
+
         // プラグイン関連のファイルを全て更新
         $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
         $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-    
+
         return $info;
     }
 
@@ -267,12 +267,28 @@ class plugin_update {
     protected static function upTo_1_3_1($info) {
         $info['plugin_version'] = '1.3.1';
         $plugin_code = $info['plugin_code'];
-    
+
         // プラグイン関連のファイルを全て更新
         $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
         $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
         SC_Utils::copyDirectory($src_dir, $dest_dir);
-    
+
+        return $info;
+    }
+
+    /**
+     * @param array $info
+     * @return array
+     */
+    protected static function upTo_1_3_2($info) {
+        $info['plugin_version'] = '1.3.2';
+        $plugin_code = $info['plugin_code'];
+
+        // プラグイン関連のファイルを全て更新
+        $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
+        $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+
         return $info;
     }
 }
