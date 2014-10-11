@@ -1,121 +1,79 @@
 <?php
 
-class An_Eccube_PageContext {
+class An_Eccube_PageContext extends ArrayObject
+{
+    protected $secret_key;
+
     /**
-     * @var string
+     * @param array $input
+     * @param string $secret_key
      */
-    public $id;
-    
-    /**
-     * @var array
-     */
-    public $session = array();
-    
-    /**
-     * @var int
-     */
-    public $expiration;
-    
-    /**
-     * @var bool
-     */
-    public $disposed = false;
-    
-    /**
-     * @var bool
-     */
-    public $prepared = false;
-    
-    public function __construct($id) {
-        $this->id = $id;
-        $this->expiration = self::getDefaultExpiration() + time();
+    public function __construct($input = array(), $secret_key = null)
+    {
+        parent::__construct($input);
+
+        $this->secret_key = $secret_key;
     }
-    
-    public static function & getStorage() {
-        if (!isset($_SESSION['plg_AnCoupon']['page_context'])) {
-            $_SESSION['plg_AnCoupon']['page_context'] = array();
-        }
-        
-        return $_SESSION['plg_AnCoupon']['page_context'];
-    }
-    
-    public static function runGc() {
-        $now = time();
-        $storage =& self::getStorage();
-        foreach ($storage as $id => $context) {
-            if ($context->disposed || $context->expiration < $now) {
-                unset($storage[$id]);
-            }
+
+    /**
+     * @param string $encoded
+     */
+    public function restore($encoded)
+    {
+        $data = $this->decode($encoded);
+        foreach ($data as $key => $value) {
+            $this[$key] = $value;
         }
     }
 
-    public static function getDefaultExpiration() {
-        return 60 * 60 * 24 * 2;
+    /**
+     * @param string $data
+     * @param string $secret_key
+     * @return string
+     */
+    protected function hash($data, $secret_key)
+    {
+        return hash_hmac('sha1', $data, $this->secret_key);
     }
-    
-    public static function load($id) {
-        self::runGc();
-        
-        $context = new self($id);
-        $context->restore();
-        return $context;
-    }
-    
-    public function save() {
-        $storage =& self::getStorage();
-        $expired = $this->expiration < time();
-        if ($this->disposed || $expired) {
-            unset($storage[$this->id]);
-            return;
-        }
-        
-        $storage[$this->id] = (object)(array)$this;
-    }
-    
-    public function allocate() {
-        $storage =& self::getStorage();
-        do {
-            $id = sha1(mt_rand());
-        } while (isset($storage[$id]));
-        
-        $this->id = $id;
-        $this->save();
-    }
-    
-    public function restore() {
-        $storage =& self::getStorage();
-        $stored = isset($storage[$this->id]) ? $storage[$this->id] : null;
-        $now = time();
-        if (!$stored || $stored->disposed || $stored->expiration < $now) {
-            $this->allocate();
-            return;
-        }
-        
-        $this->session = $stored->session;
-        $this->expiration = $stored->expiration;
-        $this->prepared = $stored->prepared;
-    }
-    
-    public function updateExpiration($time = null) {
-        if ($time === null) {
-            $this->expiration = self::getDefaultExpiration();
-        } else {
-            $this->expiration = $time;
-        }
-    }
-    
-    public function dispose() {
-        $storage =& self::getStorage();
-        unset($storage[$this->id]);
 
-        $this->disposed = true;
+    /**
+     * @return string
+     */
+    public function encode()
+    {
+        $data = iterator_to_array($this);
+        $serialized = serialize($data);
+        $hash = $this->hash($serialized, $this->secret_key);
+        return base64_encode($serialized) . '--' . base64_encode($hash);
     }
-    
-    public function isPrepared() {
-        return $this->prepared;
+
+    /**
+     * @param string $encoded
+     * @throws RuntimeException
+     * @return array
+     */
+    public function decode($encoded)
+    {
+        @list($serialized, $hash) = array_map('base64_decode', (array)explode('--', $encoded, 2));
+
+        $current_hash = $this->hash($serialized, $this->secret_key);
+        if ($hash !== $current_hash) {
+            throw new RuntimeException('invalid page context');
+        }
+
+        $data = unserialize($serialized);
+        if (!is_array($data)) {
+            throw new RuntimeException('page context has unknown content');
+        }
+
+        return $data;
     }
-    
-    public function prepare() {
-        $this->prepared = true;
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->encode();
     }
 }

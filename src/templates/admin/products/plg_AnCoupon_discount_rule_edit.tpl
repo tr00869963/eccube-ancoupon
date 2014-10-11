@@ -2,17 +2,17 @@
  * アフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -21,12 +21,12 @@
 <form name="form1" id="form1" method="post">
     <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
     <input type="hidden" name="mode" value="save" />
-    <input type="hidden" name="page_context_id" value="<!--{$context->id|h}-->" />
+    <input type="hidden" name="context" value="<!--{$context|h}-->" />
     <input type="hidden" name="anchor_key" value="" />
 
     <div id="discount_rule" class="contents-main">
         <h2>割引情報</h2>
-    
+
         <table class="form">
             <tr>
                 <th><!--{$form.name.title|h}--><span class="attention"> *</span></th>
@@ -61,7 +61,7 @@
         </table>
 
         <h2>適用条件</h2>
-        
+
         <table class="form">
             <tr>
                 <th rowspan="2">適用期間 <span class="attention"> *</span></th>
@@ -96,9 +96,9 @@
                 <th>対象ユーザー</th>
                 <td>
                     <!--{if $form.allow_guest.error}--><span class="attention"><!--{$form.allow_guest.error}--></span><!--{/if}-->
-                    <label><input type="checkbox" name="allow_guest" value="1" <!--{if $form.allow_guest.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_guest.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_guest.title|h}--></label><br /> 
+                    <label><input type="checkbox" name="allow_guest" value="1" <!--{if $form.allow_guest.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_guest.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_guest.title|h}--></label><br />
                     <!--{if $form.allow_member.error}--><span class="attention"><!--{$form.allow_member.error}--></span><!--{/if}-->
-                    <label><input type="checkbox" name="allow_member" value="1" <!--{if $form.allow_member.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_member.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_member.title|h}--></label><br /> 
+                    <label><input type="checkbox" name="allow_member" value="1" <!--{if $form.allow_member.value}-->checked="checked"<!--{/if}--> <!--{if $form.allow_member.error}--><!--{sfSetErrorStyle}--><!--{/if}--> /> <!--{$form.allow_member.title|h}--></label><br />
                 </td>
             </tr>
             <tr>
@@ -111,9 +111,9 @@
         </table>
 
         <h2>全体割引</h2>
-        
+
         <p>購入した商品を合計したものに対して割引を適用します。商品を問わずに割引したい時にご指定下さい。全体割引は商品割引の適用後に適用されます。</p>
-        
+
         <table class="form">
             <tr>
                 <th><!--{$form.total_discount_amount.title|h}--><span class="attention"> *</span></th>
@@ -133,9 +133,9 @@
         </table>
 
         <h2 id="product">商品割引</h2>
-        
+
         <p>指定した商品毎に割引を適用します。割引情報は商品の価格欄に表示されます。</p>
-        
+
         <table class="form">
             <tr>
                 <th><!--{$form.item_discount_amount.title|h}--><span class="attention"> *</span></th>

@@ -31,7 +31,7 @@
 <form name="form1" method="post" action="?">
     <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
     <input type="hidden" name="mode" value="use" />
-    <input type="hidden" name="page_context_id" value="<!--{$context->id|h}-->" />
+    <input type="hidden" name="context" value="<!--{$context->id|h}-->" />
     
     <font color="#FF0000">*</font><!--{$form.coupon_code.title|h}-->:<br>
     <!--{if $form.coupon_code.error}--><font color="#FF0000">*</font><!--{$form.coupon_code.error}--></font><!--{/if}-->

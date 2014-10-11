@@ -3,23 +3,23 @@
  * EC-CUBEアフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once CLASS_EX_REALDIR . 'page_extends/LC_Page_Ex.php';
+require_once PLUGIN_UPLOAD_REALDIR . '/AnCoupon/pages/plg_AnCoupon_LC_Page.php';
 
 /**
  * クーポンの編集画面
@@ -28,22 +28,23 @@ require_once CLASS_EX_REALDIR . 'page_extends/LC_Page_Ex.php';
  * @author M-soft
  * @version $Id: $
  */
-class plg_AnCoupon_LC_Page_Cart_CouponStatus extends LC_Page_Ex {
-    public function init() {
+class plg_AnCoupon_LC_Page_Cart_CouponStatus extends plg_AnCoupon_LC_Page
+{
+    public function init()
+    {
         parent::init();
 
         $this->tpl_title = 'クーポンの状態';
-
-        $this->context = $this->getContext();
     }
-    
-    public function process() {
+
+    public function process()
+    {
         $this->action();
         $this->sendResponse();
-        $this->context->save();
     }
-    
-    public function action() {
+
+    protected function action()
+    {
         $mode = $this->getMode();
         switch ($mode) {
             default:
@@ -51,43 +52,27 @@ class plg_AnCoupon_LC_Page_Cart_CouponStatus extends LC_Page_Ex {
                 break;
         }
     }
-    
-    /**
-     * @return An_Eccube_PageContext
-     */
-    protected function getContext() {
-        $page_context_id = $_REQUEST['page_context_id'];
-        $context = An_Eccube_PageContext::load($page_context_id);
-        
-        if (!$context->isPrepared()) {
-            $this->initializeContext($context);
-            $context->prepare();
-        }
-        
-        return $context;
-    }
-    
-    protected function initializeContext(An_Eccube_PageContext $context) {
-    }
-    
-    public function doDefault() {
+
+    protected function doDefault()
+    {
         $plugin = AnCoupon::getInstance();
         $discount_rules = $plugin->getCurrentDiscountRules();
         $used_time = $plugin->getCouponUsedTime();
         $this->discount_info = $this->getDiscountInfo($discount_rules, $used_time);
     }
-    
+
     /**
      * @param array<An_Eccube_DiscountRule> $discount_rules
      */
-    protected function getDiscountInfo(array $discount_rules, $used_time) {
+    protected function getDiscountInfo(array $discount_rules, $used_time)
+    {
         $info = array(
             'total' => false,
             'total_amount' => 0,
             'total_rate' => 0,
             'minimum_subtotal' => 0,
         );
-        
+
         $amount = 0;
         $rate = 0;
         $minimum_subtotal = 0;
@@ -98,46 +83,47 @@ class plg_AnCoupon_LC_Page_Cart_CouponStatus extends LC_Page_Ex {
                 $minimum_subtotal = max($discount_rule->minimum_subtotal, $minimum_subtotal);
             }
         }
-        
+
         $info['total'] = $amount || $rate;
-        
+
         $info['total_amount'] = $amount;
-        
+
         $rate = $rate * 100;
         $info['total_rate'] = $rate;
-        
-        
+
+
         $discount_rule_ids = array_keys($discount_rules);
         $categories = $this->getTargetCategories($discount_rule_ids, $used_time);
         $products = $this->getTargetProducts($discount_rule_ids, $used_time);
-        
+
         $info['target'] = $categories || $products;
-        
+
         $info['target_categories'] = $categories;
         $info['target_products'] = $products;
-        
-        
+
+
         $info['restrict_exists'] = (bool)$minimum_subtotal;
-        
+
         $info['restricts'] = array(
             'minimum_subtotal' => $minimum_subtotal,
         );
-        
+
         return $info;
     }
-    
-    protected function getTargetCategories(array $discount_rule_ids, $used_time) {
+
+    protected function getTargetCategories(array $discount_rule_ids, $used_time)
+    {
         if (empty($discount_rule_ids)) {
             return array();
         }
-        
+
         $query = SC_Query_Ex::getSingletonInstance();
-        
+
         $from = <<<__SQL__
 dtb_category AS category
 JOIN dtb_category_total_count as category_total_count ON category_total_count.category_id = category.category_id
 __SQL__;
-        
+
         $ph_discount_rule_ids = implode(',', array_pad(array(), count($discount_rule_ids), '?'));
         $where = <<<__SQL__
 category.del_flg = 0
@@ -155,7 +141,7 @@ AND category.category_id IN (
         AND discount_rule.effective_to >= ?
 )
 __SQL__;
-        
+
         $where_params = array_values($discount_rule_ids);
         $time = date('Y-m-d H:i:s', $used_time);
         $where_params[] = $time;
@@ -164,17 +150,18 @@ __SQL__;
         $columns = "category.category_id, category.category_name AS name, category_total_count.product_count AS products";
         $query->setOrder('category.rank ASC');
         $items = $query->select($columns, $from, $where, $where_params);
-        
+
         return $items;
     }
-    
-    protected function getTargetProducts(array $discount_rule_ids, $used_time) {
+
+    protected function getTargetProducts(array $discount_rule_ids, $used_time)
+    {
         if (empty($discount_rule_ids)) {
             return array();
         }
-        
+
         $query = SC_Query_Ex::getSingletonInstance();
-        
+
         $from = <<<__SQL__
 dtb_products AS product
 __SQL__;
@@ -222,22 +209,23 @@ __SQL__;
             array($time),
             array($time)
         );
-        
+
         $columns = "product.product_id, product.name";
         $query->setOrder('product.name ASC');
         $items = $query->select($columns, $from, $where, $where_params);
-        
+
         return $items;
     }
-    
+
     /**
      * @param SC_FormParam_Ex $params
      * @param array $errors
      * @return array
      */
-    protected function buildForm(SC_FormParam_Ex $params, $errors = array()) {
+    protected function buildForm(SC_FormParam_Ex $params, $errors = array())
+    {
         $form = array();
-        
+
         foreach ($params->keyname as $index => $key) {
             $form[$key] = array(
                 'title' => $params->disp_name[$index],
@@ -246,31 +234,33 @@ __SQL__;
                 'error' => null,
             );
         }
-        
+
         foreach ($errors as $key => $error) {
             $form[$key]['error'] = $error;
         }
-        
+
         return $form;
     }
-    
+
     /**
      * @param string $coupon_code
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam($coupon_code) {
+    protected function buildFormParam($coupon_code)
+    {
         $params = new SC_FormParam_Ex();
-        
+
         return $params;
     }
-    
+
     /**
      * @param SC_FormParam_Ex $params
      * @return array キーにフォーム名、値にエラーメッセージを収めた連想配列。
      */
-    function validateFormParam(SC_FormParam_Ex $params) {
+    protected function validateFormParam(SC_FormParam_Ex $params)
+    {
         $errors = $params->checkError();
-        
+
         return $errors;
     }
 }

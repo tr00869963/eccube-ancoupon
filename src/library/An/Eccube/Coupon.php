@@ -31,50 +31,50 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     public $memo;
     public $create_date;
     public $update_date;
-    
+
     public $discount_rules;
-    
+
     /**
      * @param array $data
      * @param array $options
      */
     public function __construct(array $data = array(), array $options = array()) {
         parent::__construct($data, $options);
-        
+
         if ($this->effective_from === null) {
             $this->effective_from = date('Y-m-d 0:0:0');
         }
-        
+
         if ($this->effective_to === null) {
             $this->effective_to = date('Y-m-d H:i:s', 0x7fffffff - 60 * 60 * 24);
         }
-        
+
         if ($this->discount_rules === null) {
             $this->discount_rules = array();
         }
     }
-    
+
     /**
      * @see An_Eccube_Model::getStorableProperties()
      */
     protected function getStorableProperties() {
         $properties = parent::getStorableProperties();
-        
+
         unset($properties['discount_rules']);
-        
+
         return $properties;
     }
-    
+
     protected function toStorableValues() {
         $values = parent::toStorableValues();
 
         $values['enabled'] = (int)$values['enabled'];
-        
+
         return $values;
     }
-    
+
     /**
-     * 
+     *
      * @param string $coupon_id
      * @return An_Eccube_Coupon
      */
@@ -82,21 +82,21 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         $where = 'coupon_id = ?';
         $params = array($coupon_id);
         $add = '';
-        
+
         if (!empty($options['for_update'])) {
             $add .= ' FOR UPDATE';
         }
-        
+
         $coupons = self::findByWhere('*', $where, $params, null, null, null, null, $add);
-        
+
         if (empty($coupons)) {
             $message = sprintf("Not found %s at id = %s", __CLASS__, $coupon_id);
             throw new RuntimeException($message);
         }
-        
+
         return reset($coupons);
     }
-    
+
     /**
      * @param string $cols
      * @param string $where
@@ -106,7 +106,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      */
     public static function findByWhere($columns, $where, array $params = array(), $limit = null, $offset = null, $sort_key = null, $sort_order = 'ASC', $additional = null) {
         $query = self::getQuery();
-        
+
         if ($limit && $offset) {
             $query->setLimitOffset($limit, $offset);
         } elseif ($limit) {
@@ -114,24 +114,25 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         } elseif ($offset) {
             $query->setOffset($offset);
         }
-        
+
         if ($sort_key) {
             $order = $sort_order ? "{$sort_key} {$sort_order}" : $sort_key;
             $query->setOrder($order);
         }
-        
+
         if ($additional) {
             $query->setOption($additional);
         }
 
         $rows = $query->select($columns, 'plg_ancoupon_coupon', $where, $params);
+        $coupons = array();
         foreach ($rows as $row) {
             $coupon = new self($row);
-        
+
             $coupon->ensureStored();
             $coupons[$coupon->coupon_id] = $coupon;
         }
-        
+
         if ($coupons) {
             $coupon_ids = array_keys($coupons);
 
@@ -144,10 +145,10 @@ class An_Eccube_Coupon extends An_Eccube_Model {
                 $coupons[$row['coupon_id']]->discount_rules[] = $row['discount_rule_id'];
             }
         }
-        
+
         return $coupons;
     }
-    
+
     /**
      * @param An_Eccube_Coupon $cupon_code
      * @return An_Eccube_Coupon
@@ -168,7 +169,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         $query = self::getQuery();
         return $query->exists('plg_ancoupon_coupon', $where, $params);
     }
-    
+
     /**
      * @param string $where
      * @param array $params
@@ -178,13 +179,13 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         $query = self::getQuery();
         return $query->count('plg_ancoupon_coupon', $where, $params);
     }
-    
+
     /**
-     * 
+     *
      */
     public function save() {
         $query = self::getQuery();
-        
+
         if ($this->isStored()) {
             $this->update_date = date('Y-m-d H:i:s');
         } else {
@@ -194,7 +195,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         }
 
         $values = $this->toStorableValues();
-        
+
         if ($this->isStored()) {
             $query->update('plg_ancoupon_coupon', $values, 'coupon_id = ?', array($this->coupon_id));
         } else {
@@ -211,7 +212,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
             $query->insert('plg_ancoupon_coupon_discount_rule', $values);
         }
     }
-    
+
     /**
      * @param string $id
      * @param int
@@ -221,7 +222,7 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         $params = array($coupon_id);
         return self::deleteByWhere($where, $params);
     }
-    
+
     /**
      * @param string $where
      * @param array $params
@@ -233,10 +234,10 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         $coupon_ids = $query->getSql('coupon_id', 'plg_ancoupon_coupon', $where);
         $discount_rule_where = "coupon_id IN ($coupon_ids)";
         $query->delete('plg_ancoupon_coupon_discount_rule', $discount_rule_where, $params);
-        
+
         return $query->delete('plg_ancoupon_coupon', $where, $params);
     }
-    
+
     /**
      * @param int $used_time
      * @param array $session
@@ -246,48 +247,48 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         if ($customer === null) {
             $customer = new SC_Customer_Ex();
         }
-        
+
         // 利用可能か？
         $available = $this->enabled;
-        
+
         // 使用日時が有効期間内か？
         $available = $available && $this->isInPeriod($used_time);
-        
+
         // 使用回数が上限に達していないか？
         $available = $available && !$this->isUsesLimitReached();
-        
+
         // ユーザーが対象か？
         $available = $available && $this->isUserTargeted($customer);
-        
+
         return $available;
     }
-    
+
     public function isUserTargeted(SC_Customer_Ex $customer) {
         $loggedin = $customer->isLoginSuccess(true);
-        
+
         $targeted = false;
         $discount_rules = $this->getDiscountRules();
         foreach ($discount_rules as $discount_rule) {
             $targeted = $targeted || (($discount_rule->allow_guest && !$loggedin) || ($discount_rule->allow_member && $loggedin));
         }
-        
+
         return $targeted;
     }
-    
+
     public function isInPeriod($used_time) {
         $in_from = $used_time >= strtotime($this->effective_from);
         $in_to = $used_time < strtotime($this->effective_to);
         return $in_from && $in_to;
     }
-    
+
     public function isUsesLimitReached() {
         if (!$this->limit_uses) {
             return false;
         }
-        
+
         return $this->uses >= $this->max_uses;
     }
-    
+
     /**
      * @return array <An_Eccube_DiscountRule>
      */
@@ -306,7 +307,7 @@ __SQL__;
         $discount_rules = An_Eccube_DiscountRule::findByWhere('*', $where, $where_params);
         return $discount_rules;
     }
-    
+
     /**
      * @param array $coupon_codes
      * @return array <An_Eccube_DiscountRule>
@@ -315,7 +316,7 @@ __SQL__;
         if (!$coupon_codes) {
             return array();
         }
-        
+
         $coupon_codes_placeholder = implode(',', array_pad(array(), count($coupon_codes), '?'));
         $where = <<<__SQL__
 discount_rule_id IN (
@@ -332,7 +333,7 @@ __SQL__;
         $discount_rules = An_Eccube_DiscountRule::findByWhere('*', $where, $where_params);
         return $discount_rules;
     }
-    
+
     /**
      * @param string $coupon_code
      * @return string
@@ -343,17 +344,17 @@ __SQL__;
         $coupon_code = preg_replace($pattern, '', $coupon_code);
         return $coupon_code;
     }
-    
+
     /**
      * @param int $order_id
      * @param float $discount
      */
     public function useToOrder($order_id, $discount) {
         $query = self::getQuery();
-        
+
         $this->uses++;
         $query->query('UPDATE plg_ancoupon_coupon SET uses = uses + 1 WHERE coupon_id = ?', array($this->coupon_id));
-        
+
         $values = array(
             'coupon_id' => $this->coupon_id,
             'order_id' => $order_id,

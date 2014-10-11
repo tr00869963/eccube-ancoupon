@@ -3,23 +3,23 @@
  * EC-CUBEアフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once CLASS_EX_REALDIR . 'page_extends/admin/LC_Page_Admin_Ex.php';
+require_once PLUGIN_UPLOAD_REALDIR . '/AnCoupon/pages/plg_AnCoupon_LC_Page_Admin.php';
 
 /**
  * クーポンの編集画面
@@ -28,62 +28,32 @@ require_once CLASS_EX_REALDIR . 'page_extends/admin/LC_Page_Admin_Ex.php';
  * @author M-soft
  * @version $Id: $
  */
-class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
+class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends plg_AnCoupon_LC_Page_Admin
+{
+    /**
+     *
+     * @var string
+     */
+    protected $defaultMode = 'edit';
+
     public function init() {
         parent::init();
-        
+
         $this->tpl_mainpage = 'products/plg_AnCoupon_coupon_edit.tpl';
         $this->tpl_mainno = 'products';
         $this->tpl_subno = 'coupon';
         $this->tpl_maintitle = '商品管理';
         $this->tpl_subtitle = 'クーポン登録';
     }
-    
-    public function process() {
-        $this->action();
-        $this->sendResponse();
-    }
-    
-    public function action() {
-        $this->context = $this->getContext();
-        
-        $mode = $this->getMode();
-        switch ($mode) {
-            case 'save':
-                $this->doSave();
-                break;
-                
-            case 'edit':
-            default:
-                $this->doEdit();
-                break;
-        }
-        
-        $this->context->save();
-    }
-    
-    /**
-     * @return An_Eccube_PageContext
-     */
-    protected function getContext() {
-        $page_context_id = $_REQUEST['page_context_id'];
-        $context = An_Eccube_PageContext::load($page_context_id);
-        
-        if (!$context->isPrepared()) {
-            $this->initializeContext($context);
-            $context->prepare();
-        }
-        
-        return $context;
-    }
-    
-    protected function initializeContext(An_Eccube_PageContext $context) {
+
+    protected function initializeContext(An_Eccube_PageContext $context)
+    {
         if (isset($_GET['coupon_id'])) {
-            $coupon_id = (string)$_GET['coupon_id'];
+            $coupon_id = (int)$_GET['coupon_id'];
             $coupon = An_Eccube_Coupon::load($coupon_id);
         } else {
             $coupon = new An_Eccube_Coupon();
-            
+
             $discount_rule_ids = (array)@$_GET['discount_rule_id'];
             if ($discount_rule_ids) {
                 $discount_rule_id = array_pop($discount_rule_ids);
@@ -97,34 +67,36 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
                 }
             }
         }
-        $context->session['coupon'] = $coupon;
+        $context['coupon'] = $coupon;
     }
-    
-    public function doEdit($errors = array()) {
-        $coupon = $this->context->session['coupon'];
+
+    public function doEdit($errors = array())
+    {
+        $coupon = $this->context['coupon'];
         $this->coupon = $coupon;
-        
-        $params = $this->buildFormParam($this->context);
+
+        $params = $this->buildFormParam();
         $form = $this->buildForm($params, $errors);
         $this->form = $form;
-        
+
         $this->acceptable_chars = AnCoupon::getSetting('acceptable_chars');
     }
-    
-    public function doSave() {
+
+    protected function doSave()
+    {
         try {
             $tx = An_Eccube_Model::beginTransaction();
 
-            $coupon = $this->context->session['coupon'];
+            $coupon = $this->context['coupon'];
             if ($coupon->isStored()) {
                 $lock = An_Eccube_Coupon::load($coupon->coupon_id, array('for_update' => true));
             }
-            
+
             $params = $this->buildFormParam($this->context);
             $values = $_POST + array(
             );
             $params->setParam($values);
-            
+
             $errors = $this->validateFormParam($params, $this->context);
             if ($errors) {
                 $tx->rollback();
@@ -134,30 +106,29 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
             }
 
             $this->applyFormParam($params, $this->context);
-            
+
             $coupon->save();
-            
+
             $tx->commit();
-            
-            $this->context->dispose();
 
             $this->coupon = $coupon;
             $this->tpl_mainpage = 'products/plg_AnCoupon_coupon_edit_complete.tpl';
         } catch (Exception $e) {
             $tx->rollback();
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * @param SC_FormParam_Ex $params
      * @param array $errors
      * @return array
      */
-    protected function buildForm(SC_FormParam_Ex $params, $errors = array()) {
+    protected function buildForm(SC_FormParam_Ex $params, $errors = array())
+    {
         $form = array();
-        
+
         foreach ($params->keyname as $index => $key) {
             $form[$key] = array(
                 'title' => $params->disp_name[$index],
@@ -166,21 +137,21 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
                 'error' => null,
             );
         }
-        
+
         foreach ($errors as $key => $error) {
             $form[$key]['error'] = $error;
         }
-        
+
         $form['enabled']['options'] = array(
             1 => '有効',
             0 => '無効',
         );
-        
+
         $form['limit_uses']['options'] = array(
             1 => '制限する',
             0 => '制限しない',
         );
-        
+
         $discount_rules = An_Eccube_DiscountRule::findByWhere('discount_rule_id, name', 'enabled = ?', array(1), null, null, 'name');
         $options = array('' => '');
         foreach ($discount_rules as $discount_rule) {
@@ -201,26 +172,26 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         $form['effective_to_year']['options'] = $date->getYear();
         $form['effective_to_month']['options'] = $date->getMonth();
         $form['effective_to_day']['options'] = $date->getDay();
-        
+
         return $form;
     }
-    
+
     /**
-     * @param An_Eccube_PageContext $context
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam(An_Eccube_PageContext $context) {
-        $coupon = $context->session['coupon'];
-        
+    protected function buildFormParam()
+    {
+        $coupon = $this->context['coupon'];
+
         $params = new SC_FormParam_Ex();
-        
+
         $params->addParam('クーポンコード', 'code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $coupon->code);
         $params->addParam('状態', 'enabled', 1, 'n', array('MAX_LENGTH_CHECK', 'SELECT_CHECK'), (int)$coupon->enabled);
         $params->addParam('管理者メモ', 'memo', 1000, 'n', array('MAX_LENGTH_CHECK'), $coupon->memo);
 
         $params->addParam('使用回数制限', 'limit_uses', INT_LEN, 'n', array('EXIST_CHECK', 'SELECT_CHECK'), (int)$coupon->limit_uses);
         $params->addParam('使用回数上限', 'max_uses', INT_LEN, 'n', array('EXIST_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $coupon->max_uses);
-        
+
         list($year, $month, $day) = explode('-', date('Y-n-j', strtotime($coupon->effective_from)));
         $params->addParam('有効期間開始年', 'effective_from_year', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), $year);
         $params->addParam('有効期間開始月', 'effective_from_month', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), $month);
@@ -232,18 +203,18 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         $params->addParam('有効期間終了日', 'effective_to_day', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), $day);
 
         $params->addParam('割引条件', 'discount_rule', null, '', array('EXIST_CHECK'), reset($coupon->discount_rules));
-        
+
         return $params;
     }
-    
+
     /**
      * @param SC_FormParam_Ex $params
-     * @param An_Eccube_PageContext $context
      * @return array キーにフォーム名、値にエラーメッセージを収めた連想配列。
      */
-    function validateFormParam(SC_FormParam_Ex $params, An_Eccube_PageContext $context) {
+    protected function validateFormParam(SC_FormParam_Ex $params)
+    {
         $errors = $params->checkError();
-        $coupon = $context->session['coupon'];
+        $coupon = $this->context['coupon'];
 
         // クーポンコード
         $name = 'code';
@@ -265,7 +236,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
                 $errors[$name] = "※ {$title}の <code>{$code}</code> は既に使用されています。<br />";
             }
         }
-        
+
         // 状態
         $name = 'enabled';
         $value = $params->getValue($name);
@@ -273,7 +244,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         if (!in_array($value, array(0, 1))) {
             $errors[$name] = "※ {$title}の選択肢が不正です。<br />";
         }
-        
+
         // 仕様回数制限
         $name = 'limit_uses';
         $value = $params->getValue($name);
@@ -291,7 +262,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
             $minimum = number_format($coupon->uses);
             $errors[$name] = "※ {$title}を {$minimum} 未満にする事は出来ません。<br />";
         }
-        
+
         // 割引条件
         $name = 'discount_rule';
         $value = $params->getValue($name);
@@ -305,7 +276,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
                 $errors[$name] = "※ {$title}の選択肢が不正です。<br />";
             }
         }
-        
+
         // 有効期間開始
         $year = $params->getValue('effective_from_year');
         $month = $params->getValue('effective_from_month');
@@ -318,7 +289,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
                 $errors['effective_from'] = "※ 有効期間の開始日が指定できる範囲を超えています。<br />";
             }
         }
-        
+
         // 有効期間終了
         $year = $params->getValue('effective_to_year');
         $month = $params->getValue('effective_to_month');
@@ -333,12 +304,17 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
                 $errors['effective_to'] = "※ 有効期間の開始日以前にはできません。<br />";
             }
         }
-        
+
         return $errors;
     }
-    
-    protected function applyFormParam(SC_FormParam_Ex $params, An_Eccube_PageContext $context) {
-        $coupon = $this->context->session['coupon'];
+
+    /**
+     *
+     * @param SC_FormParam_Ex $params
+     */
+    protected function applyFormParam(SC_FormParam_Ex $params)
+    {
+        $coupon = $this->context['coupon'];
 
         $coupon->code = $params->getValue('code');
         $coupon->enabled = $params->getValue('enabled');
@@ -346,7 +322,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
 
         $coupon->limit_uses = $params->getValue('limit_uses');
         $coupon->max_uses = $params->getValue('max_uses');
-        
+
         $discount_rules = (array)$params->getValue('discount_rule');
         $coupon->discount_rules = $discount_rules;
 
@@ -354,7 +330,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends LC_Page_Admin_Ex {
         $month = $params->getValue('effective_from_month');
         $day = $params->getValue('effective_from_day');
         $coupon->effective_from = SC_Utils_Ex::sfGetTimestamp($year, $month, $day);
-        
+
         $year = $params->getValue('effective_to_year');
         $month = $params->getValue('effective_to_month');
         $day = $params->getValue('effective_to_day');

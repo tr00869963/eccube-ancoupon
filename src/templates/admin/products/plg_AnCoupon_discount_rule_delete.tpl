@@ -2,7 +2,7 @@
     <div id="discount_rule" class="contents-main">
         <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
         <input type="hidden" name="mode" value="delete" />
-        <input type="hidden" name="page_context_id" value="<!--{$context->id|h}-->" />
+        <input type="hidden" name="context" value="<!--{$context|h}-->" />
 
         <h2>削除する割引条件</h2>
 

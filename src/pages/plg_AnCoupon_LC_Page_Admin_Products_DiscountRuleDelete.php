@@ -19,7 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once CLASS_EX_REALDIR . 'page_extends/admin/LC_Page_Admin_Ex.php';
+require_once PLUGIN_UPLOAD_REALDIR . '/AnCoupon/pages/plg_AnCoupon_LC_Page_Admin.php';
 
 /**
  * 割引条件の削除画面
@@ -28,13 +28,16 @@ require_once CLASS_EX_REALDIR . 'page_extends/admin/LC_Page_Admin_Ex.php';
  * @author M-soft
  * @version $Id: $
  */
-class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Admin_Ex {
+class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends plg_AnCoupon_LC_Page_Admin
+{
     /**
-     * @var An_Eccube_PageContext
+     *
+     * @var string
      */
-    public $context;
+    protected $defaultMode = 'confirm';
 
-    public function init() {
+    public function init()
+    {
         parent::init();
 
         $this->tpl_mainpage = 'products/plg_AnCoupon_discount_rule_delete.tpl';
@@ -44,50 +47,15 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
         $this->tpl_subtitle = '割引条件の削除';
     }
 
-    public function process() {
-        $this->action();
-        $this->sendResponse();
+    protected function initializeContext(An_Eccube_PageContext $context)
+    {
+        $discount_rule_ids = array_map('intval', (array)@$_GET['discount_rule_id']);
+        $context['discount_rule_ids'] = $discount_rule_ids;
     }
 
-    public function action() {
-        $this->context = $this->getContext();
-
-        $mode = $this->getMode();
-        switch ($mode) {
-            case 'delete':
-                $this->doDelete();
-                break;
-
-            default:
-                $this->doConfirm();
-                break;
-        }
-
-        $this->context->save();
-    }
-
-    /**
-     * @return An_Eccube_PageContext
-     */
-    protected function getContext() {
-        $page_context_id = $_REQUEST['page_context_id'];
-        $context = An_Eccube_PageContext::load($page_context_id);
-
-        if (!$context->isPrepared()) {
-            $this->initializeContext($context);
-            $context->prepare();
-        }
-
-        return $context;
-    }
-
-    protected function initializeContext(An_Eccube_PageContext $context) {
-        $discount_rule_ids = array_map('strval', (array)@$_GET['discount_rule_id']);
-        $context->session['discount_rule_ids'] = $discount_rule_ids;
-    }
-
-    protected function doConfirm() {
-        $discount_rule_ids = $this->context->session['discount_rule_ids'];
+    protected function doConfirm()
+    {
+        $discount_rule_ids = $this->context['discount_rule_ids'];
         $params = $this->buildFormParam($discount_rule_ids);
 
         $columns = 'name, update_date';
@@ -101,7 +69,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
         $this->form = $form;
     }
 
-    protected function buildDeleteQueryCondition($discount_rule_ids) {
+    protected function buildDeleteQueryCondition($discount_rule_ids)
+    {
         $wheres = array();
         $values = array();
 
@@ -115,11 +84,12 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
         return array($where, $values);
     }
 
-    protected function doDelete() {
+    protected function doDelete()
+    {
         try {
             $tx = An_Eccube_Model::beginTransaction();
 
-            $discount_rule_ids = $this->context->session['discount_rule_ids'];
+            $discount_rule_ids = $this->context['discount_rule_ids'];
             $params = $this->buildFormParam($discount_rule_ids);
             $params->setParam($_POST);
 
@@ -135,8 +105,6 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
 
             $tx->commit();
 
-            $this->context->dispose();
-
             $this->deleted_items_number = $deleted_items_number;
             $this->tpl_mainpage = 'products/plg_AnCoupon_discount_rule_delete_complete.tpl';
         } catch (Exception $e) {
@@ -151,7 +119,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
      * @param array $errors
      * @return array
      */
-    protected function buildForm(SC_FormParam_Ex $params, $errors = array()) {
+    protected function buildForm(SC_FormParam_Ex $params, $errors = array())
+    {
         $form = array();
 
         foreach ($params->keyname as $index => $key) {
@@ -174,7 +143,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
      * @param object $coupon
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam(array $discount_rule_ids) {
+    protected function buildFormParam(array $discount_rule_ids)
+    {
         $params = new SC_FormParam_Ex();
 
         return $params;
@@ -184,7 +154,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleDelete extends LC_Page_Adm
      * @param SC_FormParam_Ex $params
      * @return array キーにフォーム名、値にエラーメッセージを収めた連想配列。
      */
-    protected function validateFormParam($params) {
+    protected function validateFormParam($params)
+    {
         $errors = $params->checkError();
 
         return $errors;

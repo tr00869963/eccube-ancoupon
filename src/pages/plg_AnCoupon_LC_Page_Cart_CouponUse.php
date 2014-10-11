@@ -3,23 +3,23 @@
  * EC-CUBEアフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once CLASS_EX_REALDIR . 'page_extends/LC_Page_Ex.php';
+require_once PLUGIN_UPLOAD_REALDIR . '/AnCoupon/pages/plg_AnCoupon_LC_Page.php';
 
 /**
  * クーポンの編集画面
@@ -28,84 +28,51 @@ require_once CLASS_EX_REALDIR . 'page_extends/LC_Page_Ex.php';
  * @author M-soft
  * @version $Id: $
  */
-class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
+class plg_AnCoupon_LC_Page_Cart_CouponUse extends plg_AnCoupon_LC_Page
+{
     /**
-     * @var An_Eccube_PageContext
+     *
+     * @var string
      */
-    public $context;
-    
-    public function init() {
+    protected $defaultMode = 'input';
+
+    public function init()
+    {
         parent::init();
 
         $this->tpl_title = 'クーポンの使用';
-        
-        $this->context = $this->getContext();
     }
-    
-    public function process() {
-        $this->action();
-        $this->sendResponse();
-        $this->context->save();
-    }
-    
-    public function action() {
-        $mode = $this->getMode();
-        switch ($mode) {
-            case 'use':
-                $this->doUse();
-                break;
-                
-            case 'input':
-            default:
-                $this->doInput();
-                break;
-        }
-    }
-    
-    /**
-     * @return An_Eccube_PageContext
-     */
-    protected function getContext() {
-        $page_context_id = $_REQUEST['page_context_id'];
-        $context = An_Eccube_PageContext::load($page_context_id);
-        
-        if (!$context->isPrepared()) {
-            $this->initializeContext($context);
-            $context->prepare();
-        }
-        
-        return $context;
-    }
-    
-    protected function initializeContext(An_Eccube_PageContext $context) {
-        $context->session = array();
 
+    protected function initializeContext(An_Eccube_PageContext $context)
+    {
         $coupon_code = '';
-        $context->session['coupon'] = $coupon_code;
-        
-        $dest_path = isset($_GET['destination']) && is_string($_GET['destination']) ? $_GET['destination'] : '';
-        $context->session['destination'] = $dest_path;
+        $context['coupon'] = $coupon_code;
+
+        $destination = isset($_GET['destination']) && is_string($_GET['destination']) ? $_GET['destination'] : '';
+        $context['destination'] = $destination;
     }
-    
-    protected function doInput($errors = array()) {
-        $params = $this->buildFormParam($this->context);
+
+    protected function doInput($errors = array())
+    {
+        $params = $this->buildFormParam();
         $form = $this->buildForm($params, $errors);
         $this->form = $form;
-        
+
         $this->coupon_expired_error = isset($_GET['coupon_expired_error']);
     }
-    
-    protected function doUse() {
+
+    protected function doUse()
+    {
         try {
             $tx = An_Eccube_Model::beginTransaction();
-            
-            $params = $this->buildFormParam($this->context);
+
+            $params = $this->buildFormParam();
             $params->setParam($_POST);
-            
+
             $errors = $this->validateFormParam($params);
             if ($errors) {
                 $tx->rollback();
-                $this->context->session['coupon_code'] = $params->getValue('coupon_code');
+                $this->context['coupon_code'] = $params->getValue('coupon_code');
                 $this->doInput($errors);
                 return;
             }
@@ -115,31 +82,30 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
             $plugin = AnCoupon::getInstance();
             $plugin->clearUsingCouponCode();
             $plugin->useCouponCode($coupon_code);
-            
-            $tx->commit();
-            
-            $this->context->dispose();
 
-            $destination = $this->context->session['destination'];
+            $tx->commit();
+
+            $destination = $this->context['destination'];
             if ($destination == '') {
                 $destination = ROOT_URLPATH . 'cart/plg_AnCoupon_coupon_status.php';
             }
             SC_Response_Ex::sendRedirect($destination);
         } catch (Exception $e) {
             $tx->rollback();
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * @param SC_FormParam_Ex $params
      * @param array $errors
      * @return array
      */
-    protected function buildForm(SC_FormParam_Ex $params, $errors = array()) {
+    protected function buildForm(SC_FormParam_Ex $params, $errors = array())
+    {
         $form = array();
-        
+
         foreach ($params->keyname as $index => $key) {
             $form[$key] = array(
                 'title' => $params->disp_name[$index],
@@ -148,31 +114,32 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
                 'error' => null,
             );
         }
-        
+
         foreach ($errors as $key => $error) {
             $form[$key]['error'] = $error;
         }
-        
+
         return $form;
     }
-    
+
     /**
-     * @param string $coupon_code
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam(An_Eccube_PageContext $context) {
+    protected function buildFormParam()
+    {
         $params = new SC_FormParam_Ex();
-        
-        $params->addParam('クーポンコード', 'coupon_code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $context->session['coupon_code']);
-        
+
+        $params->addParam('クーポンコード', 'coupon_code', 64, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $this->context['coupon_code']);
+
         return $params;
     }
-    
+
     /**
      * @param SC_FormParam_Ex $params
      * @return array キーにフォーム名、値にエラーメッセージを収めた連想配列。
      */
-    protected function validateFormParam(SC_FormParam_Ex $params) {
+    protected function validateFormParam(SC_FormParam_Ex $params)
+    {
         $errors = $params->checkError();
 
         // クーポンコード
@@ -197,7 +164,7 @@ class plg_AnCoupon_LC_Page_Cart_CouponUse extends LC_Page_Ex {
                 $errors[$name] = "※ ご指定頂いたクーポンコードはご利用できません。<br />";
             }
         }
-        
+
         return $errors;
     }
 }

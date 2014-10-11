@@ -24,16 +24,17 @@
  *
  * @package AnCoupon
  * @author M-soft
- * @version $Id: $
  */
-class plugin_update {
+class plugin_update
+{
     /**
      * プラグインをアップデートします。
      *
      * @param array $info プラグイン情報の連想配列(dtb_plugin)
      * @return void
      */
-    function update($info) {
+    public function update($info)
+    {
         $new_info = self::invokeUpTo($info);
         self::savePluginInfo($new_info, $info);
     }
@@ -44,7 +45,8 @@ class plugin_update {
      * @param array $info プラグイン情報の連想配列(dtb_plugin)
      * @return array アップデート後のプラグイン情報の連想配列(dtb_plugin)
      */
-    protected static function invokeUpTo($info) {
+    protected static function invokeUpTo($info)
+    {
         $points = self::getMigrationPoints();
         foreach ($points as $point) {
             if (version_compare($info['plugin_version'], $point['version'], '<')) {
@@ -57,7 +59,8 @@ class plugin_update {
         return $info;
     }
 
-    private static function getMigrationPoints() {
+    private static function getMigrationPoints()
+    {
         $points = array();
         $sortkey = array();
         $class = new ReflectionClass(__CLASS__);
@@ -89,7 +92,8 @@ class plugin_update {
      * @param array $new_info 新しいプラグイン情報の連想配列(dtb_plugin)
      * @param array $old_info 以前のプラグイン情報の連想配列(dtb_plugin)
      */
-    protected static function savePluginInfo($new_info, $old_info) {
+    protected static function savePluginInfo($new_info, $old_info)
+    {
         $query = SC_Query_Ex::getSingletonInstance();
         $fields = array(
             'plugin_name',
@@ -117,7 +121,8 @@ class plugin_update {
      * @param array $info
      * @return array
      */
-    protected static function upTo_1_1_0($info) {
+    protected static function upTo_1_1_0($info)
+    {
         $info['plugin_version'] = '1.1.0';
 
         // 不要になった管理者用ページを削除
@@ -189,7 +194,8 @@ class plugin_update {
      * @param array $info
      * @return array
      */
-    protected static function upTo_1_2_0($info) {
+    protected static function upTo_1_2_0($info)
+    {
         $info['plugin_version'] = '1.2.0';
         $plugin_code = $info['plugin_code'];
 
@@ -232,7 +238,8 @@ class plugin_update {
      * @param array $info
      * @return array
      */
-    protected static function upTo_1_2_1($info) {
+    protected static function upTo_1_2_1($info)
+    {
         $info['plugin_version'] = '1.2.1';
         $plugin_code = $info['plugin_code'];
 
@@ -248,7 +255,8 @@ class plugin_update {
      * @param array $info
      * @return array
      */
-    protected static function upTo_1_3_0($info) {
+    protected static function upTo_1_3_0($info)
+    {
         $info['plugin_version'] = '1.3.0';
         $plugin_code = $info['plugin_code'];
 
@@ -264,7 +272,8 @@ class plugin_update {
      * @param array $info
      * @return array
      */
-    protected static function upTo_1_3_1($info) {
+    protected static function upTo_1_3_1($info)
+    {
         $info['plugin_version'] = '1.3.1';
         $plugin_code = $info['plugin_code'];
 
@@ -280,13 +289,36 @@ class plugin_update {
      * @param array $info
      * @return array
      */
-    protected static function upTo_1_3_2($info) {
+    protected static function upTo_1_3_2($info)
+    {
         $info['plugin_version'] = '1.3.2';
         $plugin_code = $info['plugin_code'];
 
         // プラグイン関連のファイルを全て更新
         $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
         $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+
+        return $info;
+    }
+
+    /**
+     * @param array $info
+     * @return array
+     */
+    protected static function upTo_1_3_3($info)
+    {
+        $info['plugin_version'] = '1.3.3';
+        $plugin_code = $info['plugin_code'];
+
+        // プラグイン関連のファイルを全て更新
+        $src_dir = DOWNLOADS_TEMP_PLUGIN_UPDATE_DIR;
+        $dest_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/";
+        SC_Utils::copyDirectory($src_dir, $dest_dir);
+
+        // テンプレートを更新。
+        $src_dir = PLUGIN_UPLOAD_REALDIR . "{$plugin_code}/templates/";
+        $dest_dir = SMARTY_TEMPLATES_REALDIR;
         SC_Utils::copyDirectory($src_dir, $dest_dir);
 
         return $info;

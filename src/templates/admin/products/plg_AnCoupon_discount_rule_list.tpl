@@ -4,17 +4,17 @@
     <a class="btn-action" href="plg_AnCoupon_coupon_list.php"><span class="btn-next">発行済みクーポンの一覧</span></a>
 </div>
 
-<form name="form1" id="form1" method="post" action="?">    
+<form name="form1" id="form1" method="post" action="?">
     <div id="discount_rule" class="contents-main">
         <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
         <input type="hidden" name="mode" value="" />
-        <input type="hidden" name="page_context_id" value="<!--{$context->id|h}-->" />
+        <input type="hidden" name="context" value="<!--{$context|h}-->" />
         <input name="search_pageno" type="hidden" value="" />
 
         <h2>クーポン用割引条件一覧</h2>
-        
+
         <!--{include file=$tpl_pager}-->
-    
+
         <table class="list center">
             <col width="30%" />
             <col width="10%" />
@@ -52,10 +52,10 @@
                 <!--{/foreach}-->
             </tbody>
         </table>
-        
+
         <!--{* 表示条件 *}-->
         <h2>表示条件</h2>
-        
+
         <table class="form">
             <col width="20%" />
             <col width="80%" />
@@ -96,14 +96,14 @@
                 </td>
             </tr>
         </table>
-    
+
         <div class="btn">
             <p class="page_rows">検索結果表示件数
             <!--{if $form.search_page_max.error}--><span class="attention"><!--{$form.search_page_max.error}--></span><!--{/if}-->
             <select name="search_page_max" style="<!--{$form.search_page_max.error|sfGetErrorColor}-->">
                 <!--{html_options options=$form.search_page_max.options selected=$form.search_page_max.value}-->
             </select> 件</p>
-    
+
             <div class="btn-area">
                 <ul>
                     <li><a class="btn-action" href="javascript:;" onclick="fnFormModeSubmit('form1', '', '', ''); return false;"><span class="btn-next">この条件で再表示する</span></a></li>

@@ -3,23 +3,23 @@
  * EC-CUBEアフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once CLASS_EX_REALDIR . 'page_extends/admin/LC_Page_Admin_Ex.php';
+require_once PLUGIN_UPLOAD_REALDIR . '/AnCoupon/pages/plg_AnCoupon_LC_Page_Admin.php';
 
 /**
  * クーポンの編集画面
@@ -28,78 +28,43 @@ require_once CLASS_EX_REALDIR . 'page_extends/admin/LC_Page_Admin_Ex.php';
  * @author M-soft
  * @version $Id: $
  */
-class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleEdit extends LC_Page_Admin_Ex {
+class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleEdit extends plg_AnCoupon_LC_Page_Admin
+{
     /**
-     * @var An_Eccube_PageContext
+     *
+     * @var string
      */
-    public $context;
-    
-    public function init() {
+    protected $defaultMode = 'edit';
+
+    public function init()
+    {
         parent::init();
-        
+
         $this->tpl_mainpage = 'products/plg_AnCoupon_discount_rule_edit.tpl';
         $this->tpl_mainno = 'products';
         $this->tpl_subno = 'discount_rule';
         $this->tpl_maintitle = '商品管理';
         $this->tpl_subtitle = '割引条件登録';
+    }
 
-        $this->context = $this->getContext();
-    }
-    
-    public function process() {
-        $this->action();
-        $this->sendResponse();
-        $this->context->save();
-    }
-    
-    public function action() {
-        $mode = $this->getMode();
-        switch ($mode) {
-            case 'save':
-                $this->doSave();
-                break;
-
-            case 'refresh':
-                $this->doRefresh();
-                break;
-                
-            case 'edit':
-            default:
-                $this->doEdit();
-                break;
-        }
-    }
-    
-    /**
-     * @return An_Eccube_PageContext
-     */
-    protected function getContext() {
-        $page_context_id = $_REQUEST['page_context_id'];
-        $context = An_Eccube_PageContext::load($page_context_id);
-        
-        if (!$context->isPrepared()) {
-            $this->initializeContext($context);
-            $context->prepare();
-        }
-        
-        return $context;
-    }
-    
-    protected function initializeContext(An_Eccube_PageContext $context) {
+    protected function initializeContext(An_Eccube_PageContext $context)
+    {
         if (isset($_GET['discount_rule_id'])) {
-            $discount_rule_id = (string)$_GET['discount_rule_id'];
+            $discount_rule_id = (int)$_GET['discount_rule_id'];
             $discount_rule = An_Eccube_DiscountRule::load($discount_rule_id);
         } else {
             $discount_rule = new An_Eccube_DiscountRule();
             $discount_rule->name = An_Eccube_DiscountRule::getDefaultUniqueName();
         }
-        $context->session['discount_rule'] = $discount_rule;
+
+        $context['discount_rule'] = $discount_rule;
     }
-    
-    protected function doEdit($errors = array()) {
-        $discount_rule = $this->context->session['discount_rule'];
+
+    protected function doEdit($errors = array())
+    {
+        $discount_rule = $this->context['discount_rule'];
         $this->discount_rule = $discount_rule;
-        
+
         $params = $this->buildFormParam($discount_rule);
         $form = $this->buildForm($params, $errors);
         $this->form = $form;
@@ -110,8 +75,9 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleEdit extends LC_Page_Admin
         $product_class_ids = $discount_rule->product_classes;
         $this->product_classes = $this->getProductClasses($product_class_ids);
     }
-    
-    protected function getProducts(array $product_ids) {
+
+    protected function getProducts(array $product_ids)
+    {
         if (empty($product_ids)) {
             return;
         }
@@ -135,11 +101,12 @@ JOIN (SELECT product_id, MIN(price02) AS min_price, MAX(price02) AS max_price FR
         foreach ($rows as $row) {
             $products[$row['product_id']] = $row;
         }
-        
+
         return $products;
     }
-    
-    protected function getProductClasses(array $product_class_ids) {
+
+    protected function getProductClasses(array $product_class_ids)
+    {
         if (empty($product_class_ids)) {
             return;
         }
@@ -169,12 +136,13 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         foreach ($rows as $row) {
             $product_classes[$row['product_class_id']] = $row;
         }
-        
+
         return $product_classes;
     }
-    
-    protected function doRefresh() {
-        $discount_rule = $this->context->session['discount_rule'];
+
+    protected function doRefresh()
+    {
+        $discount_rule = $this->context['discount_rule'];
 
         $params = $this->buildFormParam($discount_rule);
         $values = $_POST + array(
@@ -190,16 +158,17 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
 
         $this->tpl_onload = "location.hash='#product'";
     }
-    
-    protected function doSave() {
+
+    protected function doSave()
+    {
         try {
             $tx = An_Eccube_Model::beginTransaction();
 
-            $discount_rule = $this->context->session['discount_rule'];
+            $discount_rule = $this->context['discount_rule'];
             if ($discount_rule->isStored()) {
                 $lock = An_Eccube_DiscountRule::load($discount_rule->discount_rule_id, array('for_update' => true));
             }
-            
+
             $params = $this->buildFormParam($discount_rule);
             $values = $_POST + array(
                 'allow_guest' => 0,
@@ -211,7 +180,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
                 'product_class_remove' => array(),
             );
             $params->setParam($values);
-            
+
             $errors = $this->validateFormParam($params);
             if ($errors) {
                 $tx->rollback();
@@ -220,30 +189,29 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
             }
 
             $this->applyFormParam($params, $discount_rule);
-            
+
             $discount_rule->save();
-            
+
             $tx->commit();
-            
-            $this->context->dispose();
 
             $this->discount_rule = $discount_rule;
             $this->tpl_mainpage = 'products/plg_AnCoupon_discount_rule_edit_complete.tpl';
         } catch (Exception $e) {
             $tx->rollback();
-            
+
             throw $e;
         }
     }
-    
+
     /**
      * @param SC_FormParam_Ex $params
      * @param array $errors
      * @return array
      */
-    protected function buildForm(SC_FormParam_Ex $params, $errors = array()) {
+    protected function buildForm(SC_FormParam_Ex $params, $errors = array())
+    {
         $form = array();
-        
+
         foreach ($params->keyname as $index => $key) {
             $form[$key] = array(
                 'title' => $params->disp_name[$index],
@@ -252,11 +220,11 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
                 'error' => null,
             );
         }
-        
+
         foreach ($errors as $key => $error) {
             $form[$key]['error'] = $error;
         }
-        
+
         $form['enabled']['options'] = array(
             1 => '有効',
             0 => '無効',
@@ -283,7 +251,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         }
         $form['product_class_remove']['options'] = $options;
         $form['product_class_remove']['map'] = $map;
-        
+
         $categories = SC_Helper_DB::sfGetCatTree(0);
         $levels = array();
         $options = array();
@@ -293,7 +261,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         }
         $form['category']['options'] = $options;
         $form['category']['levels'] = $levels;
-        
+
         $product_numbers = array();
         $query = SC_Query_Ex::getSingletonInstance();
         $rows = $query->select('category_id, product_count', 'dtb_category_count');
@@ -317,15 +285,16 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         $form['effective_to_year']['options'] = $date->getYear();
         $form['effective_to_month']['options'] = $date->getMonth();
         $form['effective_to_day']['options'] = $date->getDay();
-        
+
         return $form;
     }
-    
+
     /**
-     * @param object $coupon
+     * @param An_Eccube_DiscountRule $discount_rule
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam(An_Eccube_DiscountRule $discount_rule) {
+    protected function buildFormParam(An_Eccube_DiscountRule $discount_rule)
+    {
         $params = new SC_FormParam_Ex();
 
         $params->addParam('割引条件名', 'name', 100, '', array('EXIST_CHECK', 'MAX_LENGTH_CHECK'), $discount_rule->name);
@@ -336,12 +305,12 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         $params->addParam('ゲスト', 'allow_guest', 1, 'n', array('MAX_LENGTH_CHECK'), (int)$discount_rule->allow_guest);
         $params->addParam('会員', 'allow_member', 1, 'n', array('MAX_LENGTH_CHECK'), (int)$discount_rule->allow_member);
         $params->addParam('最低購入金額', 'minimum_subtotal', PRICE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->minimum_subtotal);
-        
+
         $params->addParam('定額小計割引', 'total_discount_amount', PRICE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->total_discount_amount);
         $params->addParam('比例小計割引', 'total_discount_rate', PERCENTAGE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->total_discount_rate * 100);
         $params->addParam('定額商品割引', 'item_discount_amount', PRICE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->item_discount_amount);
         $params->addParam('比例商品割引', 'item_discount_rate', PERCENTAGE_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK', 'SPTAB_CHECK'), $discount_rule->item_discount_rate * 100);
-        
+
         list($year, $month, $day) = explode('-', date('Y-n-j', strtotime($discount_rule->effective_from)));
         $params->addParam('適用開始年', 'effective_from_year', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), $year);
         $params->addParam('適用開始月', 'effective_from_month', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), $month);
@@ -362,15 +331,16 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         $params->addParam('追加対象規格', 'product_class_new');
         $params->addParam('削除対象規格', 'product_class_remove');
         $params->addParam('アンカーキー', 'anchor_key', STEXT_LEN, 'KVa', array('SPTAB_CHECK', 'MAX_LENGTH_CHECK'));
-        
+
         return $params;
     }
-    
+
     /**
      * @param SC_FormParam_Ex $params
      * @return array キーにフォーム名、値にエラーメッセージを収めた連想配列。
      */
-    protected function validateFormParam($params) {
+    protected function validateFormParam($params)
+    {
         $errors = $params->checkError();
 
         // 割引条件コード
@@ -381,7 +351,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
 //         } elseif (preg_match('/[^0-9A-Za-z-]/u', $value)) {
 //             $errors[$name] = "※ {$title}に使用できない文字が含まれています。<br />";
 //         }
-        
+
         // 状態
         $name = 'enabled';
         $value = $params->getValue($name);
@@ -429,7 +399,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         } elseif ($value > 100) {
             $errors[$name] = "※ {$title}を 100 以上にする事は出来ません。<br />";
         }
-        
+
         // 割引適用期間開始
         $year = $params->getValue('effective_from_year');
         $month = $params->getValue('effective_from_month');
@@ -442,7 +412,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
                 $errors['effective_from'] = "※ 割引適用期間の開始日が指定できる範囲を超えています。<br />";
             }
         }
-        
+
         // 割引適用期間終了
         $year = $params->getValue('effective_to_year');
         $month = $params->getValue('effective_to_month');
@@ -466,11 +436,12 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         } elseif ($value < 0) {
             $errors[$name] = "※ {$title}を 0 未満にする事は出来ません。<br />";
         }
-        
+
         return $errors;
     }
-    
-    protected function applyFormParam(SC_FormParam_Ex $params, An_Eccube_DiscountRule $discount_rule) {
+
+    protected function applyFormParam(SC_FormParam_Ex $params, An_Eccube_DiscountRule $discount_rule)
+    {
 //         $discount_rule->code = $params->getValue('code');
         $discount_rule->name = $params->getValue('name');
         $discount_rule->enabled = $params->getValue('enabled');
@@ -479,16 +450,16 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         $discount_rule->total_discount_rate = $params->getValue('total_discount_rate') / 100;
         $discount_rule->item_discount_amount = $params->getValue('item_discount_amount');
         $discount_rule->item_discount_rate = $params->getValue('item_discount_rate') / 100;
-        
+
         $discount_rule->allow_guest = (bool)$params->getValue('allow_guest');
         $discount_rule->allow_member = (bool)$params->getValue('allow_member');
         $discount_rule->minimum_subtotal = $params->getValue('minimum_subtotal');
-        
+
         $year = $params->getValue('effective_from_year');
         $month = $params->getValue('effective_from_month');
         $day = $params->getValue('effective_from_day');
         $discount_rule->effective_from = SC_Utils_Ex::sfGetTimestamp($year, $month, $day);
-        
+
         $year = $params->getValue('effective_to_year');
         $month = $params->getValue('effective_to_month');
         $day = $params->getValue('effective_to_day');
@@ -503,7 +474,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
         }
         $discount_rule->products = array_values(array_unique($products));
 
-        
+
         $product_classes = $discount_rule->product_classes;
         $removes = (array)$params->getValue('product_class_remove');
         $product_classes = array_diff($product_classes, $removes);
@@ -512,7 +483,7 @@ LEFT JOIN dtb_classcategory AS classcategory2 ON classcategory2.classcategory_id
             $product_classes[] = $new;
         }
         $discount_rule->product_classes = array_values(array_unique($product_classes));
-        
+
         $discount_rule->categories = $params->getValue('category');
     }
 }

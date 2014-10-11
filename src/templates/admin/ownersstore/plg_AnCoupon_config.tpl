@@ -2,17 +2,17 @@
  * アフィリナビクーポンプラグイン
  * Copyright (C) 2013 M-soft All Rights Reserved.
  * http://m-soft.jp/
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -25,7 +25,7 @@
 <form name="form1" id="form1" method="post" action="<!--{$smarty.server.REQUEST_URI|h}-->">
     <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
     <input type="hidden" name="mode" value="save" />
-    <input type="hidden" name="page_context_id" value="<!--{$context->id|h}-->" />
+    <input type="hidden" name="context" value="<!--{$context|h}-->" />
 
     <div class="coupon-settings-form">
         <h3>基本設定</h3>
@@ -46,7 +46,7 @@
                 </td>
             </tr>
         </table>
-        
+
         <h3>AN7との連携</h3>
         <p>当プラグインを介してEC-CUBEとAN7を連携させる際に必要な設定項目です。連携せずに運用される場合は設定する必要はありません。</p>
         <table class="form">

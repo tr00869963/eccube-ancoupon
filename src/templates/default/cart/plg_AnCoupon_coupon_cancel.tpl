@@ -20,15 +20,15 @@
 
 <div id="undercolumn">
     <h2 class="title"><!--{$tpl_title|h}--></h2>
-    
+
     <div id="undercolumn_coupon">
         <p>クーポンの使用を止めると現在購入中の商品に対して割引が受けられなくなります。割引を再度受けたい時はクーポンコードを入力し直して下さい。</p>
 
         <form name="form1" method="post" action="?">
             <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
             <input type="hidden" name="mode" value="execute" />
-            <input type="hidden" name="page_context_id" value="<!--{$context->id|h}-->" />
-            
+            <input type="hidden" name="context" value="<!--{$context|h}-->" />
+
             <div class="btn_area">
                 <ul>
                     <li>
