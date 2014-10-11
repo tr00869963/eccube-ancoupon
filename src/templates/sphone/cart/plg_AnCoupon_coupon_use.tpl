@@ -35,7 +35,7 @@
         <form name="form1" method="post" action="?">
             <input type="hidden" name="<!--{$smarty.const.TRANSACTION_ID_NAME}-->" value="<!--{$transactionid}-->" />
             <input type="hidden" name="mode" value="use" />
-            <input type="hidden" name="context" value="<!--{$context->id|h}-->" />
+            <input type="hidden" name="context" value="<!--{$context|h}-->" />
             
             <table summary="クーポンコードの入力">
                 <colgroup>
