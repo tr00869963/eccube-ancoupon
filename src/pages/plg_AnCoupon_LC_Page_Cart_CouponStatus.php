@@ -185,31 +185,31 @@ product.del_flg = 0
 AND product.status = 1
 AND (
         product.product_id IN (
-        	SELECT
-        		discount_rule_product.product_id
-        	FROM
-         		plg_ancoupon_discount_rule AS discount_rule
-        		JOIN plg_ancoupon_discount_rule_product AS discount_rule_product ON discount_rule_product.discount_rule_id = discount_rule.discount_rule_id
-        	WHERE
+            SELECT
+                discount_rule_product.product_id
+            FROM
+                 plg_ancoupon_discount_rule AS discount_rule
+                JOIN plg_ancoupon_discount_rule_product AS discount_rule_product ON discount_rule_product.discount_rule_id = discount_rule.discount_rule_id
+            WHERE
                 discount_rule.discount_rule_id IN ($ph_discount_rule_ids)
                 AND discount_rule.enabled = 1
                 AND discount_rule.effective_from <= ?
                 AND discount_rule.effective_to >= ?
-	    )
+        )
         OR
         product.product_id IN (
-        	SELECT
-        		product_class.product_id
-        	FROM
-         		plg_ancoupon_discount_rule AS discount_rule
-        		JOIN plg_ancoupon_discount_rule_product_class AS discount_rule_product_class ON discount_rule_product_class.discount_rule_id = discount_rule.discount_rule_id
-        		JOIN dtb_products_class AS product_class ON product_class.product_class_id = discount_rule_product_class.product_class_id
-        	WHERE
+            SELECT
+                product_class.product_id
+            FROM
+                 plg_ancoupon_discount_rule AS discount_rule
+                JOIN plg_ancoupon_discount_rule_product_class AS discount_rule_product_class ON discount_rule_product_class.discount_rule_id = discount_rule.discount_rule_id
+                JOIN dtb_products_class AS product_class ON product_class.product_class_id = discount_rule_product_class.product_class_id
+            WHERE
                 discount_rule.discount_rule_id IN ($ph_discount_rule_ids)
                 AND discount_rule.enabled = 1
                 AND discount_rule.effective_from <= ?
                 AND discount_rule.effective_to >= ?
-	    )
+        )
 )
 __SQL__;
 

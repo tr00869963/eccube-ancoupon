@@ -296,15 +296,15 @@ class An_Eccube_DiscountRule extends An_Eccube_Model {
         
         $stmt = <<<__SQL__
 SELECT
-	1
+    1
 FROM
-	dtb_products_class
+    dtb_products_class
 WHERE
     product_class_id = ?
-	AND (
+    AND (
         product_id IN (SELECT product_id FROM plg_ancoupon_discount_rule_product AS rule_product WHERE discount_rule_id = ?)
         OR product_class_id IN (SELECT product_class_id FROM plg_ancoupon_discount_rule_product_class WHERE discount_rule_id = ?)
-	    OR product_id IN (SELECT dtb_product_categories.product_id FROM dtb_product_categories JOIN plg_ancoupon_discount_rule_category AS rule_cat ON rule_cat.category_id = dtb_product_categories.category_id WHERE rule_cat.discount_rule_id = ?)
+        OR product_id IN (SELECT dtb_product_categories.product_id FROM dtb_product_categories JOIN plg_ancoupon_discount_rule_category AS rule_cat ON rule_cat.category_id = dtb_product_categories.category_id WHERE rule_cat.discount_rule_id = ?)
     )
 __SQL__;
 
@@ -323,15 +323,15 @@ __SQL__;
         
         $stmt = <<<__SQL__
 SELECT
-	1 AS matched
+    1 AS matched
 FROM
-	dtb_products
+    dtb_products
 WHERE
     product_id = ?
-	AND (
+    AND (
         product_id IN (SELECT product_id FROM plg_ancoupon_discount_rule_product AS rule_product WHERE discount_rule_id = ?)
         OR product_id IN (SELECT product_id FROM dtb_products_class JOIN plg_ancoupon_discount_rule_product_class AS rule_class ON rule_class.product_class_id = dtb_products_class.product_class_id WHERE discount_rule_id = ?)
-	    OR product_id IN (SELECT product_id FROM dtb_product_categories JOIN plg_ancoupon_discount_rule_category AS rule_cat ON rule_cat.category_id = dtb_product_categories.category_id WHERE rule_cat.discount_rule_id = ?)
+        OR product_id IN (SELECT product_id FROM dtb_product_categories JOIN plg_ancoupon_discount_rule_category AS rule_cat ON rule_cat.category_id = dtb_product_categories.category_id WHERE rule_cat.discount_rule_id = ?)
     )
 __SQL__;
 
