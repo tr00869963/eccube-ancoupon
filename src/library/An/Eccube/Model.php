@@ -19,39 +19,45 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-abstract class An_Eccube_Model {
+abstract class An_Eccube_Model
+{
     private $stored = false;
-    
+
     /**
      * @param array $data
      * @param array $options
      */
-    public function __construct(array $data = array(), array $options = array()) {
+    public function __construct(array $data = array(), array $options = array())
+    {
         $this->query = isset($options['query']) ? $options['query'] : self::getQuery();
-        
+
         foreach ($data as $key => $value) {
             $this->$key = $value;
         }
     }
-    
-    public function isStored() {
+
+    public function isStored()
+    {
         return $this->stored;
     }
-    
-    protected function ensureStored() {
+
+    protected function ensureStored()
+    {
         $this->stored = true;
     }
-    
-    protected function cancelStored() {
+
+    protected function cancelStored()
+    {
         $this->stored = false;
     }
-    
+
     /**
      * @return array
      */
-    protected function getStorableProperties() {
+    protected function getStorableProperties()
+    {
         static $properties;
-        
+
         if ($properties === null) {
             $class = new ReflectionClass($this);
             $properties = array();
@@ -59,32 +65,34 @@ abstract class An_Eccube_Model {
                 $properties[$property->name] = $property->name;
             }
         }
-        
+
         return $properties;
     }
-    
+
     /**
-     * 
+     *
      * @return array
      */
-    protected function toStorableValues() {
+    protected function toStorableValues()
+    {
         $values = array();
-        
+
         foreach ($this->getStorableProperties() as $name) {
             $values[$name] = $this->$name;
         }
-        
+
         return $values;
     }
-    
+
     /**
      * @return An_Eccube_Transaction
      */
-    public static function beginTransaction(SC_Query_Ex $query = null) {
+    public static function beginTransaction(SC_Query_Ex $query = null)
+    {
         if (!$query) {
             $query = self::getQuery();
         }
-        
+
         $tx = new An_Eccube_Transaction($query);
         return $tx;
     }
@@ -92,7 +100,8 @@ abstract class An_Eccube_Model {
     /**
      * @return SC_Query_Ex
      */
-    public static function getQuery() {
+    public static function getQuery()
+    {
         return SC_Query_Ex::getSingletonInstance();
     }
 }

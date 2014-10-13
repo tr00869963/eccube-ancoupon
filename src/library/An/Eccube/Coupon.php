@@ -19,7 +19,8 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-class An_Eccube_Coupon extends An_Eccube_Model {
+class An_Eccube_Coupon extends An_Eccube_Model
+{
     public $coupon_id;
     public $code;
     public $enabled = true;
@@ -38,7 +39,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param array $data
      * @param array $options
      */
-    public function __construct(array $data = array(), array $options = array()) {
+    public function __construct(array $data = array(), array $options = array())
+    {
         parent::__construct($data, $options);
 
         if ($this->effective_from === null) {
@@ -57,7 +59,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     /**
      * @see An_Eccube_Model::getStorableProperties()
      */
-    protected function getStorableProperties() {
+    protected function getStorableProperties()
+    {
         $properties = parent::getStorableProperties();
 
         unset($properties['discount_rules']);
@@ -65,7 +68,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         return $properties;
     }
 
-    protected function toStorableValues() {
+    protected function toStorableValues()
+    {
         $values = parent::toStorableValues();
 
         $values['enabled'] = (int)$values['enabled'];
@@ -78,7 +82,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param string $coupon_id
      * @return An_Eccube_Coupon
      */
-    public static function load($coupon_id, array $options = array()) {
+    public static function load($coupon_id, array $options = array())
+    {
         $where = 'coupon_id = ?';
         $params = array($coupon_id);
         $add = '';
@@ -104,7 +109,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param array $options
      * @return array <An_Eccube_Coupon>
      */
-    public static function findByWhere($columns, $where, array $params = array(), $limit = null, $offset = null, $sort_key = null, $sort_order = 'ASC', $additional = null) {
+    public static function findByWhere($columns, $where, array $params = array(), $limit = null, $offset = null, $sort_key = null, $sort_order = 'ASC', $additional = null)
+    {
         $query = self::getQuery();
 
         if ($limit && $offset) {
@@ -153,7 +159,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param An_Eccube_Coupon $cupon_code
      * @return An_Eccube_Coupon
      */
-    public static function findByCode($cupon_code) {
+    public static function findByCode($cupon_code)
+    {
         $where = 'code = ?';
         $where_params = array($cupon_code);
         $coupons = self::findByWhere('*', $where, $where_params);
@@ -165,7 +172,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param array $params
      * @return bool
      */
-    public static function exists($where = '', array $params = array()) {
+    public static function exists($where = '', array $params = array())
+    {
         $query = self::getQuery();
         return $query->exists('plg_ancoupon_coupon', $where, $params);
     }
@@ -175,7 +183,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param array $params
      * @return int
      */
-    public static function count($where = '', array $params = array()) {
+    public static function count($where = '', array $params = array())
+    {
         $query = self::getQuery();
         return $query->count('plg_ancoupon_coupon', $where, $params);
     }
@@ -183,7 +192,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     /**
      *
      */
-    public function save() {
+    public function save()
+    {
         $query = self::getQuery();
 
         if ($this->isStored()) {
@@ -217,7 +227,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param string $id
      * @param int
      */
-    public static function delete($coupon_id) {
+    public static function delete($coupon_id)
+    {
         $where = 'coupon_id = ?';
         $params = array($coupon_id);
         return self::deleteByWhere($where, $params);
@@ -228,7 +239,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param array $params
      * @return int
      */
-    public static function deleteByWhere($where, array $params = array()) {
+    public static function deleteByWhere($where, array $params = array())
+    {
         $query = self::getQuery();
 
         $coupon_ids = $query->getSql('coupon_id', 'plg_ancoupon_coupon', $where);
@@ -243,7 +255,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
      * @param array $session
      * @return boolean
      */
-    public function isAvailable($used_time, SC_Customer_Ex $customer = null) {
+    public function isAvailable($used_time, SC_Customer_Ex $customer = null)
+    {
         if ($customer === null) {
             $customer = new SC_Customer_Ex();
         }
@@ -263,25 +276,30 @@ class An_Eccube_Coupon extends An_Eccube_Model {
         return $available;
     }
 
-    public function isUserTargeted(SC_Customer_Ex $customer) {
+    public function isUserTargeted(SC_Customer_Ex $customer)
+    {
         $loggedin = $customer->isLoginSuccess(true);
 
         $targeted = false;
         $discount_rules = $this->getDiscountRules();
         foreach ($discount_rules as $discount_rule) {
-            $targeted = $targeted || (($discount_rule->allow_guest && !$loggedin) || ($discount_rule->allow_member && $loggedin));
+            $targeted = $targeted
+                || (($discount_rule->allow_guest && !$loggedin)
+                    || ($discount_rule->allow_member && $loggedin));
         }
 
         return $targeted;
     }
 
-    public function isInPeriod($used_time) {
+    public function isInPeriod($used_time)
+    {
         $in_from = $used_time >= strtotime($this->effective_from);
         $in_to = $used_time < strtotime($this->effective_to);
         return $in_from && $in_to;
     }
 
-    public function isUsesLimitReached() {
+    public function isUsesLimitReached()
+    {
         if (!$this->limit_uses) {
             return false;
         }
@@ -292,7 +310,8 @@ class An_Eccube_Coupon extends An_Eccube_Model {
     /**
      * @return array <An_Eccube_DiscountRule>
      */
-    public function getDiscountRules() {
+    public function getDiscountRules()
+    {
         $where = <<<__SQL__
 discount_rule_id IN (
     SELECT
@@ -312,7 +331,8 @@ __SQL__;
      * @param array $coupon_codes
      * @return array <An_Eccube_DiscountRule>
      */
-    public static function getDiscountRulesByCouponCode(array $coupon_codes) {
+    public static function getDiscountRulesByCouponCode(array $coupon_codes)
+    {
         if (!$coupon_codes) {
             return array();
         }
@@ -338,7 +358,8 @@ __SQL__;
      * @param string $coupon_code
      * @return string
      */
-    public static function normalizeCode($coupon_code) {
+    public static function normalizeCode($coupon_code)
+    {
         $ignorable_chars = "\t\n\r\0\x0B " . AnCoupon::getSetting('ignorable_chars', '-');
         $pattern = '/[' . preg_quote($ignorable_chars, '/g') . ']/u';
         $coupon_code = preg_replace($pattern, '', $coupon_code);
@@ -349,7 +370,8 @@ __SQL__;
      * @param int $order_id
      * @param float $discount
      */
-    public function useToOrder($order_id, $discount) {
+    public function useToOrder($order_id, $discount)
+    {
         $query = self::getQuery();
 
         $this->uses++;

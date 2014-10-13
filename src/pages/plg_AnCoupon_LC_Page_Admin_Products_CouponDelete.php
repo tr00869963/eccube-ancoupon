@@ -28,13 +28,15 @@ require_once PLUGIN_UPLOAD_REALDIR . '/AnCoupon/pages/plg_AnCoupon_LC_Page_Admin
  * @author M-soft
  * @version $Id: $
  */
-class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_Page_Admin {
+class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_Page_Admin
+{
     /**
      * @var An_Eccube_PageContext
      */
     public $context;
 
-    public function init() {
+    public function init()
+    {
         parent::init();
 
         $this->tpl_mainpage = 'products/plg_AnCoupon_coupon_delete.tpl';
@@ -44,12 +46,14 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
         $this->tpl_subtitle = 'クーポンコードの削除';
     }
 
-    public function process() {
+    public function process()
+    {
         $this->action();
         $this->sendResponse();
     }
 
-    public function action() {
+    public function action()
+    {
         $this->context = $this->getContext();
 
         $mode = $this->getMode();
@@ -69,7 +73,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
     /**
      * @return An_Eccube_PageContext
      */
-    protected function getContext() {
+    protected function getContext()
+    {
         $page_context_id = $_REQUEST['page_context_id'];
         $context = An_Eccube_PageContext::load($page_context_id);
 
@@ -81,12 +86,14 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
         return $context;
     }
 
-    protected function initializeContext(An_Eccube_PageContext $context) {
+    protected function initializeContext(An_Eccube_PageContext $context)
+    {
         $coupon_ids = array_map('strval', (array)@$_GET['coupon_id']);
         $context->session['coupon_ids'] = $coupon_ids;
     }
 
-    protected function doConfirm() {
+    protected function doConfirm()
+    {
         $coupon_ids = $this->context->session['coupon_ids'];
         $params = $this->buildFormParam($coupon_ids);
 
@@ -100,7 +107,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
         $this->form = $form;
     }
 
-    protected function buildDeleteQueryCondition($coupon_ids) {
+    protected function buildDeleteQueryCondition($coupon_ids)
+    {
         $wheres = array();
         $values = array();
 
@@ -114,7 +122,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
         return array($where, $values);
     }
 
-    protected function doDelete() {
+    protected function doDelete()
+    {
         try {
             $tx = An_Eccube_Model::beginTransaction();
 
@@ -150,7 +159,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
      * @param array $errors
      * @return array
      */
-    protected function buildForm(SC_FormParam_Ex $params, $errors = array()) {
+    protected function buildForm(SC_FormParam_Ex $params, $errors = array())
+    {
         $form = array();
 
         foreach ($params->keyname as $index => $key) {
@@ -173,7 +183,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
      * @param object $coupon
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam(array $coupon_ids) {
+    protected function buildFormParam(array $coupon_ids)
+    {
         $params = new SC_FormParam_Ex();
 
         return $params;
@@ -183,7 +194,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
      * @param SC_FormParam_Ex $params
      * @return array キーにフォーム名、値にエラーメッセージを収めた連想配列。
      */
-    protected function validateFormParam($params) {
+    protected function validateFormParam($params)
+    {
         $errors = $params->checkError();
 
         return $errors;

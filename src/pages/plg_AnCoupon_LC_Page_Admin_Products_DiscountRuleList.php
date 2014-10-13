@@ -167,7 +167,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_DiscountRuleList extends plg_AnCoupon_
     {
         $params = new SC_FormParam_Ex();
 
-        $params->addParam('ページ番号','search_pageno', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), 1);
+        $params->addParam('ページ番号', 'search_pageno', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), 1);
         $params->addParam('表示件数', 'search_page_max', INT_LEN, 'n', array('MAX_LENGTH_CHECK', 'NUM_CHECK'), 10);
 
         $params->addParam('割引条件名', 'name', 100, '', array('MAX_LENGTH_CHECK'));

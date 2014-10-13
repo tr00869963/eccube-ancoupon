@@ -1,17 +1,20 @@
 <?php
 
-class An_Eccube_Api_DiscountRules_ListApi extends An_Eccube_Api {
-    protected function initialize() {
+class An_Eccube_Api_DiscountRules_ListApi extends An_Eccube_Api
+{
+    protected function initialize()
+    {
         $this->authenticationRequired = true;
     }
-    
-    protected function get(An_Eccube_ApiRequest $request, An_Eccube_ApiResponse $response) {
+
+    protected function get(An_Eccube_ApiRequest $request, An_Eccube_ApiResponse $response)
+    {
         $where = 'enabled = ?';
         $where_params = array(1);
         $limit = null;
         $offset = 0;
         $discount_rules = An_Eccube_DiscountRule::findByWhere('*', $where, $where_params, $limit, $offset, 'name', 'ASC');
-        
+
         $body = array();
         foreach ($discount_rules as $discount_rule) {
             $item = array(
@@ -26,7 +29,7 @@ class An_Eccube_Api_DiscountRules_ListApi extends An_Eccube_Api {
             );
             $body[] = $item;
         }
-        
+
         $response->setBody($body);
     }
 }

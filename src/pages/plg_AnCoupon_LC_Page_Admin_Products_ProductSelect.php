@@ -28,8 +28,10 @@ require_once PLUGIN_UPLOAD_REALDIR . '/AnCoupon/pages/plg_AnCoupon_LC_Page_Admin
  * @author M-soft
  * @version $Id: $
  */
-class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_Page_Admin {
-    function init() {
+class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_Page_Admin
+{
+    public function init()
+    {
         parent::init();
 
         $this->tpl_mainpage = 'products/plg_AnCoupon_product_select.tpl';
@@ -44,7 +46,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      *
      * @return void
      */
-    function process() {
+    public function process()
+    {
         $this->action();
         $this->sendResponse();
     }
@@ -54,7 +57,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      *
      * @return void
      */
-    function action() {
+    protected function action()
+    {
         $this->class_required = (int)!empty($_REQUEST['class_required']);
 
         $objDb = new SC_Helper_DB_Ex();
@@ -69,8 +73,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
             case 'search':
                 $objProduct = new SC_Product_Ex();
                 $this->arrForm = $objFormParam->getHashArray();
-                $wheres = $this->createWhere($objFormParam,$objDb);
-                $this->tpl_linemax = $this->getLineCount($wheres,$objProduct);
+                $wheres = $this->createWhere($objFormParam, $objDb);
+                $this->tpl_linemax = $this->getLineCount($wheres, $objProduct);
 
                 //ぶった斬りポイント==================================================================
                 // ページ送りの処理
@@ -81,9 +85,9 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
                 $this->tpl_strnavi = $objNavi->strnavi;     // 表示文字列
                 $startno = $objNavi->start_row;
                 $arrProduct_id = $this->getProducts($wheres, $objProduct, $page_max, $startno);
-                $productList = $this->getProductList($arrProduct_id,$objProduct);
+                $productList = $this->getProductList($arrProduct_id, $objProduct);
                 //取得している並び順で並び替え
-                $this->arrProducts = $this->sortProducts($arrProduct_id,$productList);
+                $this->arrProducts = $this->sortProducts($arrProduct_id, $productList);
                 $objProduct->setProductsClassByProductIds($arrProduct_id);
                 $this->tpl_javascript .= $this->getTplJavascript($objProduct);
                 $js_fnOnLoad = $this->getFnOnload($this->arrProducts);
@@ -118,7 +122,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      * @param array $arrProductId
      * @param SC_Product $objProduct
      */
-    function getProductList($arrProductId, &$objProduct) {
+    protected function getProductList($arrProductId, &$objProduct)
+    {
         $objQuery =& SC_Query_Ex::getSingletonInstance();
 
         // 表示順序
@@ -132,7 +137,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      * ロード時に実行するJavascriptを生成
      * @param array $arrProducts
      */
-    function getFnOnload($arrProducts) {
+    protected function getFnOnload($arrProducts)
+    {
         foreach ($arrProducts as $arrProduct) {
             $js_fnOnLoad .= "fnSetClassCategories(document.product_form{$arrProduct['product_id']});";
         }
@@ -143,7 +149,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      * 規格クラス用JavaScript生成
      * @param SC_Product $objProduct
      */
-    function getTplJavascript(&$objProduct) {
+    protected function getTplJavascript($objProduct)
+    {
         return 'productsClassCategories = ' . SC_Utils_Ex::jsonEncode($objProduct->classCategories) . '; ';
     }
 
@@ -152,7 +159,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      * @param array $whereAndBind string whereと array bindの連想配列
      * @param SC_Product $objProduct
      */
-    function getProducts($whereAndBind,&$objProduct, $page_max, $startno) {
+    protected function getProducts($whereAndBind, $objProduct, $page_max, $startno)
+    {
         $where = $whereAndBind['where'];
         $bind = $whereAndBind['bind'];
         $objQuery =& SC_Query_Ex::getSingletonInstance();
@@ -172,7 +180,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      * @param array $whereAndBind
      * @param SC_Product $objProduct
      */
-    function getLineCount($whereAndBind,&$objProduct) {
+    protected function getLineCount($whereAndBind, $objProduct)
+    {
         $where = $whereAndBind['where'];
         $bind = $whereAndBind['bind'];
         // 検索結果対象となる商品の数を取得
@@ -188,7 +197,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      * @return array ('where' => where string, 'bind' => databind array)
      * @param SC_FormParam $objFormParam
      */
-    function createWhere(&$objFormParam,&$objDb) {
+    protected function createWhere($objFormParam, $objDb)
+    {
         $arrForm = $objFormParam->getHashArray();
         $where = 'alldtl.del_flg = 0';
         $bind = array();
@@ -228,9 +238,10 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      * リクエストパラメーターnoを取ってくる。
      * @param unknown_type $globalParams
      */
-    function getNo($globalParams) {
+    protected function getNo($globalParams)
+    {
         foreach ($globalParams as $params) {
-            if (isset($params['no']) && $params['no']!= '') {
+            if (isset($params['no']) && $params['no'] != '') {
                 return intval($params['no']);
             }
         }
@@ -242,7 +253,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
      * @param $arrProduct_id
      * @param $productList
      */
-    function sortProducts($arrProduct_id,$productList) {
+    protected function sortProducts($arrProduct_id, $productList)
+    {
         $products  = array();
         foreach ($productList as $item) {
             $products[ $item['product_id'] ] = $item;
@@ -255,21 +267,14 @@ class plg_AnCoupon_LC_Page_Admin_Products_ProductSelect extends plg_AnCoupon_LC_
     }
 
     /**
-     * デストラクタ.
-     * @return void
-     */
-    function destroy() {
-        parent::destroy();
-    }
-
-    /**
      * パラメーター情報の初期化
      * @param SC_FormParam $objFormParam
      */
-    function lfInitParam(&$objFormParam) {
+    protected function lfInitParam($objFormParam)
+    {
         $objFormParam->addParam('オーダーID', 'order_id', INT_LEN, 'n', array('EXIST_CHECK', 'MAX_LENGTH_CHECK', 'NUM_CHECK'));
         $objFormParam->addParam('商品名', 'search_name', STEXT_LEN, 'KVa', array('MAX_LENGTH_CHECK'));
-        $objFormParam->addParam('カテゴリID', 'search_category_id', STEXT_LEN, 'KVa',  array('MAX_LENGTH_CHECK', 'SPTAB_CHECK'));
+        $objFormParam->addParam('カテゴリID', 'search_category_id', STEXT_LEN, 'KVa', array('MAX_LENGTH_CHECK', 'SPTAB_CHECK'));
         $objFormParam->addParam('商品コード', 'search_product_code', LTEXT_LEN, 'KVa', array('MAX_LENGTH_CHECK', 'SPTAB_CHECK'));
         $objFormParam->addParam('フッター', 'footer', LTEXT_LEN, 'KVa', array('MAX_LENGTH_CHECK', 'SPTAB_CHECK'));
     }

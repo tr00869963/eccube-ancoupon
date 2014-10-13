@@ -19,16 +19,19 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-class An_Eccube_Transaction {
+class An_Eccube_Transaction
+{
     protected $query;
     protected $alive = false;
-    
-    public function __construct(SC_Query_Ex $query) {
+
+    public function __construct(SC_Query_Ex $query)
+    {
         $this->query = $query;
         $this->begin();
     }
-    
-    protected function begin() {
+
+    protected function begin()
+    {
         $mdb2 = An_Eccube_DbUtils::getMDB2($this->query);
         $result = $mdb2->beginNestedTransaction();
         if (PEAR::isError($result)) {
@@ -37,36 +40,39 @@ class An_Eccube_Transaction {
 
         $this->alive = true;
     }
-    
-    public function commit() {
+
+    public function commit()
+    {
         if (!$this->alive) {
             throw new RuntimeException('Failed to rollback. transaction was already closed.');
         }
-        
+
         $mdb2 = An_Eccube_DbUtils::getMDB2($this->query);
         $result = $mdb2->completeNestedTransaction();
         if (PEAR::isError($result)) {
             throw new RuntimeException($result->toString());
         }
-        
+
         $this->alive = false;
     }
-    
-    public function rollback() {
+
+    public function rollback()
+    {
         if (!$this->alive) {
             throw new RuntimeException('Failed to rollback. transaction was already closed.');
         }
- 
+
         $mdb2 = An_Eccube_DbUtils::getMDB2($this->query);
         $result = $mdb2->failNestedTransaction();
         if (PEAR::isError($result)) {
             throw new RuntimeException($result->toString());
         }
-        
+
         $this->alive = false;
     }
-    
-    public function isAlive() {
+
+    public function isAlive()
+    {
         return $this->alive;
     }
 }

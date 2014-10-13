@@ -77,7 +77,8 @@ class plg_AnCoupon_LC_Page_Cart_CouponCancel extends plg_AnCoupon_LC_Page
      * @param array $errors
      * @return array
      */
-    protected function buildForm(SC_FormParam_Ex $params, $errors = array()) {
+    protected function buildForm(SC_FormParam_Ex $params, $errors = array())
+    {
         $form = array();
 
         foreach ($params->keyname as $index => $key) {
@@ -99,7 +100,8 @@ class plg_AnCoupon_LC_Page_Cart_CouponCancel extends plg_AnCoupon_LC_Page
     /**
      * @return SC_FormParam_Ex
      */
-    protected function buildFormParam() {
+    protected function buildFormParam()
+    {
         $params = new SC_FormParam_Ex();
 
         return $params;
@@ -109,7 +111,8 @@ class plg_AnCoupon_LC_Page_Cart_CouponCancel extends plg_AnCoupon_LC_Page
      * @param SC_FormParam_Ex $params
      * @return array キーにフォーム名、値にエラーメッセージを収めた連想配列。
      */
-    protected function validateFormParam(SC_FormParam_Ex $params) {
+    protected function validateFormParam(SC_FormParam_Ex $params)
+    {
         $errors = $params->checkError();
 
         return $errors;

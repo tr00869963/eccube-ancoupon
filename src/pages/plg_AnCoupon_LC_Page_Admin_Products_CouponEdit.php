@@ -36,7 +36,8 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends plg_AnCoupon_LC_Pag
      */
     protected $defaultMode = 'edit';
 
-    public function init() {
+    public function init()
+    {
         parent::init();
 
         $this->tpl_mainpage = 'products/plg_AnCoupon_coupon_edit.tpl';
@@ -70,7 +71,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponEdit extends plg_AnCoupon_LC_Pag
         $context['coupon'] = $coupon;
     }
 
-    public function doEdit($errors = array())
+    protected function doEdit($errors = array())
     {
         $coupon = $this->context['coupon'];
         $this->coupon = $coupon;
