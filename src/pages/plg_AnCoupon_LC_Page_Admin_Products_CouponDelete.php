@@ -31,9 +31,10 @@ require_once PLUGIN_UPLOAD_REALDIR . '/AnCoupon/pages/plg_AnCoupon_LC_Page_Admin
 class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_Page_Admin
 {
     /**
-     * @var An_Eccube_PageContext
+     *
+     * @var string
      */
-    public $context;
+    protected $defaultMode = 'confirm';
 
     public function init()
     {
@@ -46,55 +47,15 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
         $this->tpl_subtitle = 'クーポンコードの削除';
     }
 
-    public function process()
-    {
-        $this->action();
-        $this->sendResponse();
-    }
-
-    public function action()
-    {
-        $this->context = $this->getContext();
-
-        $mode = $this->getMode();
-        switch ($mode) {
-            case 'delete':
-                $this->doDelete();
-                break;
-
-            default:
-                $this->doConfirm();
-                break;
-        }
-
-        $this->context->save();
-    }
-
-    /**
-     * @return An_Eccube_PageContext
-     */
-    protected function getContext()
-    {
-        $page_context_id = $_REQUEST['page_context_id'];
-        $context = An_Eccube_PageContext::load($page_context_id);
-
-        if (!$context->isPrepared()) {
-            $this->initializeContext($context);
-            $context->prepare();
-        }
-
-        return $context;
-    }
-
     protected function initializeContext(An_Eccube_PageContext $context)
     {
-        $coupon_ids = array_map('strval', (array)@$_GET['coupon_id']);
-        $context->session['coupon_ids'] = $coupon_ids;
+        $coupon_ids = array_map('intval', (array)@$_GET['coupon_id']);
+        $context['coupon_ids'] = $coupon_ids;
     }
 
     protected function doConfirm()
     {
-        $coupon_ids = $this->context->session['coupon_ids'];
+        $coupon_ids = $this->context['coupon_ids'];
         $params = $this->buildFormParam($coupon_ids);
 
         $columns = 'code, update_date';
@@ -107,7 +68,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
         $this->form = $form;
     }
 
-    protected function buildDeleteQueryCondition($coupon_ids)
+    protected function buildDeleteQueryCondition(array $coupon_ids)
     {
         $wheres = array();
         $values = array();
@@ -127,7 +88,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
         try {
             $tx = An_Eccube_Model::beginTransaction();
 
-            $coupon_ids = $this->context->session['coupon_ids'];
+            $coupon_ids = $this->context['coupon_ids'];
             $params = $this->buildFormParam($coupon_ids);
             $params->setParam($_POST);
 
@@ -142,8 +103,6 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
             $deleted_items_number = An_Eccube_Coupon::deleteByWhere($where, $where_params);
 
             $tx->commit();
-
-            $this->context->dispose();
 
             $this->deleted_items_number = $deleted_items_number;
             $this->tpl_mainpage = 'products/plg_AnCoupon_coupon_delete_complete.tpl';
@@ -180,7 +139,7 @@ class plg_AnCoupon_LC_Page_Admin_Products_CouponDelete extends plg_AnCoupon_LC_P
     }
 
     /**
-     * @param object $coupon
+     * @param array $coupon_ids
      * @return SC_FormParam_Ex
      */
     protected function buildFormParam(array $coupon_ids)
