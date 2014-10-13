@@ -1,6 +1,6 @@
 <!--{*
  * アフィリナビクーポンプラグイン
- * Copyright (C) 2013 M-soft All Rights Reserved.
+ * Copyright (C) 2014 M-soft All Rights Reserved.
  * http://m-soft.jp/
  * 
  * This library is free software; you can redistribute it and/or
